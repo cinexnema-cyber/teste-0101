@@ -123,7 +123,7 @@ const App = () => (
                 path="/subscriber-dashboard"
                 element={
                   <ProtectedRoute
-                    allowedRoles={["subscriber"]}
+                    allowedRoles={["subscriber", "admin"]}
                     requireSubscription={true}
                   >
                     <SubscriberDashboard />
@@ -134,7 +134,7 @@ const App = () => (
                 path="/between-heaven-hell"
                 element={
                   <ProtectedRoute
-                    allowedRoles={["subscriber"]}
+                    allowedRoles={["subscriber", "admin"]}
                     requireSubscription={true}
                   >
                     <BetweenHeavenHell />
@@ -157,25 +157,6 @@ const App = () => (
               <Route path="/visitor-dashboard" element={<VisitorDashboard />} />
 
               {/* Role-specific Dashboards */}
-              <Route
-                path="/user-dashboard"
-                element={
-                  <ProtectedRoute allowedRoles={["user"]}>
-                    <UserDashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/subscriber-dashboard"
-                element={
-                  <ProtectedRoute
-                    allowedRoles={["subscriber"]}
-                    requireSubscription={true}
-                  >
-                    <SubscriberDashboard />
-                  </ProtectedRoute>
-                }
-              />
               <Route
                 path="/creator-dashboard"
                 element={
@@ -201,7 +182,7 @@ const App = () => (
                 path="/watch/:contentId"
                 element={
                   <ProtectedRoute
-                    allowedRoles={["subscriber"]}
+                    allowedRoles={["subscriber", "admin"]}
                     requireSubscription={true}
                   >
                     <Watch />
@@ -211,17 +192,6 @@ const App = () => (
               <Route path="/series/:seriesId" element={<SeriesDetail />} />
 
               {/* Rotas protegidas - Criadores */}
-              <Route
-                path="/creator-dashboard"
-                element={
-                  <ProtectedRoute
-                    allowedRoles={["creator"]}
-                    requireApproval={true}
-                  >
-                    <CreatorDashboard />
-                  </ProtectedRoute>
-                }
-              />
               <Route
                 path="/creator-portal"
                 element={
