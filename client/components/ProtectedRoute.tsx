@@ -94,7 +94,10 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   }
 
   // Check subscription requirement - show prompt instead of blocking
-  if (requireSubscription && !user.assinante) {
+  // Admins automatically have subscription access
+  const hasSubscriptionAccess = user.assinante || user.role === "admin";
+
+  if (requireSubscription && !hasSubscriptionAccess) {
     return (
       <>
         {children}
