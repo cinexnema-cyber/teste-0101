@@ -31,7 +31,13 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   // Auto-show subscription prompt for premium content
   useEffect(() => {
-    if (requireSubscription && user && !user.assinante && user.role !== "admin" && isAuthenticated) {
+    if (
+      requireSubscription &&
+      user &&
+      !user.assinante &&
+      user.role !== "admin" &&
+      isAuthenticated
+    ) {
       const timer = setTimeout(() => setShowSubscriptionPrompt(true), 2000);
       return () => clearTimeout(timer);
     }
