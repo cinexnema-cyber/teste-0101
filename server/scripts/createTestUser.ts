@@ -17,7 +17,7 @@ export const createTestUser = async () => {
     const testUser = new User({
       email: "cinexnema@gmail.com",
       password: "I30C77T$Ii", // Será criptografada automaticamente
-      name: "CineXnema Test User",
+      nome: "CineXnema Test User",
       role: "subscriber",
       assinante: true, // Acesso completo sem pagamento
       subscription: {

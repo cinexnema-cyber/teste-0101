@@ -35,6 +35,7 @@ const UserSchema = new Schema<IUser>(
       unique: true,
       lowercase: true,
       trim: true,
+      index: true,
     },
     password: {
       type: String,
@@ -108,7 +109,6 @@ const UserSchema = new Schema<IUser>(
 );
 
 // Índices para otimização
-UserSchema.index({ email: 1 });
 UserSchema.index({ tipo: 1 });
 UserSchema.index({ subscriptionStatus: 1 });
 
