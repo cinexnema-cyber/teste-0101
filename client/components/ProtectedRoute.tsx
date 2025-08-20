@@ -101,7 +101,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     return (
       <>
         {children}
-        {showSubscriptionPrompt && (
+        {showSubscriptionPrompt && user.role !== "admin" && (
           <SubscriptionPrompt
             contentTitle={
               location.pathname.includes("between-heaven-hell")
