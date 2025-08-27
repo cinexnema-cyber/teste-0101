@@ -242,7 +242,9 @@ export default function CreatorPortal() {
                       </div>
                       <DollarSign className="w-8 h-8 text-green-600" />
                     </div>
-                    <p className="text-xs text-muted-foreground mt-2">+{mockAnalytics.monthlyGrowth}% vs mês anterior</p>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      {analyticsData.loading ? '...' : `+${analyticsData.monthlyGrowth}% vs mês anterior`}
+                    </p>
                   </CardContent>
                 </Card>
 
