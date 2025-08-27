@@ -19,6 +19,23 @@ export interface IUser extends Document {
   bio?: string;
   avatar?: string;
   verificado: boolean;
+  creatorProfile?: {
+    status: "pending" | "approved" | "rejected";
+    whatsapp?: string;
+    portfolio?: string;
+    description?: string;
+    gracePeriod?: number;
+    gracePeriodApproved?: number;
+    appliedAt?: Date;
+    approvedAt?: Date;
+    rejectedAt?: Date;
+    approvedBy?: string;
+    rejectionReason?: string;
+    graceStartDate?: Date;
+    graceEndDate?: Date;
+    affiliateCode?: string;
+    affiliateLink?: string;
+  };
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
@@ -98,6 +115,73 @@ const UserSchema = new Schema<IUser>(
     verificado: {
       type: Boolean,
       default: false,
+    },
+    creatorProfile: {
+      status: {
+        type: String,
+        enum: ["pending", "approved", "rejected"],
+        required: false,
+      },
+      whatsapp: {
+        type: String,
+        required: false,
+      },
+      portfolio: {
+        type: String,
+        required: false,
+      },
+      description: {
+        type: String,
+        required: false,
+      },
+      gracePeriod: {
+        type: Number,
+        min: 1,
+        max: 3,
+        required: false,
+      },
+      gracePeriodApproved: {
+        type: Number,
+        min: 1,
+        max: 3,
+        required: false,
+      },
+      appliedAt: {
+        type: Date,
+        required: false,
+      },
+      approvedAt: {
+        type: Date,
+        required: false,
+      },
+      rejectedAt: {
+        type: Date,
+        required: false,
+      },
+      approvedBy: {
+        type: String,
+        required: false,
+      },
+      rejectionReason: {
+        type: String,
+        required: false,
+      },
+      graceStartDate: {
+        type: Date,
+        required: false,
+      },
+      graceEndDate: {
+        type: Date,
+        required: false,
+      },
+      affiliateCode: {
+        type: String,
+        required: false,
+      },
+      affiliateLink: {
+        type: String,
+        required: false,
+      },
     },
   },
   {
