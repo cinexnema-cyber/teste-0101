@@ -261,15 +261,10 @@ const App = () => (
                 }
               />
 
+              {/* Smart Dashboard - Acesso sem login */}
+              <Route path="/smart-dashboard" element={<SmartDashboard />} />
+
               {/* Rotas protegidas - Admin */}
-              <Route
-                path="/smart-dashboard"
-                element={
-                  <ProtectedRoute allowedRoles={["admin"]}>
-                    <SmartDashboard />
-                  </ProtectedRoute>
-                }
-              />
               <Route
                 path="/admin-dashboard"
                 element={
