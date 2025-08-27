@@ -26,7 +26,7 @@ export default function CreatorTerms() {
                 <Crown className="w-6 h-6 text-black" />
               </div>
               <h1 className="text-4xl lg:text-5xl font-bold text-foreground">
-                Termos para Criadores
+                Termos de Uso para Criadores – Cinexnema
               </h1>
             </div>
             
@@ -38,269 +38,186 @@ export default function CreatorTerms() {
           {/* Content */}
           <div className="prose prose-invert max-w-none">
             <div className="bg-gradient-to-r from-xnema-orange/20 to-xnema-purple/20 border border-xnema-orange/30 rounded-2xl p-8 mb-8">
-              <h2 className="text-2xl font-bold text-foreground mb-4">🎉 Oferta Especial de Lançamento</h2>
+              <h2 className="text-2xl font-bold text-foreground mb-4">🎉 Período de Carência Especial</h2>
               <p className="text-lg text-muted-foreground leading-relaxed">
-                <span className="text-xnema-orange font-bold">100% da receita para você nos primeiros 3 meses!</span><br/>
-                Aproveite nosso período promocional e comece a gerar renda imediatamente, sem taxas da plataforma.
+                <span className="text-xnema-orange font-bold">3 meses gratuitos para novos criadores!</span><br/>
+                Comece a gerar renda imediatamente, sem mensalidade ou taxas sobre a receita durante o período de carência.
               </p>
             </div>
 
             <div className="bg-xnema-surface rounded-2xl p-8 mb-8">
-              <h2 className="text-2xl font-bold text-foreground mb-4">1. Aceitação dos Termos</h2>
+              <h2 className="text-2xl font-bold text-foreground mb-4">1. Adesão e Período de Carência</h2>
               <p className="text-muted-foreground leading-relaxed mb-4">
-                Ao se cadastrar como criador na XNEMA, você aceita estar vinculado a estes Termos para Criadores, 
-                além dos Termos de Uso gerais da plataforma.
+                Ao se cadastrar como criador, o usuário terá <strong className="text-xnema-orange">3 meses gratuitos</strong> de acesso à plataforma para postagem de conteúdos.
               </p>
               <p className="text-muted-foreground leading-relaxed">
-                Estes termos estabelecem os direitos e responsabilidades específicas para criadores de conteúdo 
-                que desejam monetizar seu trabalho através da nossa plataforma.
+                Durante esse período, não há cobrança de mensalidade ou taxas sobre a receita gerada.
               </p>
             </div>
 
             <div className="bg-xnema-surface rounded-2xl p-8 mb-8">
-              <h2 className="text-2xl font-bold text-foreground mb-4">2. Processo de Cadastro</h2>
+              <h2 className="text-2xl font-bold text-foreground mb-4">2. Mensalidade e Limite de Espaço</h2>
               
-              <h3 className="text-lg font-semibold text-xnema-orange mb-3">2.1 Solicitação</h3>
-              <p className="text-muted-foreground leading-relaxed mb-4">
-                Para se tornar um criador XNEMA, você deve:
-              </p>
-              <ul className="text-muted-foreground space-y-2 mb-4">
-                <li>• Entrar em contato via WhatsApp (15) 99763-6161 ou email cinexnema@gmail.com</li>
-                <li>• Fornecer portfólio ou exemplos do seu trabalho</li>
-                <li>• Demonstrar capacidade técnica para produção de conteúdo</li>
-                <li>• Ser maior de 18 anos ou representado legalmente</li>
-              </ul>
+              <div className="grid md:grid-cols-2 gap-6 mb-6">
+                <div className="bg-gradient-to-br from-red-500/20 to-red-600/20 border border-red-500/30 rounded-xl p-6">
+                  <h3 className="text-xl font-bold text-red-400 mb-3">Após o 4º Mês</h3>
+                  <div className="text-4xl font-bold text-red-400 mb-2">R$ 1.000</div>
+                  <p className="text-muted-foreground">
+                    Mensalidade fixa para manutenção do acesso e hospedagem de vídeos.
+                  </p>
+                </div>
+                
+                <div className="bg-gradient-to-br from-blue-500/20 to-blue-600/20 border border-blue-500/30 rounded-xl p-6">
+                  <h3 className="text-xl font-bold text-blue-400 mb-3">Limite de Armazenamento</h3>
+                  <div className="text-4xl font-bold text-blue-400 mb-2">100GB</div>
+                  <p className="text-muted-foreground">
+                    Espaço incluído. Uso adicional será cobrado proporcionalmente.
+                  </p>
+                </div>
+              </div>
 
-              <h3 className="text-lg font-semibold text-xnema-orange mb-3">2.2 Análise e Aprovação</h3>
-              <p className="text-muted-foreground leading-relaxed mb-4">
-                Nossa equipe analisará sua solicitação considerando:
+              <p className="text-muted-foreground leading-relaxed">
+                Cada criador possui um limite de <strong className="text-blue-400">100GB de armazenamento</strong>. 
+                Caso esse limite seja ultrapassado, será cobrado um valor proporcional pelo espaço adicional utilizado.
               </p>
-              <ul className="text-muted-foreground space-y-2">
-                <li>• Qualidade do conteúdo apresentado</li>
-                <li>• Adequação ao perfil da plataforma</li>
-                <li>• Originalidade e criatividade</li>
-                <li>• Potencial de engajamento</li>
-                <li>• Processo leva até 5 dias úteis</li>
-              </ul>
             </div>
 
             <div className="bg-xnema-surface rounded-2xl p-8 mb-8">
               <h2 className="text-2xl font-bold text-foreground mb-4">3. Divisão de Receita</h2>
               
               <div className="grid md:grid-cols-2 gap-6 mb-6">
-                <div className="bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 border border-yellow-500/30 rounded-xl p-6">
-                  <h3 className="text-xl font-bold text-yellow-400 mb-3">Primeiros 3 Meses</h3>
-                  <div className="text-4xl font-bold text-yellow-400 mb-2">100%</div>
+                <div className="bg-gradient-to-br from-green-500/20 to-green-600/20 border border-green-500/30 rounded-xl p-6">
+                  <h3 className="text-xl font-bold text-green-400 mb-3">Primeiros 3 Meses</h3>
+                  <div className="text-4xl font-bold text-green-400 mb-2">100%</div>
                   <p className="text-muted-foreground">
-                    Toda a receita gerada pelo seu conteúdo é sua. 
-                    Zero taxas da plataforma durante o período promocional.
+                    <strong>100% da receita gerada pelo conteúdo é do criador.</strong>
                   </p>
                 </div>
                 
                 <div className="bg-gradient-to-br from-xnema-orange/20 to-xnema-purple/20 border border-xnema-orange/30 rounded-xl p-6">
-                  <h3 className="text-xl font-bold text-xnema-orange mb-3">Após 3º Mês</h3>
-                  <div className="text-4xl font-bold text-xnema-orange mb-2">70%</div>
-                  <p className="text-muted-foreground">
-                    Você mantém 70% da receita. Nossa comissão de 30% cobre 
-                    hospedagem, streaming, suporte e infraestrutura.
+                  <h3 className="text-xl font-bold text-xnema-orange mb-3">A partir do 4º Mês</h3>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-2xl font-bold text-xnema-orange">70%</span>
+                    <span className="text-lg text-gray-400">|</span>
+                    <span className="text-2xl font-bold text-gray-400">30%</span>
+                  </div>
+                  <p className="text-muted-foreground text-sm">
+                    <span className="text-xnema-orange">O criador recebe 70%</span> da receita gerada.<br/>
+                    <span className="text-gray-400">O Cinexnema retém 30%</span> para cobertura de hospedagem, streaming, suporte e infraestrutura.
                   </p>
                 </div>
               </div>
-
-              <h3 className="text-lg font-semibold text-xnema-orange mb-3">3.1 Formas de Monetização</h3>
-              <ul className="text-muted-foreground space-y-2">
-                <li>• <strong>Visualizações:</strong> Receita baseada no número de visualizações do seu conteúdo</li>
-                <li>• <strong>Assinaturas Premium:</strong> Participação na receita de assinantes que consomem seu conteúdo</li>
-                <li>• <strong>Conteúdo Exclusivo:</strong> Monetização adicional para conteúdo premium ou antecipado</li>
-              </ul>
             </div>
 
             <div className="bg-xnema-surface rounded-2xl p-8 mb-8">
-              <h2 className="text-2xl font-bold text-foreground mb-4">4. Direitos e Obrigações do Criador</h2>
+              <h2 className="text-2xl font-bold text-foreground mb-4">4. Formas de Monetização</h2>
               
-              <h3 className="text-lg font-semibold text-xnema-orange mb-3">4.1 Seus Direitos</h3>
-              <ul className="text-muted-foreground space-y-2 mb-4">
-                <li>• Manter a propriedade intelectual do seu conteúdo original</li>
-                <li>• Receber 70% da receita gerada (100% nos primeiros 3 meses)</li>
-                <li>• Acesso a analytics detalhados do seu conteúdo</li>
-                <li>• Suporte técnico dedicado para criadores</li>
-                <li>• Liberdade criativa dentro das diretrizes da plataforma</li>
-              </ul>
+              <div className="space-y-4">
+                <div className="flex items-start gap-4 p-4 bg-xnema-orange/10 border border-xnema-orange/20 rounded-lg">
+                  <div className="w-2 h-2 bg-xnema-orange rounded-full mt-2"></div>
+                  <div>
+                    <h3 className="font-semibold text-xnema-orange mb-2">Assinaturas Premium</h3>
+                    <p className="text-muted-foreground">
+                      Parte da receita das assinaturas é atribuída proporcionalmente ao conteúdo do criador.
+                    </p>
+                  </div>
+                </div>
 
-              <h3 className="text-lg font-semibold text-xnema-orange mb-3">4.2 Suas Obrigações</h3>
-              <ul className="text-muted-foreground space-y-2">
-                <li>• Produzir conteúdo original e de qualidade</li>
-                <li>• Respeitar direitos autorais de terceiros</li>
-                <li>• Seguir as diretrizes de conteúdo da XNEMA</li>
-                <li>• Fornecer metadados precisos (títulos, descrições, tags)</li>
-                <li>• Manter comunicação regular com a equipe XNEMA</li>
-                <li>• Não publicar o mesmo conteúdo em plataformas concorrentes por 30 dias</li>
-              </ul>
+                <div className="flex items-start gap-4 p-4 bg-xnema-purple/10 border border-xnema-purple/20 rounded-lg">
+                  <div className="w-2 h-2 bg-xnema-purple rounded-full mt-2"></div>
+                  <div>
+                    <h3 className="font-semibold text-xnema-purple mb-2">Visualizações</h3>
+                    <p className="text-muted-foreground">
+                      Receita baseada no número de acessos aos conteúdos publicados pelo criador.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div className="bg-xnema-surface rounded-2xl p-8 mb-8">
-              <h2 className="text-2xl font-bold text-foreground mb-4">5. Diretrizes de Conteúdo</h2>
+              <h2 className="text-2xl font-bold text-foreground mb-4">5. Painel do Criador</h2>
               
-              <h3 className="text-lg font-semibold text-xnema-orange mb-3">5.1 Conteúdo Permitido</h3>
-              <ul className="text-muted-foreground space-y-2 mb-4">
-                <li>• Filmes originais e independentes</li>
-                <li>• Séries e documentários autorais</li>
-                <li>• Conteúdo educativo e cultural</li>
-                <li>• Entretenimento familiar</li>
-                <li>• Arte e expressão criativa</li>
-              </ul>
+              <p className="text-muted-foreground leading-relaxed mb-6">
+                Os criadores têm acesso a um painel exclusivo com:
+              </p>
 
-              <h3 className="text-lg font-semibold text-xnema-orange mb-3">5.2 Conteúdo Proibido</h3>
-              <ul className="text-muted-foreground space-y-2 mb-4">
-                <li>• Conteúdo que viole direitos autorais</li>
-                <li>• Material pornográfico ou sexualmente explícito</li>
-                <li>• Incitação à violência ou ódio</li>
-                <li>• Conteúdo discriminatório</li>
-                <li>• Informações falsas ou enganosas</li>
-                <li>• Atividades ilegais</li>
-              </ul>
+              <div className="grid md:grid-cols-3 gap-4">
+                <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4 text-center">
+                  <div className="text-2xl font-bold text-green-400 mb-2">💰</div>
+                  <h3 className="font-semibold text-green-400">Ganhos Acumulados</h3>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Acompanhe sua receita em tempo real
+                  </p>
+                </div>
 
-              <h3 className="text-lg font-semibold text-xnema-orange mb-3">5.3 Padrões Técnicos</h3>
-              <ul className="text-muted-foreground space-y-2">
-                <li>• Resolu��ão mínima: 1080p (recomendado 4K)</li>
-                <li>• Formatos aceitos: MP4, MOV, AVI</li>
-                <li>• Áudio: AAC ou MP3, estéreo ou 5.1</li>
-                <li>• Duração: sem limitações específicas</li>
-                <li>• Thumbnails: 1920x1080, formato JPG ou PNG</li>
-              </ul>
+                <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 text-center">
+                  <div className="text-2xl font-bold text-blue-400 mb-2">📊</div>
+                  <h3 className="font-semibold text-blue-400">Métricas de Visualização</h3>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Analytics detalhados e cliques
+                  </p>
+                </div>
+
+                <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg p-4 text-center">
+                  <div className="text-2xl font-bold text-purple-400 mb-2">💳</div>
+                  <h3 className="font-semibold text-purple-400">Histórico de Pagamentos</h3>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Comissões e repasses realizados
+                  </p>
+                </div>
+              </div>
             </div>
 
             <div className="bg-xnema-surface rounded-2xl p-8 mb-8">
-              <h2 className="text-2xl font-bold text-foreground mb-4">6. Pagamentos e Repasses</h2>
+              <h2 className="text-2xl font-bold text-foreground mb-4">6. Obrigações do Criador</h2>
               
-              <h3 className="text-lg font-semibold text-xnema-orange mb-3">6.1 Frequência</h3>
-              <p className="text-muted-foreground leading-relaxed mb-4">
-                Os pagamentos são realizados mensalmente, até o dia 15 do mês seguinte ao período de apuração.
-              </p>
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-2 h-2 bg-red-400 rounded-full mt-2"></div>
+                  <p className="text-muted-foreground">
+                    O criador deve respeitar as leis de direitos autorais e as políticas do Cinexnema.
+                  </p>
+                </div>
 
-              <h3 className="text-lg font-semibold text-xnema-orange mb-3">6.2 Valor Mínimo</h3>
-              <p className="text-muted-foreground leading-relaxed mb-4">
-                Valor mínimo para saque: R$ 50,00. Valores abaixo são acumulados para o próximo período.
-              </p>
-
-              <h3 className="text-lg font-semibold text-xnema-orange mb-3">6.3 Formas de Pagamento</h3>
-              <ul className="text-muted-foreground space-y-2 mb-4">
-                <li>• PIX (processamento instantâneo)</li>
-                <li>• Transferência bancária (1-2 dias úteis)</li>
-                <li>• Conta Mercado Pago</li>
-              </ul>
-
-              <h3 className="text-lg font-semibold text-xnema-orange mb-3">6.4 Documentação Fiscal</h3>
-              <p className="text-muted-foreground leading-relaxed">
-                O criador é responsável por emitir nota fiscal ou recibo de pagamento autônomo (RPA) 
-                quando solicitado, conforme legislação vigente.
-              </p>
+                <div className="flex items-start gap-3">
+                  <div className="w-2 h-2 bg-red-400 rounded-full mt-2"></div>
+                  <p className="text-muted-foreground">
+                    Conteúdos impróprios ou ilegais podem ser removidos, e o acesso do criador suspenso.
+                  </p>
+                </div>
+              </div>
             </div>
 
             <div className="bg-xnema-surface rounded-2xl p-8 mb-8">
-              <h2 className="text-2xl font-bold text-foreground mb-4">7. Propriedade Intelectual</h2>
+              <h2 className="text-2xl font-bold text-foreground mb-4">7. Disposições Gerais</h2>
               
-              <h3 className="text-lg font-semibold text-xnema-orange mb-3">7.1 Seus Direitos</h3>
-              <p className="text-muted-foreground leading-relaxed mb-4">
-                Você mantém todos os direitos autorais sobre seu conteúdo original. 
-                A XNEMA recebe apenas uma licença não exclusiva para exibir, distribuir e promover seu conteúdo.
-              </p>
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2"></div>
+                  <p className="text-muted-foreground">
+                    O Cinexnema se reserva o direito de atualizar estes termos, notificando os criadores sobre alterações relevantes.
+                  </p>
+                </div>
 
-              <h3 className="text-lg font-semibold text-xnema-orange mb-3">7.2 Licença Concedida à XNEMA</h3>
-              <ul className="text-muted-foreground space-y-2 mb-4">
-                <li>• Exibir o conteúdo na plataforma</li>
-                <li>• Criar materiais promocionais</li>
-                <li>• Adaptar formatos para diferentes dispositivos</li>
-                <li>• Usar em campanhas de marketing da XNEMA</li>
-              </ul>
-
-              <h3 className="text-lg font-semibold text-xnema-orange mb-3">7.3 Proteção Contra Pirataria</h3>
-              <p className="text-muted-foreground leading-relaxed">
-                A XNEMA implementa tecnologias DRM e outras medidas de proteção para 
-                prevenir distribuição não autorizada do seu conteúdo.
-              </p>
+                <div className="flex items-start gap-3">
+                  <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2"></div>
+                  <p className="text-muted-foreground">
+                    O uso da plataforma implica concordância com todos os termos acima.
+                  </p>
+                </div>
+              </div>
             </div>
 
             <div className="bg-xnema-surface rounded-2xl p-8 mb-8">
-              <h2 className="text-2xl font-bold text-foreground mb-4">8. Exclusividade e Concorrência</h2>
-              
-              <h3 className="text-lg font-semibold text-xnema-orange mb-3">8.1 Período de Exclusividade</h3>
+              <h2 className="text-2xl font-bold text-foreground mb-4">8. Contato e Suporte</h2>
               <p className="text-muted-foreground leading-relaxed mb-4">
-                Novos conteúdos devem permanecer exclusivos na XNEMA por 30 dias antes de serem 
-                publicados em outras plataformas de streaming.
-              </p>
-
-              <h3 className="text-lg font-semibold text-xnema-orange mb-3">8.2 Exceções</h3>
-              <ul className="text-muted-foreground space-y-2">
-                <li>• Redes sociais para divulgação (teasers de até 2 minutos)</li>
-                <li>• Festivais de cinema e eventos culturais</li>
-                <li>• Sessões presenciais e cinema tradicional</li>
-              </ul>
-            </div>
-
-            <div className="bg-xnema-surface rounded-2xl p-8 mb-8">
-              <h2 className="text-2xl font-bold text-foreground mb-4">9. Suporte e Recursos</h2>
-              
-              <h3 className="text-lg font-semibold text-xnema-orange mb-3">9.1 Suporte Técnico</h3>
-              <ul className="text-muted-foreground space-y-2 mb-4">
-                <li>• Ajuda com upload e publicação de conteúdo</li>
-                <li>• Otimização de qualidade de vídeo</li>
-                <li>• Resolução de problemas técnicos</li>
-                <li>• Treinamento em ferramentas da plataforma</li>
-              </ul>
-
-              <h3 className="text-lg font-semibold text-xnema-orange mb-3">9.2 Analytics e Relatórios</h3>
-              <ul className="text-muted-foreground space-y-2 mb-4">
-                <li>• Dashboard detalhado de performance</li>
-                <li>• Métricas de visualização em tempo real</li>
-                <li>• Dados demográficos da audiência</li>
-                <li>• Relatórios de receita e pagamentos</li>
-              </ul>
-
-              <h3 className="text-lg font-semibold text-xnema-orange mb-3">9.3 Promoção</h3>
-              <ul className="text-muted-foreground space-y-2">
-                <li>• Destaque na página inicial da plataforma</li>
-                <li>• Inclusão em newsletters e campanhas</li>
-                <li>• Promoção em redes sociais da XNEMA</li>
-                <li>• Participação em eventos e festivais</li>
-              </ul>
-            </div>
-
-            <div className="bg-xnema-surface rounded-2xl p-8 mb-8">
-              <h2 className="text-2xl font-bold text-foreground mb-4">10. Rescisão e Cancelamento</h2>
-              
-              <h3 className="text-lg font-semibold text-xnema-orange mb-3">10.1 Por Parte do Criador</h3>
-              <p className="text-muted-foreground leading-relaxed mb-4">
-                Você pode encerrar sua participação como criador a qualquer momento com aviso de 30 dias. 
-                Conteúdos já publicados podem permanecer na plataforma por até 90 dias.
-              </p>
-
-              <h3 className="text-lg font-semibold text-xnema-orange mb-3">10.2 Por Parte da XNEMA</h3>
-              <p className="text-muted-foreground leading-relaxed mb-4">
-                Podemos encerrar a parceria em casos de:
-              </p>
-              <ul className="text-muted-foreground space-y-2 mb-4">
-                <li>• Violação destes termos</li>
-                <li>• Conteúdo inadequado ou ilegal</li>
-                <li>• Inatividade prolongada (mais de 6 meses)</li>
-                <li>• Práticas prejudiciais à plataforma</li>
-              </ul>
-
-              <h3 className="text-lg font-semibold text-xnema-orange mb-3">10.3 Pagamentos Pendentes</h3>
-              <p className="text-muted-foreground leading-relaxed">
-                Valores devidos até a data de rescisão serão pagos conforme cronograma normal.
-              </p>
-            </div>
-
-            <div className="bg-xnema-surface rounded-2xl p-8 mb-8">
-              <h2 className="text-2xl font-bold text-foreground mb-4">11. Contato e Suporte</h2>
-              <p className="text-muted-foreground leading-relaxed mb-4">
-                Para dúvidas específicas sobre estes termos ou suporte para criadores:
+                Para dúvidas específicas sobre estes termos ou para se candidatar como criador:
               </p>
               <ul className="text-muted-foreground space-y-2">
                 <li>• <strong>WhatsApp:</strong> (15) 99763-6161</li>
                 <li>• <strong>Email:</strong> cinexnema@gmail.com</li>
-                <li>• <strong>Assunto:</strong> "Suporte Criador"</li>
+                <li>• <strong>Assunto:</strong> "Candidatura Criador"</li>
                 <li>• <strong>Horário:</strong> Segunda a sexta, 9h às 18h</li>
               </ul>
             </div>
@@ -309,10 +226,10 @@ export default function CreatorTerms() {
           {/* Call to Action */}
           <div className="mt-12 p-8 bg-gradient-to-r from-xnema-orange/20 to-xnema-purple/20 border border-xnema-orange/30 rounded-2xl text-center">
             <h3 className="text-2xl font-bold text-foreground mb-4">
-              Pronto para Começar?
+              Comece sua Jornada como Criador
             </h3>
             <p className="text-lg text-muted-foreground mb-6">
-              Junte-se aos criadores que já estão monetizando seu talento na XNEMA
+              3 meses gratuitos + 100% da receita no período de carência
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 
@@ -321,7 +238,7 @@ export default function CreatorTerms() {
                 asChild
               >
                 <a href="https://wa.me/5515997636161" target="_blank" rel="noopener noreferrer">
-                  Falar no WhatsApp
+                  Candidatar-se via WhatsApp
                 </a>
               </Button>
               <Button 
