@@ -505,6 +505,10 @@ export function createServer() {
   app.get("/api/content/pending", authenticateToken, getPendingContent);
   app.post("/api/content/:contentId/view", recordView);
 
+  // Analytics routes for creators (Google Analytics integration)
+  app.post("/api/analytics/creator-data", handleCreatorAnalytics);
+  app.post("/api/analytics/video-data", handleVideoAnalytics);
+
   // Protected routes (examples)
   app.get("/api/admin/users", authenticateToken, async (req, res) => {
     try {
