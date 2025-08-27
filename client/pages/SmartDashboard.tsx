@@ -488,21 +488,41 @@ export default function SmartDashboard() {
                     <div className="space-y-4">
                       <h4 className="font-semibold text-foreground">Ações</h4>
                       <div className="space-y-2">
-                        <Button
-                          onClick={handlePaymentRenewal}
-                          className="w-full bg-xnema-orange hover:bg-xnema-orange/90 text-black"
-                        >
-                          Renovar Agora
-                        </Button>
-                        <Button variant="outline" className="w-full">
-                          Alterar Método
-                        </Button>
-                        <Button
-                          variant="outline"
-                          className="w-full text-red-500 border-red-500 hover:bg-red-500 hover:text-white"
-                        >
-                          Cancelar Assinatura
-                        </Button>
+                        {user.assinante ? (
+                          <>
+                            <Button
+                              onClick={handlePaymentRenewal}
+                              className="w-full bg-xnema-orange hover:bg-xnema-orange/90 text-black"
+                            >
+                              Renovar Agora
+                            </Button>
+                            <Button variant="outline" className="w-full">
+                              Alterar Método
+                            </Button>
+                            <Button
+                              variant="outline"
+                              className="w-full text-red-500 border-red-500 hover:bg-red-500 hover:text-white"
+                            >
+                              Cancelar Assinatura
+                            </Button>
+                          </>
+                        ) : (
+                          <>
+                            <Button
+                              onClick={() => navigate('/pricing')}
+                              className="w-full bg-xnema-orange hover:bg-xnema-orange/90 text-black"
+                            >
+                              Assinar Premium
+                            </Button>
+                            <Button
+                              variant="outline"
+                              className="w-full"
+                              onClick={() => navigate('/pricing')}
+                            >
+                              Ver Planos
+                            </Button>
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>
