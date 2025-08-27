@@ -5,6 +5,14 @@ import { connectDB } from "./config/database";
 import { handleDemo } from "./routes/demo";
 import { login, register, validateToken } from "./routes/auth";
 import { checkUserExists } from "./routes/check-user";
+import {
+  registerCreator,
+  getPendingCreators,
+  approveCreator,
+  rejectCreator,
+  getCreatorAnalytics,
+  generateAffiliateLink
+} from "./routes/creator-registration";
 import { authenticateToken, requireSubscriber } from "./middleware/auth";
 import paymentsRouter from "./routes/payments";
 import creatorRouter from "./routes/creator";
@@ -119,6 +127,14 @@ export function createServer() {
   app.post("/api/auth/register", register);
   app.post("/api/auth/check-user", checkUserExists);
   app.get("/api/auth/validate", authenticateToken, validateToken);
+
+  // Creator registration routes
+  app.post("/api/creators/register", registerCreator);
+  app.get("/api/creators/pending", authenticateToken, getPendingCreators);
+  app.post("/api/creators/:creatorId/approve", authenticateToken, approveCreator);
+  app.post("/api/creators/:creatorId/reject", authenticateToken, rejectCreator);
+  app.get("/api/creators/analytics", authenticateToken, getCreatorAnalytics);
+  app.post("/api/creators/affiliate-link", authenticateToken, generateAffiliateLink);
 
   // Endpoints específicos para Builder.io
   app.post("/api/auth/cadastrar", async (req, res) => {

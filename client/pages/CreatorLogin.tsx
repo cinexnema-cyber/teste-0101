@@ -2,17 +2,89 @@ import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "react-router-dom";
-import { Video, Crown, DollarSign, Users, ArrowRight, Lock, Mail } from "lucide-react";
+import { Video, Crown, DollarSign, Users, ArrowRight, Lock, Mail, CheckCircle, AlertCircle } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function CreatorLogin() {
   const [isLogin, setIsLogin] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [formData, setFormData] = useState({
+    nome: "",
+    email: "",
+    password: "",
+    whatsapp: "",
+    portfolio: "",
+    description: "",
+    gracePeriod: "2"
+  });
 
-  const handleLogin = () => {
-    // Simulate login
-    setIsLoggedIn(true);
-    // In real app, this would redirect to creator portal
+  const { login } = useAuth();
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleLogin = async () => {
+    setLoading(true);
+    setError("");
+
+    try {
+      const success = await login(formData.email, formData.password);
+
+      if (success) {
+        setIsLoggedIn(true);
+      } else {
+        setError("Email ou senha incorretos");
+      }
+    } catch (error) {
+      setError("Erro ao fazer login");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRegister = async () => {
+    setLoading(true);
+    setError("");
+    setSuccess("");
+
+    try {
+      const response = await fetch('/api/creators/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setSuccess("Solicitação enviada com sucesso! Aguarde aprovação da equipe XNEMA.");
+        setFormData({
+          nome: "",
+          email: "",
+          password: "",
+          whatsapp: "",
+          portfolio: "",
+          description: "",
+          gracePeriod: "2"
+        });
+      } else {
+        setError(result.message || "Erro ao enviar solicitação");
+      }
+    } catch (error) {
+      setError("Erro de conexão. Tente novamente.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const features = [
@@ -160,7 +232,7 @@ export default function CreatorLogin() {
                     <label className="text-sm font-medium text-foreground">Senha</label>
                     <input 
                       type="password" 
-                      placeholder="••••••••"
+                      placeholder="•••••••���"
                       className="flex h-10 w-full rounded-md border border-xnema-border bg-background px-3 py-2 text-sm text-foreground"
                     />
                   </div>
