@@ -208,6 +208,15 @@ export default function CreatorPortal() {
             </div>
           </div>
 
+          {/* Google Analytics Integration Notice */}
+          <Alert className="mb-6 border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950">
+            <CheckCircle className="h-4 w-4 text-green-600" />
+            <AlertDescription className="text-green-800 dark:text-green-200">
+              <strong>Google Analytics Integrado:</strong> Seus dados de visualizações, receita e engajamento são atualizados em tempo real através do Google Analytics (ID: G-FMZQ1MHE5G).
+              Os dados mostrados refletem a performance real do seu conteúdo na plataforma.
+            </AlertDescription>
+          </Alert>
+
           {/* Tabs Navigation */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
             <TabsList className="grid w-full grid-cols-6 lg:w-max">
