@@ -8,7 +8,7 @@ export const config = {
     supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdhcmRqeG9sbnJ5a3Z4eHRhdGRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUzNzY3MjcsImV4cCI6MjA3MDk1MjcyN30.0qkhDmTyXsc8U63t1UTh5fV1UCOfzjH7Q0hO2GNj6sQ'
   },
   development: {
-    baseUrl: window.location.origin || 'http://localhost:3000',
+    baseUrl: window.location.origin,
     supabaseUrl: 'https://gardjxolnrykvxxtatdq.supabase.co',
     supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdhcmRqeG9sbnJ5a3Z4eHRhdGRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUzNzY3MjcsImV4cCI6MjA3MDk1MjcyN30.0qkhDmTyXsc8U63t1UTh5fV1UCOfzjH7Q0hO2GNj6sQ'
   }
@@ -19,11 +19,14 @@ export const isProduction =
   window.location.hostname === 'cinexnema.com' || 
   window.location.hostname === 'www.cinexnema.com';
 
-export const isDevelopment = 
+export const isDevelopment =
   window.location.hostname === 'localhost' ||
   window.location.hostname.includes('fly.dev') ||
   window.location.hostname.includes('vercel.app') ||
-  window.location.hostname.includes('netlify.app');
+  window.location.hostname.includes('netlify.app') ||
+  window.location.hostname.includes('127.0.0.1') ||
+  window.location.port === '8080' ||
+  window.location.port === '3000';
 
 // Configuração atual baseada no ambiente
 export const currentConfig = isProduction ? config.production : config.development;
