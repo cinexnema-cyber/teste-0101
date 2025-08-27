@@ -195,45 +195,89 @@ export default function CreatorLogin() {
               </CardHeader>
               
               <CardContent className="space-y-6">
+                {error && (
+                  <div className="bg-red-500/10 border border-red-500/20 rounded-md p-3 flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 text-red-500" />
+                    <p className="text-sm text-red-400">{error}</p>
+                  </div>
+                )}
+
+                {success && (
+                  <div className="bg-green-500/10 border border-green-500/20 rounded-md p-3 flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-500" />
+                    <p className="text-sm text-green-400">{success}</p>
+                  </div>
+                )}
+
                 {!isLogin && (
                   <div className="space-y-4">
                     <div className="grid gap-2">
                       <label className="text-sm font-medium text-foreground">Nome Completo</label>
-                      <input 
-                        type="text" 
+                      <input
+                        type="text"
+                        name="nome"
+                        value={formData.nome}
+                        onChange={handleInputChange}
                         placeholder="Seu nome completo"
                         className="flex h-10 w-full rounded-md border border-xnema-border bg-background px-3 py-2 text-sm text-foreground"
+                        required
                       />
                     </div>
-                    
+
                     <div className="grid gap-2">
                       <label className="text-sm font-medium text-foreground">WhatsApp</label>
-                      <input 
-                        type="tel" 
+                      <input
+                        type="tel"
+                        name="whatsapp"
+                        value={formData.whatsapp}
+                        onChange={handleInputChange}
                         placeholder="(00) 00000-0000"
                         className="flex h-10 w-full rounded-md border border-xnema-border bg-background px-3 py-2 text-sm text-foreground"
+                        required
                       />
+                    </div>
+
+                    <div className="grid gap-2">
+                      <label className="text-sm font-medium text-foreground">Período de Carência</label>
+                      <select
+                        name="gracePeriod"
+                        value={formData.gracePeriod}
+                        onChange={handleInputChange}
+                        className="flex h-10 w-full rounded-md border border-xnema-border bg-background px-3 py-2 text-sm text-foreground"
+                        required
+                      >
+                        <option value="1">1 mês (sem mensalidade)</option>
+                        <option value="2">2 meses (recomendado)</option>
+                        <option value="3">3 meses (máximo)</option>
+                      </select>
                     </div>
                   </div>
                 )}
-                
+
                 <div className="space-y-4">
                   <div className="grid gap-2">
                     <label className="text-sm font-medium text-foreground">Email</label>
-                    <input 
-                      type="email" 
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
                       placeholder="seu@email.com"
-                      defaultValue={isLogin ? "cinexnema@gmail.com" : ""}
                       className="flex h-10 w-full rounded-md border border-xnema-border bg-background px-3 py-2 text-sm text-foreground"
+                      required
                     />
                   </div>
-                  
+
                   <div className="grid gap-2">
                     <label className="text-sm font-medium text-foreground">Senha</label>
-                    <input 
-                      type="password" 
-                      placeholder="•••••••���"
+                    <input
+                      type="password"
+                      name="password"
+                      value={formData.password}
+                      onChange={handleInputChange}
+                      placeholder="••••••••"
                       className="flex h-10 w-full rounded-md border border-xnema-border bg-background px-3 py-2 text-sm text-foreground"
+                      required
                     />
                   </div>
                 </div>
@@ -241,30 +285,38 @@ export default function CreatorLogin() {
                 {!isLogin && (
                   <div className="space-y-4">
                     <div className="grid gap-2">
-                      <label className="text-sm font-medium text-foreground">Portfólio/Canal</label>
-                      <input 
-                        type="url" 
+                      <label className="text-sm font-medium text-foreground">Portfólio/Canal (opcional)</label>
+                      <input
+                        type="url"
+                        name="portfolio"
+                        value={formData.portfolio}
+                        onChange={handleInputChange}
                         placeholder="Link do seu trabalho (YouTube, Vimeo, etc)"
                         className="flex h-10 w-full rounded-md border border-xnema-border bg-background px-3 py-2 text-sm text-foreground"
                       />
                     </div>
-                    
+
                     <div className="grid gap-2">
                       <label className="text-sm font-medium text-foreground">Sobre seu conteúdo</label>
-                      <textarea 
-                        placeholder="Descreva o tipo de conteúdo que você cria..."
+                      <textarea
+                        name="description"
+                        value={formData.description}
+                        onChange={handleInputChange}
+                        placeholder="Descreva o tipo de conteúdo que você cria, experiência e objetivos..."
                         rows={3}
                         className="flex w-full rounded-md border border-xnema-border bg-background px-3 py-2 text-sm text-foreground"
+                        required
                       />
                     </div>
                   </div>
                 )}
 
-                <Button 
+                <Button
                   className="w-full bg-xnema-orange hover:bg-xnema-orange/90 text-black font-semibold"
-                  onClick={isLogin ? handleLogin : undefined}
+                  onClick={isLogin ? handleLogin : handleRegister}
+                  disabled={loading}
                 >
-                  {isLogin ? "Entrar no Portal" : "Solicitar Acesso"}
+                  {loading ? "Processando..." : (isLogin ? "Entrar no Portal" : "Solicitar Acesso")}
                 </Button>
 
                 {!isLogin && (
