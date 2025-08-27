@@ -219,17 +219,26 @@ export const languages = [
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguageState] = useState<Language>(() => {
-    const saved = localStorage.getItem('xnema-language');
-    return (saved as Language) || 'pt';
+    try {
+      const saved = localStorage.getItem('xnema-language');
+      return (saved as Language) || 'pt';
+    } catch (error) {
+      console.warn('Failed to read language from localStorage:', error);
+      return 'pt';
+    }
   });
   const [isChanging, setIsChanging] = useState(false);
 
   const setLanguage = (lang: Language) => {
     if (lang === language) return; // No change needed
 
-    setIsChanging(true);
-    setLanguageState(lang);
-    localStorage.setItem('xnema-language', lang);
+    try {
+      setIsChanging(true);
+      setLanguageState(lang);
+      localStorage.setItem('xnema-language', lang);
+    } catch (error) {
+      console.warn('Failed to save language to localStorage:', error);
+    }
 
     // Brief visual feedback for instant switching
     setTimeout(() => {
@@ -242,37 +251,43 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
-    // Update document language immediately
-    document.documentElement.lang = language;
+    try {
+      // Update document language immediately
+      if (typeof document !== 'undefined') {
+        document.documentElement.lang = language;
 
-    // Update meta tag if exists
-    const metaLang = document.querySelector('meta[http-equiv="Content-Language"]');
-    if (metaLang) {
-      metaLang.setAttribute('content', language);
-    } else {
-      // Create meta tag if it doesn't exist
-      const meta = document.createElement('meta');
-      meta.setAttribute('http-equiv', 'Content-Language');
-      meta.setAttribute('content', language);
-      document.head.appendChild(meta);
+        // Update meta tag if exists
+        const metaLang = document.querySelector('meta[http-equiv="Content-Language"]');
+        if (metaLang) {
+          metaLang.setAttribute('content', language);
+        } else {
+          // Create meta tag if it doesn't exist
+          const meta = document.createElement('meta');
+          meta.setAttribute('http-equiv', 'Content-Language');
+          meta.setAttribute('content', language);
+          document.head.appendChild(meta);
+        }
+
+        // Update page title with language indicator
+        const currentTitle = document.title;
+        const languageNames = {
+          pt: 'PT',
+          en: 'EN',
+          es: 'ES',
+          fr: 'FR',
+          de: 'DE',
+          it: 'IT',
+          zh: '中文',
+          ja: '日本語'
+        };
+
+        // Remove any existing language indicator from title
+        const cleanTitle = currentTitle.replace(/ \([A-Z]{2}|中文|日本語\)$/, '');
+        document.title = `${cleanTitle} (${languageNames[language]})`;
+      }
+    } catch (error) {
+      console.warn('Failed to update document language settings:', error);
     }
-
-    // Update page title with language indicator
-    const currentTitle = document.title;
-    const languageNames = {
-      pt: 'PT',
-      en: 'EN',
-      es: 'ES',
-      fr: 'FR',
-      de: 'DE',
-      it: 'IT',
-      zh: '中文',
-      ja: '日本語'
-    };
-
-    // Remove any existing language indicator from title
-    const cleanTitle = currentTitle.replace(/ \([A-Z]{2}|中文|日本語\)$/, '');
-    document.title = `${cleanTitle} (${languageNames[language]})`;
   }, [language]);
 
   return (
@@ -285,7 +300,14 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 export function useLanguage() {
   const context = useContext(LanguageContext);
   if (context === undefined) {
-    throw new Error('useLanguage must be used within a LanguageProvider');
+    console.error('useLanguage must be used within a LanguageProvider');
+    // Return fallback values instead of throwing
+    return {
+      language: 'pt' as Language,
+      setLanguage: () => {},
+      t: (key: string) => key,
+      isChanging: false
+    };
   }
   return context;
 }
