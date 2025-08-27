@@ -227,8 +227,8 @@ const App = () => (
                 path="/creator-portal"
                 element={
                   <ProtectedRoute
-                    allowedRoles={["creator"]}
-                    requireApproval={true}
+                    allowedRoles={["creator", "admin"]}
+                    requireApproval={false}
                   >
                     <CreatorPortal />
                   </ProtectedRoute>
@@ -239,8 +239,8 @@ const App = () => (
                 path="/creator-payments"
                 element={
                   <ProtectedRoute
-                    allowedRoles={["creator"]}
-                    requireApproval={true}
+                    allowedRoles={["creator", "admin"]}
+                    requireApproval={false}
                   >
                     <CreatorPayments />
                   </ProtectedRoute>
@@ -250,8 +250,8 @@ const App = () => (
                 path="/content-creator"
                 element={
                   <ProtectedRoute
-                    allowedRoles={["creator"]}
-                    requireApproval={true}
+                    allowedRoles={["creator", "admin"]}
+                    requireApproval={false}
                   >
                     <ContentCreator />
                   </ProtectedRoute>
