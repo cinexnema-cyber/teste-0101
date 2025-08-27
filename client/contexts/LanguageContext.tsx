@@ -6,6 +6,7 @@ interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
   t: (key: string) => string;
+  isChanging: boolean;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -221,10 +222,19 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     const saved = localStorage.getItem('xnema-language');
     return (saved as Language) || 'pt';
   });
+  const [isChanging, setIsChanging] = useState(false);
 
   const setLanguage = (lang: Language) => {
+    if (lang === language) return; // No change needed
+
+    setIsChanging(true);
     setLanguageState(lang);
     localStorage.setItem('xnema-language', lang);
+
+    // Brief visual feedback for instant switching
+    setTimeout(() => {
+      setIsChanging(false);
+    }, 150);
   };
 
   const t = (key: string): string => {
@@ -232,11 +242,41 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
+    // Update document language immediately
     document.documentElement.lang = language;
+
+    // Update meta tag if exists
+    const metaLang = document.querySelector('meta[http-equiv="Content-Language"]');
+    if (metaLang) {
+      metaLang.setAttribute('content', language);
+    } else {
+      // Create meta tag if it doesn't exist
+      const meta = document.createElement('meta');
+      meta.setAttribute('http-equiv', 'Content-Language');
+      meta.setAttribute('content', language);
+      document.head.appendChild(meta);
+    }
+
+    // Update page title with language indicator
+    const currentTitle = document.title;
+    const languageNames = {
+      pt: 'PT',
+      en: 'EN',
+      es: 'ES',
+      fr: 'FR',
+      de: 'DE',
+      it: 'IT',
+      zh: '中文',
+      ja: '日本語'
+    };
+
+    // Remove any existing language indicator from title
+    const cleanTitle = currentTitle.replace(/ \([A-Z]{2}|中文|日本語\)$/, '');
+    document.title = `${cleanTitle} (${languageNames[language]})`;
   }, [language]);
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t }}>
+    <LanguageContext.Provider value={{ language, setLanguage, t, isChanging }}>
       {children}
     </LanguageContext.Provider>
   );
