@@ -52,7 +52,8 @@ import {
   QrCode,
   Wallet,
   PiggyBank,
-  Calculator
+  Calculator,
+  UserPlus
 } from "lucide-react";
 
 // Mock data - in real app, this would come from API
