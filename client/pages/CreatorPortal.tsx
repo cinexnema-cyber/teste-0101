@@ -53,8 +53,10 @@ import {
   Wallet,
   PiggyBank,
   Calculator,
-  UserPlus
+  UserPlus,
+  RefreshCw
 } from "lucide-react";
+import { useGoogleAnalytics } from "@/hooks/useGoogleAnalytics";
 
 // Mock data - in real app, this would come from API
 const mockAnalytics = {
