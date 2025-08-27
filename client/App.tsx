@@ -181,8 +181,8 @@ const App = () => (
                 path="/creator-dashboard"
                 element={
                   <ProtectedRoute
-                    allowedRoles={["creator"]}
-                    requireApproval={true}
+                    allowedRoles={["creator", "admin"]}
+                    requireApproval={false}
                   >
                     <CreatorDashboard />
                   </ProtectedRoute>
@@ -216,8 +216,8 @@ const App = () => (
                 path="/creator-dashboard"
                 element={
                   <ProtectedRoute
-                    allowedRoles={["creator"]}
-                    requireApproval={true}
+                    allowedRoles={["creator", "admin"]}
+                    requireApproval={false}
                   >
                     <CreatorDashboard />
                   </ProtectedRoute>
