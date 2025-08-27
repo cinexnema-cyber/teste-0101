@@ -211,6 +211,15 @@ export function Header() {
             >
               Planos
             </Link>
+            {user && (
+              <Link
+                to="/creator-portal"
+                className="text-foreground hover:text-xnema-orange transition-colors py-2 flex items-center space-x-2"
+              >
+                <Crown className="w-4 h-4 text-xnema-orange" />
+                <span>Portal do Criador</span>
+              </Link>
+            )}
           </nav>
         </div>
       )}
