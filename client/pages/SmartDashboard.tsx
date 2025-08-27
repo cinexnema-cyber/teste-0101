@@ -42,14 +42,13 @@ export default function SmartDashboard() {
   const [watchTime, setWatchTime] = useState(0);
   const [recommendedContent, setRecommendedContent] = useState<any[]>([]);
 
-  // Removed authentication check - dashboard now accessible without login
-
+  // Dashboard now accessible without login - uses demo data if no user
   const userProfile = {
-    name: "João Silva",
-    email: "joao.silva@email.com",
+    name: user?.name || "Visitante",
+    email: user?.email || "demo@xnema.com",
     subscriptionDate: "2024-12-15",
     nextBilling: "2025-01-15",
-    plan: "Premium",
+    plan: user?.role === "subscriber" ? "Premium" : "Demo",
     devices: 4,
     activeDevices: 2,
   };
