@@ -42,13 +42,18 @@ export default function SmartDashboard() {
   const [watchTime, setWatchTime] = useState(0);
   const [recommendedContent, setRecommendedContent] = useState<any[]>([]);
 
-  // Dashboard now accessible without login - uses demo data if no user
+  // Only show real user data when logged in
+  if (!user) {
+    navigate("/login");
+    return null;
+  }
+
   const userProfile = {
-    name: user?.name || "Visitante",
-    email: user?.email || "demo@xnema.com",
-    subscriptionDate: "2024-12-15",
-    nextBilling: "2025-01-15",
-    plan: user?.role === "subscriber" ? "Premium" : "Demo",
+    name: user.name,
+    email: user.email,
+    subscriptionDate: user.subscriptionStart ? new Date(user.subscriptionStart).toLocaleDateString('pt-BR') : "2024-12-15",
+    nextBilling: user.subscriptionStart ? new Date(Date.now() + 30*24*60*60*1000).toLocaleDateString('pt-BR') : "2025-01-15",
+    plan: user.assinante ? "Premium" : user.role.charAt(0).toUpperCase() + user.role.slice(1),
     devices: 4,
     activeDevices: 2,
   };
@@ -180,7 +185,7 @@ export default function SmartDashboard() {
             {!user && (
               <div className="mt-4 p-4 bg-blue-500/20 border border-blue-500/30 rounded-lg">
                 <p className="text-sm text-foreground">
-                  �� <strong>Modo Demonstração:</strong> Este é um preview do painel XNEMA.
+                  🎬 <strong>Modo Demonstração:</strong> Este é um preview do painel XNEMA.
                   <Link to="/login" className="text-xnema-orange hover:underline ml-1">
                     Faça login
                   </Link> para acessar seu painel personalizado.
