@@ -236,7 +236,9 @@ export default function CreatorPortal() {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">Receita Total</p>
-                        <p className="text-2xl font-bold text-green-600">R$ {mockAnalytics.revenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+                        <p className="text-2xl font-bold text-green-600">
+                          {analyticsData.loading ? 'Carregando...' : `R$ ${analyticsData.revenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
+                        </p>
                       </div>
                       <DollarSign className="w-8 h-8 text-green-600" />
                     </div>
