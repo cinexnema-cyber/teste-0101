@@ -4,6 +4,7 @@ import cors from "cors";
 import { connectDB } from "./config/database";
 import { handleDemo } from "./routes/demo";
 import { login, register, validateToken } from "./routes/auth";
+import { checkUserExists } from "./routes/check-user";
 import { authenticateToken, requireSubscriber } from "./middleware/auth";
 import paymentsRouter from "./routes/payments";
 import creatorRouter from "./routes/creator";
