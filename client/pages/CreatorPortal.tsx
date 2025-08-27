@@ -337,7 +337,7 @@ export default function CreatorPortal() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {mockVideos.slice(0, 3).map((video) => (
+                    {videosData.slice(0, 3).map((video) => (
                       <div key={video.id} className="flex items-center justify-between p-4 border rounded-lg">
                         <div className="flex items-center gap-4">
                           <div className="w-16 h-12 bg-gradient-to-br from-xnema-orange to-xnema-purple rounded-lg flex items-center justify-center">
