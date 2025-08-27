@@ -230,7 +230,7 @@ const App = () => (
                 path="/creator-portal"
                 element={
                   <ProtectedRoute
-                    allowedRoles={["creator", "admin"]}
+                    allowedRoles={["user", "subscriber", "creator", "admin"]}
                     requireApproval={false}
                   >
                     <CreatorPortal />
