@@ -58,7 +58,8 @@ import {
 } from "lucide-react";
 import { useGoogleAnalytics } from "@/hooks/useGoogleAnalytics";
 
-// Mock data - in real app, this would come from API
+// Legacy mock data - replaced by Google Analytics real-time data (GA4: G-FMZQ1MHE5G)
+// These constants remain for fallback purposes only
 const mockAnalytics = {
   views: 12543,
   subscribers: 1234,
