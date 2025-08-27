@@ -465,7 +465,7 @@ export default function CreatorPortal() {
                             fill="#8884d8"
                             dataKey="views"
                           >
-                            {mockViewsData.map((entry, index) => (
+                            {viewsData.map((entry, index) => (
                               <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                             ))}
                           </Pie>
