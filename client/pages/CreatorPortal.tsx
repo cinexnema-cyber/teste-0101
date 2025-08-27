@@ -192,8 +192,18 @@ export default function CreatorPortal() {
               <div className="flex items-center gap-4">
                 <Badge className="bg-green-500 text-white">
                   <Crown className="w-4 h-4 mr-2" />
-                  Período de Carência: {mockAnalytics.graceMonthsLeft} meses restantes
+                  Período de Carência: {analyticsData.loading ? '...' : `${analyticsData.graceMonthsLeft} meses restantes`}
                 </Badge>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={refreshData}
+                  disabled={analyticsData.loading}
+                  className="flex items-center gap-2"
+                >
+                  <RefreshCw className={`w-4 h-4 ${analyticsData.loading ? 'animate-spin' : ''}`} />
+                  {analyticsData.loading ? 'Atualizando...' : 'Atualizar Dados'}
+                </Button>
               </div>
             </div>
           </div>
