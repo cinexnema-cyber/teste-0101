@@ -30,10 +30,10 @@ export function XnemaLogo({ size = 'md', className = '' }: XnemaLogoProps) {
   return (
     <Link to="/" className={`flex items-center ${config.container} ${className}`}>
       <div className={`${config.icon} bg-gradient-to-br from-xnema-orange to-xnema-purple rounded-xl flex items-center justify-center shadow-lg`}>
-        <span className="text-black font-black text-xl">X</span>
+        <span className="text-white font-black text-xl">X</span>
       </div>
       <div className="flex items-center">
-        <span className={`${config.text} font-black text-transparent bg-gradient-to-r from-xnema-orange to-xnema-purple bg-clip-text`}>X</span>
+        <span className={`${config.text} font-black text-white`}>X</span>
         <span className={`${config.text.replace('text-3xl', 'text-2xl').replace('text-5xl', 'text-4xl').replace('text-xl', 'text-lg')} font-bold text-foreground`}>NEMA</span>
       </div>
     </Link>
