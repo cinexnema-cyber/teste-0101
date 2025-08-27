@@ -117,6 +117,7 @@ export function createServer() {
   // Authentication routes
   app.post("/api/auth/login", login);
   app.post("/api/auth/register", register);
+  app.post("/api/auth/check-user", checkUserExists);
   app.get("/api/auth/validate", authenticateToken, validateToken);
 
   // Endpoints específicos para Builder.io
