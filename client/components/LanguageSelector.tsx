@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { useLanguage, languages, Language } from '@/contexts/LanguageContext';
 import {
   DropdownMenu,
@@ -9,23 +9,75 @@ import {
 import { Button } from '@/components/ui/button';
 import { Globe } from 'lucide-react';
 
-export function LanguageSelector() {
-  const { language, setLanguage, isChanging } = useLanguage();
+// Error boundary component for the language selector
+class LanguageSelectorErrorBoundary extends React.Component<
+  { children: React.ReactNode; fallback?: React.ReactNode },
+  { hasError: boolean }
+> {
+  constructor(props: any) {
+    super(props);
+    this.state = { hasError: false };
+  }
 
-  const currentLanguage = languages.find(lang => lang.code === language);
+  static getDerivedStateFromError(_: Error) {
+    return { hasError: true };
+  }
 
-  const handleLanguageChange = (langCode: Language) => {
-    setLanguage(langCode);
+  componentDidCatch(error: Error, errorInfo: any) {
+    console.error('LanguageSelector error:', error, errorInfo);
+  }
 
-    // Provide immediate visual feedback
-    const event = new CustomEvent('languageChanged', {
-      detail: { language: langCode }
-    });
-    window.dispatchEvent(event);
-  };
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback || (
+        <Button variant="ghost" size="sm" className="h-9 px-3 gap-2">
+          <Globe className="w-4 h-4" />
+          <span className="hidden sm:inline">PT</span>
+        </Button>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+function LanguageSelectorContent() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  // Safe hook usage with try-catch
+  let languageData;
+  try {
+    languageData = useLanguage();
+  } catch (error) {
+    console.error('useLanguage hook error:', error);
+    // Fallback to default values
+    languageData = {
+      language: 'pt' as Language,
+      setLanguage: () => {},
+      isChanging: false
+    };
+  }
+
+  const { language, setLanguage, isChanging } = languageData;
+  const currentLanguage = languages.find(lang => lang.code === language) || languages[0];
+
+  const handleLanguageChange = useCallback((langCode: Language) => {
+    try {
+      setLanguage(langCode);
+      setIsOpen(false);
+
+      // Provide immediate visual feedback
+      const event = new CustomEvent('languageChanged', {
+        detail: { language: langCode }
+      });
+      window.dispatchEvent(event);
+    } catch (error) {
+      console.error('Language change error:', error);
+    }
+  }, [setLanguage]);
 
   return (
-    <DropdownMenu>
+    <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
@@ -34,8 +86,8 @@ export function LanguageSelector() {
             isChanging ? 'scale-105 bg-xnema-orange/20' : ''
           }`}
         >
-          <span className="text-lg">{currentLanguage?.flag}</span>
-          <span className="hidden sm:inline">{currentLanguage?.name}</span>
+          <span className="text-lg">{currentLanguage?.flag || '🇧🇷'}</span>
+          <span className="hidden sm:inline">{currentLanguage?.name || 'Português'}</span>
           <span className="sr-only">Selecionar idioma</span>
         </Button>
       </DropdownMenuTrigger>
@@ -61,5 +113,13 @@ export function LanguageSelector() {
         ))}
       </DropdownMenuContent>
     </DropdownMenu>
+  );
+}
+
+export function LanguageSelector() {
+  return (
+    <LanguageSelectorErrorBoundary>
+      <LanguageSelectorContent />
+    </LanguageSelectorErrorBoundary>
   );
 }
