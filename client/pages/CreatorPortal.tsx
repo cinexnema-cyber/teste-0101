@@ -268,7 +268,9 @@ export default function CreatorPortal() {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">Assinantes</p>
-                        <p className="text-2xl font-bold text-purple-600">{mockAnalytics.subscribers.toLocaleString('pt-BR')}</p>
+                        <p className="text-2xl font-bold text-purple-600">
+                          {analyticsData.loading ? 'Carregando...' : analyticsData.subscribers.toLocaleString('pt-BR')}
+                        </p>
                       </div>
                       <Users className="w-8 h-8 text-purple-600" />
                     </div>
