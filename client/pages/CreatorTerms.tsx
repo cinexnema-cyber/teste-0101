@@ -273,7 +273,7 @@ export default function CreatorTerms() {
               Comece sua Jornada como Criador
             </h3>
             <p className="text-lg text-muted-foreground mb-6">
-              3 meses gratuitos + 100% da receita no período de carência
+              Escolha seu período de carência (1-3 meses) + 50-70% das assinaturas desde o primeiro dia
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 
