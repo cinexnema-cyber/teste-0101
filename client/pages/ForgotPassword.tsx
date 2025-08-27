@@ -48,12 +48,43 @@ export default function ForgotPassword() {
     }
 
     try {
+      console.log("🔍 Verificando se usuário está registrado:", email);
+
+      // First check if user exists in our database
+      const checkResponse = await fetch('/api/auth/check-user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      if (checkResponse.ok) {
+        const userData = await checkResponse.json();
+
+        if (!userData.exists) {
+          // User not registered, show registration message
+          setErrorMessage(
+            `Email ${email} não está cadastrado. Por favor, cadastre-se primeiro para acessar a plataforma.`
+          );
+          setIsLoading(false);
+          return;
+        }
+      }
+
+      // If user exists, proceed with password reset
       console.log("🔄 Solicitando reset de senha para:", email);
       const { error } = await AuthService.requestPasswordReset(email);
 
       if (error) {
         console.error("❌ Erro no reset:", error);
-        setErrorMessage(error);
+        if (error.includes("User not found") || error.includes("Invalid email")) {
+          setErrorMessage(
+            `Email ${email} não está cadastrado. Por favor, cadastre-se primeiro para acessar a plataforma.`
+          );
+        } else {
+          setErrorMessage(error);
+        }
       } else {
         console.log("✅ Email de reset enviado com sucesso!");
         setEmailSent(true);
@@ -193,6 +224,16 @@ export default function ForgotPassword() {
               {errorMessage && (
                 <div className="bg-red-500/10 border border-red-500/20 rounded-md p-3">
                   <p className="text-sm text-red-400">{errorMessage}</p>
+                  {errorMessage.includes("não está cadastrado") && (
+                    <div className="mt-3 pt-3 border-t border-red-500/20">
+                      <Link
+                        to="/register"
+                        className="inline-flex items-center text-sm text-xnema-orange hover:underline"
+                      >
+                        Criar conta agora →
+                      </Link>
+                    </div>
+                  )}
                 </div>
               )}
 
