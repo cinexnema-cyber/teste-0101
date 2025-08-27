@@ -274,7 +274,9 @@ export default function CreatorPortal() {
                       </div>
                       <Users className="w-8 h-8 text-purple-600" />
                     </div>
-                    <p className="text-xs text-muted-foreground mt-2">Taxa de conversão: {mockAnalytics.subscriptionRate}%</p>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      {analyticsData.loading ? '...' : `Taxa de conversão: ${analyticsData.subscriptionRate}%`}
+                    </p>
                   </CardContent>
                 </Card>
 
