@@ -57,6 +57,7 @@ import PasswordRecovery from "./pages/PasswordRecovery";
 import AreaSelection from "./pages/AreaSelection";
 import PlatformAnalytics from "./pages/PlatformAnalytics";
 import EmailConfirmed from "./pages/EmailConfirmed";
+import AuthDebug from "./pages/AuthDebug";
 
 const queryClient = new QueryClient();
 
@@ -90,6 +91,7 @@ const App = () => (
               <Route path="/area-selection" element={<AreaSelection />} />
               <Route path="/welcome" element={<Welcome />} />
               <Route path="/subscribe" element={<Subscribe />} />
+              <Route path="/auth-debug" element={<AuthDebug />} />
 
               {/* Rotas protegidas - Usuários Básicos */}
               <Route
