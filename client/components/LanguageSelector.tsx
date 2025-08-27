@@ -10,9 +10,19 @@ import { Button } from '@/components/ui/button';
 import { Globe } from 'lucide-react';
 
 export function LanguageSelector() {
-  const { language, setLanguage } = useLanguage();
+  const { language, setLanguage, isChanging } = useLanguage();
 
   const currentLanguage = languages.find(lang => lang.code === language);
+
+  const handleLanguageChange = (langCode: Language) => {
+    setLanguage(langCode);
+
+    // Provide immediate visual feedback
+    const event = new CustomEvent('languageChanged', {
+      detail: { language: langCode }
+    });
+    window.dispatchEvent(event);
+  };
 
   return (
     <DropdownMenu>
@@ -20,7 +30,9 @@ export function LanguageSelector() {
         <Button
           variant="ghost"
           size="sm"
-          className="h-9 px-3 gap-2 text-sm font-medium hover:bg-xnema-surface transition-colors"
+          className={`h-9 px-3 gap-2 text-sm font-medium hover:bg-xnema-surface transition-all duration-200 ${
+            isChanging ? 'scale-105 bg-xnema-orange/20' : ''
+          }`}
         >
           <span className="text-lg">{currentLanguage?.flag}</span>
           <span className="hidden sm:inline">{currentLanguage?.name}</span>
@@ -31,12 +43,12 @@ export function LanguageSelector() {
         {languages.map((lang) => (
           <DropdownMenuItem
             key={lang.code}
-            onClick={() => setLanguage(lang.code as Language)}
+            onClick={() => handleLanguageChange(lang.code as Language)}
             className={`
-              flex items-center gap-3 px-3 py-2 cursor-pointer rounded-md transition-colors
+              flex items-center gap-3 px-3 py-2 cursor-pointer rounded-md transition-all duration-200
               ${language === lang.code
                 ? 'bg-xnema-orange text-white shadow-sm'
-                : 'hover:bg-xnema-surface'
+                : 'hover:bg-xnema-surface hover:scale-105'
               }
             `}
           >
