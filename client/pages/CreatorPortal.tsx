@@ -285,7 +285,9 @@ export default function CreatorPortal() {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">Vídeos Ativos</p>
-                        <p className="text-2xl font-bold text-orange-600">{mockAnalytics.videos}</p>
+                        <p className="text-2xl font-bold text-orange-600">
+                          {analyticsData.loading ? 'Carregando...' : analyticsData.videos}
+                        </p>
                       </div>
                       <Video className="w-8 h-8 text-orange-600" />
                     </div>
