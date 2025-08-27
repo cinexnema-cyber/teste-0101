@@ -124,7 +124,7 @@ const App = () => (
                 path="/subscriber-dashboard"
                 element={
                   <ProtectedRoute
-                    allowedRoles={["subscriber"]}
+                    allowedRoles={["subscriber", "admin"]}
                     requireSubscription={true}
                   >
                     <SubscriberDashboard />
@@ -170,7 +170,7 @@ const App = () => (
                 path="/subscriber-dashboard"
                 element={
                   <ProtectedRoute
-                    allowedRoles={["subscriber"]}
+                    allowedRoles={["subscriber", "admin"]}
                     requireSubscription={true}
                   >
                     <SubscriberDashboard />
