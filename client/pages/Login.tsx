@@ -18,7 +18,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, LogIn, Eye, EyeOff } from "lucide-react";
+import { Loader2, LogIn, Eye, EyeOff, Crown } from "lucide-react";
 
 export default function Login() {
   const { t } = useLanguage();
@@ -244,14 +244,30 @@ export default function Login() {
               )}
             </Button>
 
-            <div className="text-center text-sm">
-              Don't have an account?{" "}
-              <Link
-                to="/register"
-                className="text-xnema-orange hover:underline"
-              >
-                {t("auth.subscribeNow")}
-              </Link>
+            <div className="text-center text-sm space-y-3">
+              <div>
+                Don't have an account?{" "}
+                <Link
+                  to="/register"
+                  className="text-xnema-orange hover:underline"
+                >
+                  {t("auth.subscribeNow")}
+                </Link>
+              </div>
+
+              <div className="border-t border-gray-600 pt-3">
+                <p className="text-gray-400 mb-2">Criador de conteúdo?</p>
+                <Button
+                  variant="outline"
+                  asChild
+                  className="w-full border-xnema-purple text-xnema-purple hover:bg-xnema-purple hover:text-black"
+                >
+                  <Link to="/creator-login">
+                    <Crown className="mr-2 h-4 w-4" />
+                    Portal do Criador
+                  </Link>
+                </Button>
+              </div>
             </div>
           </form>
         </CardContent>
