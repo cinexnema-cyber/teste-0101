@@ -191,9 +191,11 @@ export default function SmartDashboard() {
                 <Crown className="h-4 w-4 text-xnema-orange" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-green-500">Ativa</div>
+                <div className={`text-2xl font-bold ${user.assinante ? 'text-green-500' : 'text-yellow-500'}`}>
+                  {user.assinante ? 'Ativa' : 'Inativa'}
+                </div>
                 <p className="text-xs text-muted-foreground">
-                  Renova em {userProfile.nextBilling}
+                  {user.assinante ? `Renova em ${userProfile.nextBilling}` : 'Assine para ter acesso completo'}
                 </p>
               </CardContent>
             </Card>
