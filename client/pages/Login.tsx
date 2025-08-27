@@ -149,7 +149,16 @@ export default function Login() {
           <CardDescription>Acesse sua conta XNEMA</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleLogin} className="space-y-4">
+          <form
+            onSubmit={handleLogin}
+            className="space-y-4"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && e.target instanceof HTMLInputElement) {
+                e.preventDefault();
+                handleLogin(e as any);
+              }
+            }}
+          >
             {error && (
               <Alert variant="destructive">
                 <AlertDescription>{error}</AlertDescription>
@@ -182,6 +191,16 @@ export default function Login() {
                 value={formData.email}
                 onChange={handleInputChange}
                 placeholder="seu@email.com"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const form = e.currentTarget.closest('form');
+                    if (form) {
+                      const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+                      form.dispatchEvent(submitEvent);
+                    }
+                  }
+                }}
               />
             </div>
 
@@ -197,6 +216,16 @@ export default function Login() {
                   onChange={handleInputChange}
                   placeholder="Digite sua senha"
                   className="pr-10"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      const form = e.currentTarget.closest('form');
+                      if (form) {
+                        const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+                        form.dispatchEvent(submitEvent);
+                      }
+                    }
+                  }}
                 />
                 <Button
                   type="button"
