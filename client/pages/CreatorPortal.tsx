@@ -456,7 +456,7 @@ export default function CreatorPortal() {
                       <ResponsiveContainer width="100%" height="100%">
                         <PieChart>
                           <Pie
-                            data={mockViewsData}
+                            data={viewsData}
                             cx="50%"
                             cy="50%"
                             labelLine={false}
