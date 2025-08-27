@@ -107,8 +107,7 @@ const UserSchema = new Schema<IUser>(
   },
 );
 
-// Índices para otimização
-UserSchema.index({ email: 1 });
+// Índices para otimização (email já tem unique: true)
 UserSchema.index({ tipo: 1 });
 UserSchema.index({ subscriptionStatus: 1 });
 
