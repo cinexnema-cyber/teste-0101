@@ -118,6 +118,14 @@ const mockVideos = [
 const COLORS = ['#FF8C42', '#9B59B6', '#3498DB', '#E74C3C'];
 
 export default function CreatorPortal() {
+  const {
+    analyticsData,
+    revenueData,
+    viewsData,
+    videosData,
+    trackPageView,
+    refreshData
+  } = useGoogleAnalytics();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [affiliateLink, setAffiliateLink] = useState('');
   const [paymentData, setPaymentData] = useState({
