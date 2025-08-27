@@ -446,17 +446,17 @@ export default function SmartDashboard() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div className="flex items-center justify-between p-4 bg-gradient-to-r from-green-500/20 to-green-600/20 border border-green-500/30 rounded-lg">
+                  <div className={`flex items-center justify-between p-4 ${user.assinante ? 'bg-gradient-to-r from-green-500/20 to-green-600/20 border border-green-500/30' : 'bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/30'} rounded-lg`}>
                     <div>
                       <h4 className="font-semibold text-foreground">
-                        Assinatura Premium Ativa
+                        {user.assinante ? 'Assinatura Premium Ativa' : 'Sem Assinatura Ativa'}
                       </h4>
                       <p className="text-sm text-muted-foreground">
-                        Próxima cobrança: {userProfile.nextBilling}
+                        {user.assinante ? `Próxima cobrança: ${userProfile.nextBilling}` : 'Assine para ter acesso completo ao conteúdo'}
                       </p>
                     </div>
                     <div className="text-right">
-                      <div className="text-2xl font-bold text-green-500">
+                      <div className={`text-2xl font-bold ${user.assinante ? 'text-green-500' : 'text-yellow-500'}`}>
                         R$ 19,90
                       </div>
                       <div className="text-sm text-muted-foreground">
