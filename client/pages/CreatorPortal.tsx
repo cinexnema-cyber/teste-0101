@@ -253,7 +253,9 @@ export default function CreatorPortal() {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">Visualizações</p>
-                        <p className="text-2xl font-bold text-blue-600">{mockAnalytics.views.toLocaleString('pt-BR')}</p>
+                        <p className="text-2xl font-bold text-blue-600">
+                          {analyticsData.loading ? 'Carregando...' : analyticsData.views.toLocaleString('pt-BR')}
+                        </p>
                       </div>
                       <Eye className="w-8 h-8 text-blue-600" />
                     </div>
