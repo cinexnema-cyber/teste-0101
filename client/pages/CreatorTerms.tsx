@@ -38,21 +38,50 @@ export default function CreatorTerms() {
           {/* Content */}
           <div className="prose prose-invert max-w-none">
             <div className="bg-gradient-to-r from-xnema-orange/20 to-xnema-purple/20 border border-xnema-orange/30 rounded-2xl p-8 mb-8">
-              <h2 className="text-2xl font-bold text-foreground mb-4">🎉 Período de Carência Especial</h2>
-              <p className="text-lg text-muted-foreground leading-relaxed">
-                <span className="text-xnema-orange font-bold">3 meses gratuitos para novos criadores!</span><br/>
-                Comece a gerar renda imediatamente, sem mensalidade ou taxas sobre a receita durante o período de carência.
+              <h2 className="text-2xl font-bold text-foreground mb-4">🎉 Período de Carência Flexível</h2>
+              <p className="text-lg text-muted-foreground leading-relaxed mb-4">
+                <span className="text-xnema-orange font-bold">Escolha seu período de carência: 1, 2 ou 3 meses!</span><br/>
+                Durante este período, você não paga a mensalidade mas recebe de 50% a 70% das assinaturas geradas.
               </p>
+              <div className="grid md:grid-cols-3 gap-4">
+                <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 text-center">
+                  <div className="text-xl font-bold text-blue-400 mb-2">1 Mês</div>
+                  <p className="text-sm text-muted-foreground">Carência mínima</p>
+                </div>
+                <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4 text-center">
+                  <div className="text-xl font-bold text-yellow-400 mb-2">2 Meses</div>
+                  <p className="text-sm text-muted-foreground">Período padrão</p>
+                </div>
+                <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4 text-center">
+                  <div className="text-xl font-bold text-green-400 mb-2">3 Meses</div>
+                  <p className="text-sm text-muted-foreground">Máxima flexibilidade</p>
+                </div>
+              </div>
             </div>
 
             <div className="bg-xnema-surface rounded-2xl p-8 mb-8">
               <h2 className="text-2xl font-bold text-foreground mb-4">1. Adesão e Período de Carência</h2>
               <p className="text-muted-foreground leading-relaxed mb-4">
-                Ao se cadastrar como criador, o usuário terá <strong className="text-xnema-orange">3 meses gratuitos</strong> de acesso à plataforma para postagem de conteúdos.
+                Ao se cadastrar como criador, você escolhe seu período de carência: <strong className="text-blue-400">1 mês</strong>, <strong className="text-yellow-400">2 meses</strong> ou <strong className="text-green-400">3 meses</strong>.
               </p>
-              <p className="text-muted-foreground leading-relaxed">
-                Durante esse período, não há cobrança de mensalidade ou taxas sobre a receita gerada.
-              </p>
+              <div className="space-y-4">
+                <div className="p-4 bg-gradient-to-r from-green-500/10 to-blue-500/10 border border-green-500/20 rounded-lg">
+                  <h3 className="font-semibold text-green-400 mb-2">Durante o Período de Carência:</h3>
+                  <ul className="text-muted-foreground space-y-2">
+                    <li>• <strong className="text-green-400">Sem mensalidade</strong> de R$ 1.000</li>
+                    <li>• Recebe <strong className="text-green-400">50% a 70%</strong> das assinaturas geradas pelo seu conteúdo</li>
+                    <li>• Plataforma retém o restante para infraestrutura e suporte</li>
+                  </ul>
+                </div>
+                <div className="p-4 bg-gradient-to-r from-orange-500/10 to-red-500/10 border border-orange-500/20 rounded-lg">
+                  <h3 className="font-semibold text-orange-400 mb-2">Após o Período de Carência:</h3>
+                  <ul className="text-muted-foreground space-y-2">
+                    <li>• Paga <strong className="text-red-400">R$ 1.000/mês</strong> de mensalidade</li>
+                    <li>• Continua recebendo <strong className="text-green-400">50% a 70%</strong> das assinaturas</li>
+                    <li>• Sistema automatizado de cobrança e repasse</li>
+                  </ul>
+                </div>
+              </div>
             </div>
 
             <div className="bg-xnema-surface rounded-2xl p-8 mb-8">
@@ -84,28 +113,43 @@ export default function CreatorTerms() {
 
             <div className="bg-xnema-surface rounded-2xl p-8 mb-8">
               <h2 className="text-2xl font-bold text-foreground mb-4">3. Divisão de Receita</h2>
-              
+
               <div className="grid md:grid-cols-2 gap-6 mb-6">
                 <div className="bg-gradient-to-br from-green-500/20 to-green-600/20 border border-green-500/30 rounded-xl p-6">
-                  <h3 className="text-xl font-bold text-green-400 mb-3">Primeiros 3 Meses</h3>
-                  <div className="text-4xl font-bold text-green-400 mb-2">100%</div>
-                  <p className="text-muted-foreground">
-                    <strong>100% da receita gerada pelo conteúdo é do criador.</strong>
-                  </p>
-                </div>
-                
-                <div className="bg-gradient-to-br from-xnema-orange/20 to-xnema-purple/20 border border-xnema-orange/30 rounded-xl p-6">
-                  <h3 className="text-xl font-bold text-xnema-orange mb-3">A partir do 4º Mês</h3>
+                  <h3 className="text-xl font-bold text-green-400 mb-3">Durante a Carência</h3>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-2xl font-bold text-xnema-orange">70%</span>
+                    <span className="text-2xl font-bold text-green-400">50-70%</span>
                     <span className="text-lg text-gray-400">|</span>
-                    <span className="text-2xl font-bold text-gray-400">30%</span>
+                    <span className="text-xl font-bold text-gray-400">30-50%</span>
                   </div>
                   <p className="text-muted-foreground text-sm">
-                    <span className="text-xnema-orange">O criador recebe 70%</span> da receita gerada.<br/>
-                    <span className="text-gray-400">O Cinexnema retém 30%</span> para cobertura de hospedagem, streaming, suporte e infraestrutura.
+                    <span className="text-green-400">Criador: 50% a 70%</span> das assinaturas<br/>
+                    <span className="text-red-400">Sem mensalidade</span> de R$ 1.000<br/>
+                    <span className="text-gray-400">Plataforma:</span> infraestrutura e suporte
                   </p>
                 </div>
+
+                <div className="bg-gradient-to-br from-xnema-orange/20 to-xnema-purple/20 border border-xnema-orange/30 rounded-xl p-6">
+                  <h3 className="text-xl font-bold text-xnema-orange mb-3">Após a Carência</h3>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-2xl font-bold text-xnema-orange">50-70%</span>
+                    <span className="text-lg text-gray-400">+</span>
+                    <span className="text-xl font-bold text-red-400">R$ 1.000</span>
+                  </div>
+                  <p className="text-muted-foreground text-sm">
+                    <span className="text-xnema-orange">Criador: 50% a 70%</span> das assinaturas<br/>
+                    <span className="text-red-400">Mensalidade:</span> R$ 1.000/mês<br/>
+                    <span className="text-gray-400">Desconto automático</span> disponível
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
+                <h3 className="font-semibold text-blue-400 mb-2">💡 Vantagem do Sistema:</h3>
+                <p className="text-muted-foreground text-sm">
+                  A plataforma pode descontar automaticamente os R$ 1.000 + taxas da sua receita mensal,
+                  evitando transferências manuais e simplificando o processo.
+                </p>
               </div>
             </div>
 
