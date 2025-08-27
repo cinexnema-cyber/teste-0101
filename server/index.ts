@@ -30,6 +30,7 @@ import {
   getPendingContent,
   recordView,
 } from "./routes/content";
+import { handleCreatorAnalytics, handleVideoAnalytics } from "./routes/analytics-creator";
 import { initializeAdmin, initializeSampleData } from "./scripts/initAdmin";
 
 export function createServer() {
