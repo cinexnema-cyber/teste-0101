@@ -135,7 +135,7 @@ const App = () => (
                 path="/between-heaven-hell"
                 element={
                   <ProtectedRoute
-                    allowedRoles={["subscriber"]}
+                    allowedRoles={["subscriber", "admin"]}
                     requireSubscription={true}
                   >
                     <BetweenHeavenHell />
@@ -202,7 +202,7 @@ const App = () => (
                 path="/watch/:contentId"
                 element={
                   <ProtectedRoute
-                    allowedRoles={["subscriber"]}
+                    allowedRoles={["subscriber", "admin"]}
                     requireSubscription={true}
                   >
                     <Watch />
