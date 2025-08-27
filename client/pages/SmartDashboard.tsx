@@ -42,12 +42,7 @@ export default function SmartDashboard() {
   const [watchTime, setWatchTime] = useState(0);
   const [recommendedContent, setRecommendedContent] = useState<any[]>([]);
 
-  useEffect(() => {
-    if (!user || user.role !== "subscriber") {
-      navigate("/login");
-      return;
-    }
-  }, [user, navigate]);
+  // Removed authentication check - dashboard now accessible without login
 
   const userProfile = {
     name: "João Silva",
