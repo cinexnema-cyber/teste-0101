@@ -55,6 +55,15 @@ export function Header() {
             <div className="w-2 h-2 bg-xnema-orange rounded-full"></div>
             <span>Contato</span>
           </Link>
+          {user && (
+            <Link
+              to="/creator-portal"
+              className="flex items-center space-x-1 text-foreground hover:text-xnema-orange transition-colors"
+            >
+              <Crown className="w-4 h-4 text-xnema-orange" />
+              <span>Portal do Criador</span>
+            </Link>
+          )}
         </nav>
 
         {/* Search and Actions */}
