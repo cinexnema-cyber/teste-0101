@@ -10,6 +10,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { initializeSmartPlatform } from "./utils/smartPlatform";
+import { QuickAccessButton } from "@/components/QuickAdminLogin";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Catalog from "./pages/Catalog";
@@ -299,6 +300,7 @@ const App = () => (
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
+          <QuickAccessButton />
         </AuthProvider>
       </LanguageProvider>
     </TooltipProvider>
