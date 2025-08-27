@@ -164,7 +164,10 @@ export default function SmartDashboard() {
                   Olá, {userProfile.name}! 👋
                 </h1>
                 <p className="text-muted-foreground">
-                  Bem-vindo de volta à sua experiência XNEMA Premium
+                  {user
+                    ? "Bem-vindo de volta à sua experiência XNEMA Premium"
+                    : "Conheça o painel XNEMA - Faça login para acessar todos os recursos"
+                  }
                 </p>
               </div>
               <div className="flex items-center space-x-3 bg-gradient-to-r from-xnema-orange to-xnema-purple rounded-lg px-4 py-2">
@@ -174,6 +177,16 @@ export default function SmartDashboard() {
                 </span>
               </div>
             </div>
+            {!user && (
+              <div className="mt-4 p-4 bg-blue-500/20 border border-blue-500/30 rounded-lg">
+                <p className="text-sm text-foreground">
+                  �� <strong>Modo Demonstração:</strong> Este é um preview do painel XNEMA.
+                  <Link to="/login" className="text-xnema-orange hover:underline ml-1">
+                    Faça login
+                  </Link> para acessar seu painel personalizado.
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Quick Stats */}
