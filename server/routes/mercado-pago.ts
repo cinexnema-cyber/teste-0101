@@ -3,6 +3,7 @@ import Joi from "joi";
 import User from "../models/User";
 import Subscription from "../models/Subscription";
 import { AuthenticatedRequest } from "../middleware/auth";
+import { WebhookRetryService } from "../utils/webhookRetry";
 
 // Definição dos planos do Mercado Pago
 const MERCADO_PAGO_PLANS = {
@@ -145,109 +146,48 @@ export const createPayment = async (req: AuthenticatedRequest, res: Response) =>
  */
 export const handleWebhook = async (req: Request, res: Response) => {
   try {
-    console.log("Webhook recebido:", req.body);
+    console.log("🔔 Webhook recebido:", req.body);
 
     const { error, value } = webhookSchema.validate(req.body);
     if (error) {
-      console.error("Webhook com dados inválidos:", error.details[0].message);
+      console.error("❌ Webhook com dados inválidos:", error.details[0].message);
       return res.status(400).json({ message: "Dados do webhook inválidos" });
     }
 
-    const { action, data } = value;
+    // Adicionar external_reference ao payload se estiver nos parâmetros
+    const webhookData = {
+      ...value,
+      external_reference: req.body.external_reference || req.query.external_reference
+    };
 
     // Processar apenas eventos de pagamento
-    if (action === "payment.created" || action === "payment.updated") {
-      const paymentId = data.id;
+    if (webhookData.action === "payment.created" || webhookData.action === "payment.updated") {
+      // Usar serviço de retry para processar o webhook
+      const result = await WebhookRetryService.processPaymentWebhook(webhookData);
 
-      // Buscar referência externa nos parâmetros (seria obtido da API do Mercado Pago em produção)
-      const externalReference = req.body.external_reference || req.query.external_reference;
-      
-      if (!externalReference) {
-        console.error("External reference não encontrado no webhook");
-        return res.status(400).json({ message: "Referência externa não encontrada" });
+      if (result.success) {
+        console.log("✅ Webhook processado com sucesso");
+      } else {
+        console.error("❌ Erro no processamento do webhook:", result.error);
+        // Ainda assim retornamos 200 para o Mercado Pago (retry será feito internamente)
       }
-
-      // Buscar assinatura pelo transaction_id
-      const subscription = await Subscription.findOne({ 
-        transaction_id: externalReference 
-      }).populate('id_usuario');
-
-      if (!subscription) {
-        console.error("Assinatura não encontrada para transaction_id:", externalReference);
-        return res.status(404).json({ message: "Assinatura não encontrada" });
-      }
-
-      // Simular verificação de status do pagamento (em produção, consultar API do Mercado Pago)
-      // Para demonstração, assumimos que o pagamento foi aprovado
-      const paymentStatus = "approved"; // Seria obtido da API: approved, pending, rejected, etc.
-
-      if (paymentStatus === "approved") {
-        // Atualizar assinatura para ativa
-        subscription.status_pagamento = "aprovado";
-        subscription.ativo = true;
-        subscription.data_pagamento = new Date();
-        subscription.detalhes_pagamento.referencia_externa = paymentId;
-
-        await subscription.save();
-
-        // SEGURANÇA: Só atualizar para premium após confirmação do pagamento
-        const user = subscription.id_usuario as any;
-        if (user) {
-          user.role = "premium"; // Mudar para premium APENAS após pagamento aprovado
-          user.isPremium = true; // Ativar status premium APENAS após pagamento aprovado
-          user.subscriptionStatus = "active";
-          user.subscriptionStart = subscription.data_inicio_periodo;
-          user.subscriptionEnd = subscription.data_fim_periodo;
-          user.assinante = true; // Backward compatibility
-          await user.save();
-
-          console.log(`✅ PREMIUM ATIVADO para usuário ${user.email} - Plano: ${subscription.plano}`);
-          console.log(`✅ Status: role=${user.role}, isPremium=${user.isPremium}`);
-        }
-
-      } else if (paymentStatus === "rejected") {
-        // Marcar pagamento como rejeitado
-        subscription.status_pagamento = "rejeitado";
-        subscription.ativo = false;
-        await subscription.save();
-
-        // Atualizar usuário para falha
-        const user = subscription.id_usuario as any;
-        if (user) {
-          user.role = "subscriber"; // Voltar para subscriber
-          user.isPremium = false; // NÃO é premium
-          user.subscriptionStatus = "failed";
-          user.assinante = false;
-          await user.save();
-        }
-
-        console.log(`❌ PAGAMENTO REJEITADO para transaction_id: ${externalReference}`);
-
-      } else if (paymentStatus === "pending") {
-        // Manter como pendente - NÃO ativar premium
-        const user = subscription.id_usuario as any;
-        if (user) {
-          user.role = "subscriber"; // Manter como subscriber
-          user.isPremium = false; // NÃO é premium até aprovação
-          user.subscriptionStatus = "pending";
-          user.assinante = false;
-          await user.save();
-        }
-        console.log(`⏳ PAGAMENTO PENDENTE para transaction_id: ${externalReference}`);
-      }
+    } else {
+      console.log("ℹ️ Webhook ignorado (não é evento de pagamento):", webhookData.action);
     }
 
-    // Responder OK para o Mercado Pago
-    res.status(200).json({ 
-      success: true, 
-      message: "Webhook processado com sucesso" 
+    // SEMPRE responder OK para o Mercado Pago (retry é gerenciado internamente)
+    res.status(200).json({
+      success: true,
+      message: "Webhook recebido e processado"
     });
 
   } catch (error) {
-    console.error("Erro no webhook:", error);
-    res.status(500).json({ 
-      message: "Erro interno no webhook",
-      details: process.env.NODE_ENV === 'development' ? error : undefined
+    console.error("😨 Erro crítico no webhook:", error);
+
+    // Mesmo com erro, retornar 200 para evitar reenvio descontrolado
+    res.status(200).json({
+      success: false,
+      message: "Erro processado"
     });
   }
 };
