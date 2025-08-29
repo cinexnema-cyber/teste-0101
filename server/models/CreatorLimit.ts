@@ -216,7 +216,13 @@ CreatorLimitSchema.statics.getOrCreateForCreator = async function(creatorId: str
   let creatorLimit = await this.findOne({ creatorId });
   
   if (!creatorLimit) {
-    creatorLimit = await this.createForCreator(creatorId, creatorName);
+    creatorLimit = await this.create({
+      creatorId,
+      creatorName,
+      graceStartDate: new Date(),
+      isGracePeriod: true,
+      graceMonthsLeft: 3
+    });
   }
   
   // Update grace period
