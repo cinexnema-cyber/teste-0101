@@ -20,6 +20,7 @@ import Pricing from "./pages/Pricing";
 import Creators from "./pages/Creators";
 import Login from "./pages/Login";
 import SubscriberLogin from "./pages/SubscriberLogin";
+import SubscriberLoginSimple from "./pages/SubscriberLoginSimple";
 import Register from "./pages/Register";
 import ResetPassword from "./pages/ResetPassword";
 import Subscribe from "./pages/Subscribe";
