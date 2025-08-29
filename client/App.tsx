@@ -59,6 +59,7 @@ import AreaSelection from "./pages/AreaSelection";
 import PlatformAnalytics from "./pages/PlatformAnalytics";
 import EmailConfirmed from "./pages/EmailConfirmed";
 import AuthDebug from "./pages/AuthDebug";
+import VideoUploadPage from "./pages/VideoUploadPage";
 
 const queryClient = new QueryClient();
 
