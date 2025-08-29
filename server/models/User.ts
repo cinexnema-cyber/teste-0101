@@ -6,10 +6,12 @@ export interface IUser extends Document {
   nome: string;
   email: string;
   password: string;
-  tipo: "assinante" | "criador" | "visitante" | "admin";
+  role: "visitor" | "subscriber" | "premium" | "creator" | "admin";
+  isPremium: boolean;
   data_criacao: Date;
-  assinante: boolean;
-  subscriptionStatus: "ativo" | "inativo";
+  assinante: boolean; // Kept for backward compatibility
+  subscriptionStatus: "pending" | "active" | "failed";
+  referrer?: string; // ID do criador que referiu (for affiliate tracking)
   subscriptionPlan?: "basic" | "premium" | "vip"; // R$19,90 / R$59,90 / R$199,00
   subscriptionStart?: Date;
   subscriptionEnd?: Date;
@@ -81,10 +83,14 @@ const UserSchema = new Schema<IUser>(
       required: true,
       minlength: 6,
     },
-    tipo: {
+    role: {
       type: String,
-      enum: ["assinante", "criador", "visitante", "admin"],
-      default: "visitante",
+      enum: ["visitor", "subscriber", "premium", "creator", "admin"],
+      default: "subscriber", // New users default to subscriber
+    },
+    isPremium: {
+      type: Boolean,
+      default: false, // Only true after payment confirmation
     },
     data_criacao: {
       type: Date,
@@ -96,8 +102,13 @@ const UserSchema = new Schema<IUser>(
     },
     subscriptionStatus: {
       type: String,
-      enum: ["ativo", "inativo"],
-      default: "inativo",
+      enum: ["pending", "active", "failed"],
+      default: "pending",
+    },
+    referrer: {
+      type: String,
+      ref: 'User',
+      required: false,
     },
     subscriptionPlan: {
       type: String,
@@ -273,8 +284,10 @@ const UserSchema = new Schema<IUser>(
 );
 
 // Índices para otimização (email já tem unique: true)
-UserSchema.index({ tipo: 1 });
+UserSchema.index({ role: 1 });
+UserSchema.index({ isPremium: 1 });
 UserSchema.index({ subscriptionStatus: 1 });
+UserSchema.index({ referrer: 1 });
 
 // Hash da senha antes de salvar
 UserSchema.pre("save", async function (next) {
