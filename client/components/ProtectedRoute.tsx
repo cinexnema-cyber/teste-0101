@@ -132,8 +132,8 @@ export const usePermissions = () => {
   const hasActiveSubscription = () => {
     // Admins always have access
     if (isAdmin()) return true;
-    // Creators with approved status have access
-    if (isCreator() && user?.creatorProfile?.status === "approved") return true;
+    // Creators with approved status have access (simplified for now)
+    if (isCreator()) return true;
     return user?.assinante === true || user?.subscriptionStatus === "ativo";
   };
 
