@@ -8,7 +8,7 @@ import React, {
 import { AuthService } from "@/lib/auth";
 import { User } from "@/lib/supabase";
 
-interface AuthUser {
+export interface AuthUser {
   id: string;
   user_id: string;
   email: string;
