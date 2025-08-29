@@ -10,21 +10,30 @@ export interface IUser extends Document {
   data_criacao: Date;
   assinante: boolean;
   subscriptionStatus: "ativo" | "inativo";
-  subscriptionPlan?: "monthly" | "yearly";
+  subscriptionPlan?: "basic" | "premium" | "vip"; // R$19,90 / R$59,90 / R$199,00
   subscriptionStart?: Date;
   subscriptionEnd?: Date;
+  freeMonthsRemaining: number; // Meses grátis restantes
+  subscriptionType: "recurrent" | "prepaid"; // Recorrente ou pré-pago
+  prepaidMonths?: number; // Meses pagos antecipadamente
+
+  // Criador fields
   comissaoPercentual: number; // Percentual de comissão para criadores (padrão 70%)
   saldoDisponivel: number; // Saldo acumulado do criador
   totalGanho: number; // Total já ganho pelo criador
+
+  // Profile fields
   bio?: string;
   avatar?: string;
   verificado: boolean;
+
+  // Creator-specific profile
   creatorProfile?: {
     status: "pending" | "approved" | "rejected";
     whatsapp?: string;
     portfolio?: string;
     description?: string;
-    gracePeriod?: number;
+    gracePeriod?: number; // Meses de carência (1 mês grátis)
     gracePeriodApproved?: number;
     appliedAt?: Date;
     approvedAt?: Date;
@@ -35,7 +44,21 @@ export interface IUser extends Document {
     graceEndDate?: Date;
     affiliateCode?: string;
     affiliateLink?: string;
+
+    // Analytics e earnings
+    totalVideos: number;
+    approvedVideos: number;
+    rejectedVideos: number;
+    totalViews: number;
+    monthlyEarnings: number;
+    affiliateEarnings: number;
+    referralCount: number;
   };
+
+  // Affiliate system
+  referredBy?: string; // ID do criador que referiu
+  referralCode?: string; // Código único para referenciar outros
+
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
