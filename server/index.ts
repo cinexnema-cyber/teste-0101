@@ -315,7 +315,7 @@ export function createServer() {
   app.post("/api/auth/login", universalLogin);
 
   // Specific login routes
-  const { subscriberLogin: newSubscriberLogin, checkSubscribers, createSubscriber } = require("./routes/subscriber-login");
+  const { subscriberLogin: newSubscriberLogin, checkSubscribers, createSubscriber, createTestUsersIfNeeded } = require("./routes/subscriber-login");
   app.post("/api/auth/login-subscriber", newSubscriberLogin);
   app.post("/api/auth/login-creator", creatorLogin);
 
