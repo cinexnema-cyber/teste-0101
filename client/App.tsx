@@ -102,7 +102,7 @@ const App = () => (
               <Route path="/login-select" element={<LoginSelect />} />
               <Route path="/test-login" element={<TestLogin />} />
               <Route path="/login-diagnostic" element={<LoginDiagnostic />} />
-              <Route path="/login/subscriber" element={<SubscriberLoginSimple />} />
+              <Route path="/login/subscriber" element={<SubscriberLoginTest />} />
               <Route path="/login/creator" element={<CreatorLoginSimple />} />
               <Route path="/login/admin" element={<AdminLoginSimple />} />
               <Route path="/register" element={<Register />} />
