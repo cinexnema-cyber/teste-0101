@@ -58,6 +58,7 @@ import {
   checkUploadCapacity,
   updateAllGracePeriods
 } from "./routes/creator-limits";
+import handleMuxWebhook, { verifyMuxWebhook } from "./routes/mux-webhook";
 import { initializeAdmin, initializeSampleData } from "./scripts/initAdmin";
 
 export function createServer() {
