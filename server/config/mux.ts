@@ -18,14 +18,14 @@ const mux = new Mux({
 export const MUX_CONFIG = {
   // Video encoding settings
   encoding: {
-    mp4_support: 'standard',
+    mp4_support: 'standard' as const,
     normalize_audio: true,
-    video_quality: 'plus'
+    video_quality: 'plus' as const
   },
-  
+
   // Playback policy (private for security)
-  playback_policy: ['private'] as const,
-  
+  playback_policy: ['private'],
+
   // Default test mode (set to false in production)
   test: process.env.NODE_ENV !== 'production'
 };
