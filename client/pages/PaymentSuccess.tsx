@@ -1,355 +1,310 @@
-import { useEffect, useState } from "react";
-import { useSearchParams, Link, useNavigate } from "react-router-dom";
-import { Layout } from "@/components/layout/Layout";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import {
-  CheckCircle,
-  Crown,
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { useAuth } from '@/contexts/AuthContextReal';
+import { 
+  CheckCircle, 
+  Crown, 
   Play,
   Star,
-  Calendar,
   Gift,
-  Sparkles,
-} from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
-import { AuthService } from "@/lib/auth";
+  ArrowRight,
+  Loader2,
+  AlertCircle
+} from 'lucide-react';
 
 export default function PaymentSuccess() {
-  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { user, setUser } = useAuth();
-  const [isProcessing, setIsProcessing] = useState(true);
-  const [subscriptionActivated, setSubscriptionActivated] = useState(false);
+  const { user, checkAuth } = useAuth();
+  const [searchParams] = useSearchParams();
+  
+  const [loading, setLoading] = useState(true);
+  const [sessionData, setSessionData] = useState<any>(null);
+  const [error, setError] = useState('');
+  const [countdown, setCountdown] = useState(5);
 
-  const sessionId = searchParams.get("session_id");
-  const planType = searchParams.get("plan");
+  const sessionId = searchParams.get('session_id');
 
   useEffect(() => {
-    // Simulate subscription activation
-    const activateSubscription = async () => {
-      if (!user || !planType) {
-        setIsProcessing(false);
-        return;
-      }
-
-      try {
-        // In a real implementation, you would verify the payment with Stripe
-        // and then update the user's subscription status in your database
-
-        // For now, we'll simulate this by updating the local user state
-        const updatedUser = {
-          ...user,
-          subscriptionStatus: "ativo" as const,
-          subscriptionPlan: planType as "monthly" | "yearly",
-          subscriptionStart: new Date(),
-          assinante: true,
-          role: "subscriber" as const,
-        };
-
-        // Update local state
-        setUser(updatedUser);
-        localStorage.setItem("xnema_user", JSON.stringify(updatedUser));
-
-        // In production, you would also call your backend to update the database
-        // await AuthService.updateSubscription(user.id, planType);
-
-        setSubscriptionActivated(true);
-        setIsProcessing(false);
-
-        // Redirect to subscriber dashboard after 5 seconds
-        setTimeout(() => {
-          navigate("/subscriber-dashboard");
-        }, 5000);
-      } catch (error) {
-        console.error("Error activating subscription:", error);
-        setIsProcessing(false);
-      }
-    };
-
-    activateSubscription();
-  }, [user, planType, setUser, navigate]);
-
-  const getPlanDetails = () => {
-    if (planType === "yearly") {
-      return {
-        name: "Plano Anual",
-        price: "R$ 199,00",
-        period: "por ano",
-        features: [
-          "Catálogo completo sem limites",
-          "Qualidade 4K e HDR",
-          "4 telas simultâneas",
-          "Download para assistir offline",
-          "Suporte prioritário",
-          "Acesso antecipado a lançamentos",
-        ],
-        savings: "Economize R$ 39,80 (16%)",
-      };
+    if (sessionId) {
+      verifyPayment();
     } else {
-      return {
-        name: "Plano Mensal",
-        price: "R$ 19,90",
-        period: "por mês",
-        features: [
-          "Catálogo completo sem limites",
-          "Qualidade 4K e HDR",
-          "2 telas simultâneas",
-          "Sem anúncios",
-          "Suporte via chat",
-        ],
-        savings: null,
-      };
+      setError('Sessão de pagamento não encontrada');
+      setLoading(false);
+    }
+  }, [sessionId]);
+
+  useEffect(() => {
+    if (sessionData && countdown > 0) {
+      const timer = setTimeout(() => {
+        setCountdown(countdown - 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    } else if (countdown === 0) {
+      navigate('/dashboard');
+    }
+  }, [countdown, sessionData, navigate]);
+
+  const verifyPayment = async () => {
+    try {
+      console.log('🔍 Verificando pagamento:', sessionId);
+      
+      const response = await fetch(`/api/payment/session-status/${sessionId}`);
+      const data = await response.json();
+      
+      if (data.success && data.session) {
+        setSessionData(data.session);
+        
+        // Atualizar dados do usuário
+        await checkAuth();
+        
+        console.log('✅ Pagamento verificado com sucesso');
+      } else {
+        setError('Erro ao verificar pagamento');
+      }
+    } catch (error) {
+      console.error('Erro ao verificar pagamento:', error);
+      setError('Erro de conexão');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const planDetails = getPlanDetails();
+  const getPlanName = (plan: string) => {
+    switch (plan) {
+      case 'monthly': return 'Plano Mensal';
+      case 'yearly': return 'Plano Anual';
+      case 'lifetime': return 'Plano Vitalício';
+      default: return 'Plano Premium';
+    }
+  };
 
-  if (isProcessing) {
+  const getPlanDescription = (plan: string) => {
+    switch (plan) {
+      case 'monthly': return 'Renovação automática mensal';
+      case 'yearly': return 'Cobrança anual com desconto';
+      case 'lifetime': return 'Acesso vitalício sem renovação';
+      default: return 'Acesso premium';
+    }
+  };
+
+  if (loading) {
     return (
-      <Layout>
-        <div className="min-h-screen bg-xnema-dark flex items-center justify-center">
-          <Card className="bg-xnema-surface border-gray-700 max-w-md w-full">
-            <CardContent className="p-8 text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-xnema-orange to-xnema-purple rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
-                <Crown className="w-8 h-8 text-white" />
-              </div>
-              <h2 className="text-xl font-semibold text-white mb-2">
-                Processando Pagamento
-              </h2>
-              <p className="text-gray-400">
-                Ativando sua assinatura premium...
-              </p>
-            </CardContent>
-          </Card>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4 text-blue-500" />
+          <h2 className="text-xl font-semibold mb-2">Verificando pagamento...</h2>
+          <p className="text-muted-foreground">Por favor, aguarde enquanto confirmamos sua compra</p>
         </div>
-      </Layout>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+            <CardTitle className="text-2xl font-bold">Erro na Verificação</CardTitle>
+            <CardDescription>{error}</CardDescription>
+          </CardHeader>
+          
+          <CardContent className="text-center space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Não conseguimos verificar seu pagamento. Entre em contato com o suporte se o problema persistir.
+            </p>
+            
+            <div className="space-y-2">
+              <Button onClick={() => navigate('/dashboard')} className="w-full">
+                Ir para Dashboard
+              </Button>
+              <Button variant="outline" onClick={() => navigate('/pricing')} className="w-full">
+                Ver Planos Novamente
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
   return (
-    <Layout>
-      <div className="min-h-screen bg-xnema-dark text-white">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 dark:from-green-950 dark:to-blue-950 flex items-center justify-center p-4">
+      <div className="w-full max-w-2xl space-y-6">
+        
         {/* Success Header */}
-        <section className="py-20 bg-gradient-to-r from-green-900/30 to-xnema-dark">
-          <div className="container mx-auto px-4 text-center">
-            <div className="max-w-2xl mx-auto">
-              <div className="w-24 h-24 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                <CheckCircle className="w-12 h-12 text-white" />
-              </div>
-
-              <h1 className="text-4xl md:text-5xl font-bold mb-4">
-                Pagamento Aprovado!
-              </h1>
-
-              <p className="text-xl text-gray-300 mb-8">
-                Sua assinatura {planDetails.name} foi ativada com sucesso
-              </p>
-
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button
-                  size="lg"
-                  className="bg-xnema-orange hover:bg-xnema-orange/90 text-black"
-                  asChild
-                >
-                  <Link to="/subscriber-dashboard">
-                    <div className="flex items-center">
-                      <Crown className="w-5 h-5 mr-2" />
-                      Acessar Dashboard Premium
-                    </div>
-                  </Link>
-                </Button>
-
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-green-500 text-green-400 hover:bg-green-500 hover:text-white"
-                  asChild
-                >
-                  <Link to="/between-heaven-hell">
-                    <div className="flex items-center">
-                      <Play className="w-5 h-5 mr-2" />
-                      Começar a Assistir
-                    </div>
-                  </Link>
-                </Button>
-              </div>
-            </div>
+        <div className="text-center space-y-4">
+          <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto">
+            <CheckCircle className="w-12 h-12 text-white" />
           </div>
-        </section>
-
-        {/* Subscription Details */}
-        <section className="py-16">
-          <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto">
-              <Card className="bg-gradient-to-br from-xnema-surface to-xnema-dark border-green-500/30">
-                <CardHeader className="text-center">
-                  <div className="flex items-center justify-center gap-3 mb-4">
-                    <Crown className="w-8 h-8 text-xnema-orange" />
-                    <Badge className="bg-green-500 text-white px-4 py-2 text-lg">
-                      ATIVO
-                    </Badge>
-                  </div>
-                  <CardTitle className="text-2xl">
-                    {planDetails.name} XNEMA
-                  </CardTitle>
-                  <CardDescription className="text-lg">
-                    <span className="text-2xl font-bold text-xnema-orange">
-                      {planDetails.price}
-                    </span>
-                    <span className="text-gray-400 ml-2">
-                      {planDetails.period}
-                    </span>
-                  </CardDescription>
-                  {planDetails.savings && (
-                    <div className="mt-2">
-                      <Badge className="bg-green-500 text-white">
-                        {planDetails.savings}
-                      </Badge>
-                    </div>
-                  )}
-                </CardHeader>
-
-                <CardContent>
-                  <div className="grid md:grid-cols-2 gap-8">
-                    {/* Features */}
-                    <div>
-                      <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                        <Sparkles className="w-5 h-5 text-xnema-orange" />
-                        Benefícios Inclusos
-                      </h3>
-                      <ul className="space-y-3">
-                        {planDetails.features.map((feature, index) => (
-                          <li key={index} className="flex items-center gap-3">
-                            <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
-                            <span className="text-gray-300">{feature}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    {/* Next Steps */}
-                    <div>
-                      <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                        <Gift className="w-5 h-5 text-xnema-orange" />
-                        Próximos Passos
-                      </h3>
-                      <div className="space-y-4">
-                        <div className="p-4 bg-xnema-dark rounded-lg">
-                          <h4 className="font-semibold text-xnema-orange mb-2">
-                            1. Explore o Catálogo
-                          </h4>
-                          <p className="text-sm text-gray-400 mb-3">
-                            Descubra mais de 50 títulos exclusivos em 4K
-                          </p>
-                          <Button size="sm" variant="outline" asChild>
-                            <Link to="/catalog">Explorar Agora</Link>
-                          </Button>
-                        </div>
-
-                        <div className="p-4 bg-xnema-dark rounded-lg">
-                          <h4 className="font-semibold text-xnema-orange mb-2">
-                            2. Configure Perfis
-                          </h4>
-                          <p className="text-sm text-gray-400 mb-3">
-                            Crie perfis para família e personalize experiências
-                          </p>
-                          <Button size="sm" variant="outline" asChild>
-                            <Link to="/edit-profile">Configurar Perfil</Link>
-                          </Button>
-                        </div>
-
-                        <div className="p-4 bg-xnema-dark rounded-lg">
-                          <h4 className="font-semibold text-xnema-orange mb-2">
-                            3. Comece a Assistir
-                          </h4>
-                          <p className="text-sm text-gray-400 mb-3">
-                            Assista nossa série exclusiva de estreia
-                          </p>
-                          <Button
-                            size="sm"
-                            className="bg-xnema-orange hover:bg-xnema-orange/90 text-black"
-                            asChild
-                          >
-                            <Link to="/between-heaven-hell">
-                              <Star className="w-4 h-4 mr-2" />
-                              Between Heaven and Hell
-                            </Link>
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </section>
+          
+          <h1 className="text-4xl font-bold text-green-600">
+            Pagamento Confirmado!
+          </h1>
+          
+          <p className="text-xl text-muted-foreground">
+            Bem-vindo ao XNEMA Premium! 🎉
+          </p>
+        </div>
 
         {/* Payment Details */}
-        <section className="py-12 bg-xnema-surface">
-          <div className="container mx-auto px-4">
-            <div className="max-w-2xl mx-auto">
-              <Card className="bg-xnema-dark border-gray-700">
-                <CardHeader>
-                  <CardTitle className="text-lg">
-                    Detalhes do Pagamento
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3 text-sm">
+        <Card className="border-green-200 dark:border-green-800">
+          <CardHeader className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-950 dark:to-blue-950 rounded-t-lg">
+            <CardTitle className="flex items-center gap-2">
+              <Crown className="w-6 h-6 text-yellow-500" />
+              Detalhes da Assinatura
+            </CardTitle>
+            <CardDescription>
+              Sua assinatura foi ativada com sucesso
+            </CardDescription>
+          </CardHeader>
+          
+          <CardContent className="space-y-6 p-6">
+            {sessionData && (
+              <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="font-semibold mb-3">Informações da Compra</h3>
+                  <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-gray-400">ID da Sessão:</span>
-                      <span className="font-mono text-xs">
-                        {sessionId || "N/A"}
+                      <span className="text-muted-foreground">Plano:</span>
+                      <span className="font-medium">
+                        {getPlanName(sessionData.metadata?.plan)}
                       </span>
                     </div>
+                    
                     <div className="flex justify-between">
-                      <span className="text-gray-400">Plano:</span>
-                      <span>{planDetails.name}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-400">Valor:</span>
-                      <span className="font-semibold text-green-400">
-                        {planDetails.price}
+                      <span className="text-muted-foreground">Valor:</span>
+                      <span className="font-medium">
+                        R$ {((sessionData.amount_total || 0) / 100).toFixed(2).replace('.', ',')}
                       </span>
                     </div>
+                    
                     <div className="flex justify-between">
-                      <span className="text-gray-400">Status:</span>
-                      <Badge className="bg-green-500 text-white">
-                        Aprovado
-                      </Badge>
+                      <span className="text-muted-foreground">Status:</span>
+                      <Badge className="bg-green-500 text-white">Pago</Badge>
                     </div>
+                    
                     <div className="flex justify-between">
-                      <span className="text-gray-400">Data:</span>
-                      <span>{new Date().toLocaleDateString("pt-BR")}</span>
+                      <span className="text-muted-foreground">Email:</span>
+                      <span className="font-medium text-xs">
+                        {sessionData.customerEmail}
+                      </span>
                     </div>
                   </div>
+                </div>
+                
+                <div>
+                  <h3 className="font-semibold mb-3">Benefícios Ativados</h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-green-500" />
+                      <span>Streaming 4K Ultra HD</span>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-green-500" />
+                      <span>Catálogo completo</span>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-green-500" />
+                      <span>Download offline</span>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-green-500" />
+                      <span>Sem anúncios</span>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-green-500" />
+                      <span>Múltiplos dispositivos</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
-                  <div className="mt-6 pt-4 border-t border-gray-700 text-center">
-                    <p className="text-xs text-gray-400 mb-2">
-                      Um recibo foi enviado para o seu email
-                    </p>
-                    <Button size="sm" variant="ghost" asChild>
-                      <Link to="/payment-history">
-                        <Calendar className="w-4 h-4 mr-2" />
-                        Ver Histórico de Pagamentos
-                      </Link>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+        {/* Next Steps */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Gift className="w-6 h-6 text-blue-500" />
+              Próximos Passos
+            </CardTitle>
+            <CardDescription>
+              Comece a aproveitar sua experiência premium
+            </CardDescription>
+          </CardHeader>
+          
+          <CardContent className="space-y-4">
+            <div className="grid md:grid-cols-3 gap-4">
+              <div className="text-center p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
+                <Play className="w-8 h-8 text-blue-500 mx-auto mb-2" />
+                <h4 className="font-medium mb-1">Explorar Catálogo</h4>
+                <p className="text-xs text-muted-foreground">
+                  Descubra milhares de filmes e séries
+                </p>
+              </div>
+              
+              <div className="text-center p-4 bg-purple-50 dark:bg-purple-950/20 rounded-lg">
+                <Star className="w-8 h-8 text-purple-500 mx-auto mb-2" />
+                <h4 className="font-medium mb-1">Recomendações</h4>
+                <p className="text-xs text-muted-foreground">
+                  Conteúdo personalizado para você
+                </p>
+              </div>
+              
+              <div className="text-center p-4 bg-green-50 dark:bg-green-950/20 rounded-lg">
+                <Crown className="w-8 h-8 text-green-500 mx-auto mb-2" />
+                <h4 className="font-medium mb-1">Perfil Premium</h4>
+                <p className="text-xs text-muted-foreground">
+                  Configure suas preferências
+                </p>
+              </div>
             </div>
-          </div>
-        </section>
+          </CardContent>
+        </Card>
+
+        {/* Auto Redirect Notice */}
+        <Card className="bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium text-blue-900 dark:text-blue-100">
+                  Redirecionamento automático
+                </p>
+                <p className="text-sm text-blue-700 dark:text-blue-300">
+                  Você será redirecionado para o dashboard em {countdown} segundos
+                </p>
+              </div>
+              
+              <Button 
+                onClick={() => navigate('/dashboard')}
+                className="bg-blue-500 hover:bg-blue-600"
+              >
+                Ir Agora
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Support */}
+        <div className="text-center text-sm text-muted-foreground">
+          <p>
+            Precisa de ajuda? Entre em contato com nosso{' '}
+            <button className="underline hover:text-foreground">
+              suporte técnico
+            </button>
+          </p>
+        </div>
       </div>
-    </Layout>
+    </div>
   );
 }
