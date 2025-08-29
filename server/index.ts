@@ -563,6 +563,9 @@ export function createServer() {
   app.post("/api/admin/creators/:creatorId/allow", authenticateToken, allowCreatorUpload);
   app.post("/api/admin/creators/update-grace-periods", authenticateToken, updateAllGracePeriods);
 
+  // Mux webhook endpoint (no authentication required for webhooks)
+  app.post("/api/webhooks/mux", verifyMuxWebhook, handleMuxWebhook);
+
   // Protected routes (examples)
   app.get("/api/admin/users", authenticateToken, async (req, res) => {
     try {
