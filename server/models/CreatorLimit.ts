@@ -249,4 +249,4 @@ CreatorLimitSchema.set('toObject', { virtuals: true });
 // Export the model
 const CreatorLimit = mongoose.model<ICreatorLimit>('CreatorLimit', CreatorLimitSchema);
 export default CreatorLimit;
-export { ICreatorLimit };
+export type { ICreatorLimit };
