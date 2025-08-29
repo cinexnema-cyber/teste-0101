@@ -246,6 +246,15 @@ export default function LoginSelect() {
             >
               🔧 Diagnóstico Completo
             </Button>
+
+            <Button
+              variant="outline"
+              onClick={() => navigate('/login/subscriber')}
+              className="flex items-center gap-2 px-6 border-blue-500 text-blue-600 hover:bg-blue-500 hover:text-white"
+            >
+              <User className="w-4 h-4" />
+              Teste Login Assinante
+            </Button>
           </div>
         </div>
 
