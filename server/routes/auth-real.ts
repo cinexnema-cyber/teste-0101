@@ -258,9 +258,14 @@ export const activateSubscription = async (req: Request, res: Response) => {
  * Verificar status do usuário
  * GET /api/auth/me
  */
-export const getCurrentUser = async (req: Request, res: Response) => {
+interface AuthenticatedRequest extends Request {
+  user?: any;
+  userId?: string;
+}
+
+export const getCurrentUser = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    const userId = req.user?.id;
+    const userId = req.userId || req.user?.id || req.user?._id;
     if (!userId) {
       return res.status(401).json({
         success: false,
