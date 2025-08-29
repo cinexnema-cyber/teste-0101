@@ -153,11 +153,30 @@ export default function VideoUploadPage() {
             </AlertDescription>
           </Alert>
 
-          {/* Upload Component */}
-          <VideoUpload 
-            onUploadComplete={handleUploadComplete}
-            onUploadError={handleUploadError}
-          />
+          {/* Upload System with Blocks */}
+          <Tabs defaultValue="upload" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="upload" className="flex items-center gap-2">
+                <Upload className="w-4 h-4" />
+                Upload de Vídeo
+              </TabsTrigger>
+              <TabsTrigger value="blocks" className="flex items-center gap-2">
+                <HardDrive className="w-4 h-4" />
+                Gerenciar Blocos
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="upload" className="mt-6">
+              <VideoUploadWithBlocks
+                onUploadComplete={handleUploadComplete}
+                onUploadError={handleUploadError}
+              />
+            </TabsContent>
+
+            <TabsContent value="blocks" className="mt-6">
+              <CreatorBlocksDashboard />
+            </TabsContent>
+          </Tabs>
 
           {/* Guidelines */}
           <div className="mt-12 grid md:grid-cols-2 gap-8">
