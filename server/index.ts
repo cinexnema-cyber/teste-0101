@@ -30,6 +30,17 @@ import {
   getUserPayments
 } from "./routes/mercado-pago";
 import {
+  getCreatorBlocks,
+  calculateBlocks,
+  checkUploadCapacity,
+  purchaseBlocks,
+  handleBlocksWebhook,
+  getPurchaseHistory,
+  addVideoToBlocks,
+  removeVideoFromBlocks,
+  getAllCreatorsBlocks
+} from "./routes/creator-blocks";
+import {
   uploadContent,
   getCreatorContent,
   updateContentStatus,
