@@ -6,27 +6,24 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import {
-  User,
-  Lock,
-  Mail,
-  Crown,
-  AlertCircle,
+import { 
+  User, 
+  Lock, 
+  Mail, 
+  Crown, 
+  AlertCircle, 
   Loader2,
-  ArrowRight,
   Shield,
+  CheckCircle,
   Play,
   Star,
   Eye,
   Download,
   Smartphone
 } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
-import type { AuthUser } from '@/contexts/AuthContext';
 
 export default function SubscriberLogin() {
   const navigate = useNavigate();
-  const { setUser } = useAuth();
   
   const [formData, setFormData] = useState({
     email: '',
@@ -39,11 +36,7 @@ export default function SubscriberLogin() {
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    
-    // Clear error when user starts typing
-    if (error) {
-      setError('');
-    }
+    if (error) setError('');
   };
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -58,11 +51,11 @@ export default function SubscriberLogin() {
     setError('');
 
     try {
+      console.log('🔐 Tentando login...');
+      
       const response = await fetch('/api/auth/login-subscriber', {
         method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json' 
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: formData.email.trim(),
           password: formData.password
@@ -70,48 +63,32 @@ export default function SubscriberLogin() {
       });
 
       const data = await response.json();
+      console.log('📥 Resposta do login:', data);
 
       if (data.success && data.token) {
-        // Store token
+        // Armazenar dados de autenticação
         localStorage.setItem('xnema_token', data.token);
-
-        // Transform user data to AuthUser format
-        const transformedUser: AuthUser = {
-          id: data.user.id,
-          user_id: data.user.id,
-          email: data.user.email,
-          username: data.user.name || data.user.email.split('@')[0],
-          displayName: data.user.name || data.user.email.split('@')[0],
-          bio: data.user.bio || '',
-          subscriptionStatus: data.user.isPremium ? 'ativo' : 'inativo',
-          subscriptionStart: data.user.subscriptionStart ? new Date(data.user.subscriptionStart) : undefined,
-          subscriptionPlan: data.user.subscriptionPlan || 'monthly',
-          name: data.user.name || data.user.email.split('@')[0],
-          assinante: data.user.isPremium || false,
-          role: data.user.role || 'subscriber'
-        };
-
-        // Update auth context
-        setUser(transformedUser);
-        localStorage.setItem('xnema_user', JSON.stringify(transformedUser));
-
-        setSuccess('Login realizado com sucesso!');
-
-        // Redirect based on user status
+        localStorage.setItem('xnema_user', JSON.stringify(data.user));
+        
+        setSuccess(`Bem-vindo, ${data.user.name}!`);
+        
+        // Redirecionar baseado no status da assinatura
         setTimeout(() => {
-          if (data.user?.isPremium) {
+          if (data.user.role === 'admin') {
+            navigate('/admin-dashboard');
+          } else if (data.user.isPremium || data.user.assinante) {
             navigate('/dashboard');
           } else {
-            navigate('/pricing');
+            navigate('/pricing'); // Usuário não tem assinatura ativa
           }
-        }, 500);
+        }, 1500);
 
       } else {
-        setError(data.message || 'Erro no login');
+        setError(data.message || 'Email ou senha incorretos');
       }
 
     } catch (error) {
-      console.error('Erro no login:', error);
+      console.error('❌ Erro no login:', error);
       setError('Erro de conexão. Verifique sua internet e tente novamente.');
     } finally {
       setIsLoading(false);
@@ -129,13 +106,13 @@ export default function SubscriberLogin() {
             </div>
             <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">XNEMA</h1>
           </div>
-
+          
           <div className="space-y-2">
             <Badge className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-1.5 text-sm">
               <Crown className="w-4 h-4 mr-2" />
-              Área Premium do Assinante
+              Área do Assinante
             </Badge>
-            <p className="text-sm text-muted-foreground">Streaming de alta qualidade sem limites</p>
+            <p className="text-sm text-muted-foreground">Entre e aproveite conteúdo premium sem limites</p>
           </div>
         </div>
 
@@ -146,11 +123,11 @@ export default function SubscriberLogin() {
               Entrar na Área Premium
             </CardTitle>
             <CardDescription className="text-center text-blue-700 dark:text-blue-200">
-              Acesse sua conta e desfrute do melhor conteúdo em streaming
+              Acesse sua conta para continuar assistindo
             </CardDescription>
           </CardHeader>
           
-          <CardContent>
+          <CardContent className="p-6">
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
@@ -197,7 +174,7 @@ export default function SubscriberLogin() {
 
               {success && (
                 <Alert className="border-green-500 bg-green-50 dark:bg-green-950">
-                  <Shield className="h-4 w-4 text-green-600" />
+                  <CheckCircle className="h-4 w-4 text-green-600" />
                   <AlertDescription className="text-green-700 dark:text-green-300">
                     {success}
                   </AlertDescription>
@@ -217,7 +194,7 @@ export default function SubscriberLogin() {
                 ) : (
                   <>
                     <User className="w-4 h-4 mr-2" />
-                    Entrar como Assinante
+                    Entrar na Área Premium
                   </>
                 )}
               </Button>
@@ -226,13 +203,13 @@ export default function SubscriberLogin() {
             {/* Links */}
             <div className="mt-6 space-y-4">
               <div className="text-center">
-            <Link
-              to="/forgot-password"
-              className="text-sm text-blue-600 hover:text-blue-800 underline font-medium"
-            >
-              Esqueceu sua senha?
-            </Link>
-          </div>
+                <Link 
+                  to="/forgot-password" 
+                  className="text-sm text-blue-600 hover:text-blue-800 underline font-medium"
+                >
+                  Esqueceu sua senha?
+                </Link>
+              </div>
 
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
@@ -240,25 +217,25 @@ export default function SubscriberLogin() {
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
                   <span className="bg-background px-3 text-muted-foreground font-medium">
-                    Outras opções de acesso
+                    Outras opções
                   </span>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <Button
-                  variant="outline"
-                  onClick={() => navigate('/login/creator')}
-                  className="text-sm border-xnema-orange text-xnema-orange hover:bg-xnema-orange hover:text-black"
-                >
-                  Área do Criador
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => navigate('/register')}
+                <Button 
+                  variant="outline" 
+                  onClick={() => navigate('/register-subscriber')}
                   className="text-sm border-blue-500 text-blue-600 hover:bg-blue-500 hover:text-white"
                 >
                   Criar Conta
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={() => navigate('/login/creator')}
+                  className="text-sm border-orange-500 text-orange-600 hover:bg-orange-500 hover:text-white"
+                >
+                  Área do Criador
                 </Button>
               </div>
             </div>
@@ -295,31 +272,34 @@ export default function SubscriberLogin() {
                   <span>Múltiplos dispositivos</span>
                 </div>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => navigate('/pricing')}
-                className="border-blue-500 text-blue-600 hover:bg-blue-500 hover:text-white font-medium"
-              >
-                Ver Planos Premium
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
+              
+              <div className="text-center">
+                <p className="text-xs text-blue-700 dark:text-blue-300 mb-2">
+                  Ainda não é assinante?
+                </p>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => navigate('/pricing')}
+                  className="border-blue-500 text-blue-600 hover:bg-blue-500 hover:text-white font-medium"
+                >
+                  Ver Planos Premium
+                  <Crown className="w-4 h-4 ml-2" />
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Footer */}
-        <div className="text-center text-sm text-muted-foreground">
-          <p>
-            Ao fazer login, você aceita nossos{' '}
-            <Link to="/terms" className="underline hover:text-foreground">
-              Termos de Uso
-            </Link>{' '}
-            e{' '}
-            <Link to="/privacy" className="underline hover:text-foreground">
-              Política de Privacidade
-            </Link>
-          </p>
+        {/* Back to Selection */}
+        <div className="text-center">
+          <Button 
+            variant="ghost" 
+            onClick={() => navigate('/login-select')}
+            className="text-sm"
+          >
+            ← Voltar para Seleção
+          </Button>
         </div>
       </div>
     </div>
