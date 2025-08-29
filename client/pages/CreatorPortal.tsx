@@ -196,6 +196,15 @@ export default function CreatorPortal() {
                   Período de Carência: {analyticsData.loading ? '...' : `${analyticsData.graceMonthsLeft} meses restantes`}
                 </Badge>
                 <Button
+                  asChild
+                  className="bg-xnema-orange hover:bg-xnema-orange/90 text-black font-medium"
+                >
+                  <Link to="/video-upload">
+                    <Upload className="w-4 h-4 mr-2" />
+                    Upload Vídeo
+                  </Link>
+                </Button>
+                <Button
                   variant="outline"
                   size="sm"
                   onClick={refreshData}
@@ -885,7 +894,7 @@ export default function CreatorPortal() {
                     </div>
 
                     <div className="space-y-4">
-                      <h4 className="font-semibold">Após Período de Carência</h4>
+                      <h4 className="font-semibold">Após Per��odo de Carência</h4>
                       <div className="space-y-2">
                         <div className="flex justify-between">
                           <span>Sua Parte (70%):</span>
