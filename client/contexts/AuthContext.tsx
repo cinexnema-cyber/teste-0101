@@ -182,15 +182,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         if (result.success && result.user) {
           const transformedUser: AuthUser = {
             id: result.user.id,
+            user_id: result.user.id,
             email: result.user.email,
             username: result.user.username || result.user.email.split("@")[0],
-            display_name: result.user.name || result.user.email.split("@")[0],
+            displayName: result.user.name || result.user.email.split("@")[0],
             bio: result.user.bio || "",
-            subscription_status: result.user.assinante ? "active" : "inactive",
-            subscription_start: result.user.subscription?.startDate || "",
-            subscription_end: result.user.subscription?.endDate || "",
-            created_at: result.user.createdAt || new Date().toISOString(),
-            updated_at: new Date().toISOString(),
+            subscriptionStatus: result.user.assinante ? "ativo" : "inativo",
+            subscriptionStart: result.user.subscription?.startDate ? new Date(result.user.subscription.startDate) : undefined,
+            subscriptionPlan: result.user.subscription?.plan || "monthly",
             name: result.user.name || result.user.email.split("@")[0],
             assinante: result.user.assinante || false,
             role:
