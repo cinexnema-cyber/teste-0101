@@ -315,8 +315,13 @@ export function createServer() {
   app.post("/api/auth/login", universalLogin);
 
   // Specific login routes
-  app.post("/api/auth/login-subscriber", subscriberLogin);
+  const { subscriberLogin: newSubscriberLogin, checkSubscribers, createSubscriber } = require("./routes/subscriber-login");
+  app.post("/api/auth/login-subscriber", newSubscriberLogin);
   app.post("/api/auth/login-creator", creatorLogin);
+
+  // Subscriber management routes
+  app.get("/api/subscribers/check", checkSubscribers);
+  app.post("/api/subscribers/create", createSubscriber);
 
   // Emergency and admin routes
   app.post("/api/admin/create-emergency-user", createEmergencyUser);
