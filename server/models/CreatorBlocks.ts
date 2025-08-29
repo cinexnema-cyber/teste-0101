@@ -403,6 +403,24 @@ CreatorBlocksSchema.methods.getStorageUsagePercentage = function() {
   return Math.round((this.usedStorageGB / this.totalStorageGB) * 100);
 };
 
+// Helper method to get active free blocks
+CreatorBlocksSchema.methods.getActiveFreeBlocks = function() {
+  const now = new Date();
+  return this.freeBlockExpiry > now ? this.blocksFree : 0;
+};
+
+// Helper method to get total available blocks
+CreatorBlocksSchema.methods.getTotalAvailableBlocks = function() {
+  const activeFreeBlocks = this.getActiveFreeBlocks();
+  return activeFreeBlocks + this.blocksPurchased - this.usedBlocks;
+};
+
+// Helper method to check if free period is active
+CreatorBlocksSchema.methods.isFreeBlockActive = function() {
+  const now = new Date();
+  return this.freeBlockExpiry > now;
+};
+
 // Static methods
 CreatorBlocksSchema.statics.createForCreator = function(creatorId: string, creatorName: string) {
   return this.create({
