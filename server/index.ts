@@ -301,11 +301,31 @@ export function createServer() {
   app.post("/api/auth/check-user", checkUserExists);
   app.get("/api/auth/validate", authenticateToken, validateToken);
 
-  // Separate login routes for subscribers and creators
-  const { loginSubscriber, loginCreator, loginAdmin } = require("./routes/auth-separate");
-  app.post("/api/auth/login-subscriber", loginSubscriber);
-  app.post("/api/auth/login-creator", loginCreator);
-  app.post("/api/auth/login-admin", loginAdmin);
+  // New robust login system
+  const {
+    universalLogin,
+    subscriberLogin,
+    creatorLogin,
+    createEmergencyUser,
+    listAllUsers,
+    initializeSystemUsers
+  } = require("./routes/login-system");
+
+  // Universal login (works for any role)
+  app.post("/api/auth/login", universalLogin);
+
+  // Specific login routes
+  app.post("/api/auth/login-subscriber", subscriberLogin);
+  app.post("/api/auth/login-creator", creatorLogin);
+
+  // Emergency and admin routes
+  app.post("/api/admin/create-emergency-user", createEmergencyUser);
+  app.get("/api/admin/list-users", listAllUsers);
+
+  // Initialize system users on startup
+  setTimeout(async () => {
+    await initializeSystemUsers();
+  }, 2000); // Wait 2 seconds for DB connection
 
   // Creator registration routes
   app.post("/api/creators/register", registerCreator);
@@ -504,7 +524,7 @@ export function createServer() {
       // Em produção, enviaria email real aqui
       console.log(`📧 Solicitação de recuperação de senha para: ${email}`);
       console.log(
-        `✅ ${user ? "Usuário encontrado" : "Usuário não encontrado"} - Email de recuperação "enviado"`,
+        `✅ ${user ? "Usuário encontrado" : "Usu��rio não encontrado"} - Email de recuperação "enviado"`,
       );
 
       res.json({
