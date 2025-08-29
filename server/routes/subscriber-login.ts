@@ -13,6 +13,7 @@ const loginSchema = Joi.object({
  */
 export const createTestUsersIfNeeded = async () => {
   try {
+    const User = require("../models/User").default;
     const userCount = await User.countDocuments();
     console.log(`📊 Total de usuários no banco: ${userCount}`);
 
