@@ -31,6 +31,7 @@ import Series from "./pages/Series";
 import Category from "./pages/Category";
 import CreatorPortal from "./pages/CreatorPortal";
 import CreatorLogin from "./pages/CreatorLogin";
+import CreatorLoginSimple from "./pages/CreatorLoginSimple";
 import LoginSelect from "./pages/LoginSelect";
 import TestLogin from "./pages/TestLogin";
 import CreatorPayments from "./pages/CreatorPayments";
