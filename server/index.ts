@@ -1,7 +1,7 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import { connectDB } from "./config/database";
+// Database configuration removed - using only Supabase
 import { handleDemo } from "./routes/demo";
 import { login, register, validateToken } from "./routes/auth";
 import { checkUserExists } from "./routes/check-user";
@@ -86,22 +86,8 @@ export function createServer() {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
-  // Initialize database connection
-  const initializeDatabase = async () => {
-    try {
-      await connectDB();
-
-      // Initialize admin user and sample data after successful connection
-      await initializeAdmin();
-      await initializeSampleData();
-    } catch (error) {
-      console.error("❌ Erro na inicialização do banco de dados:", error);
-      console.log("🚨 Continuando sem banco de dados...");
-    }
-  };
-
-  // Connect to database
-  initializeDatabase();
+  // Database operations now handled by Supabase
+  console.log("✅ Using Supabase for all database operations");
 
   // Health check
   app.get("/api/ping", (_req, res) => {
