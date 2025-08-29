@@ -326,7 +326,6 @@ export function createServer() {
   // Manual initialization route
   app.post("/api/admin/init-users", async (req, res) => {
     try {
-      const { createTestUsersIfNeeded } = require("./routes/subscriber-login");
       const result = await createTestUsersIfNeeded();
 
       if (result) {
