@@ -1,6 +1,7 @@
 import React from 'react';
 import { Layout } from '@/components/layout/Layout';
-import { VideoUploadWithBlocks } from '@/components/VideoUploadWithBlocks';
+import VideoUploadForm from '@/components/VideoUploadForm';
+import CreatorPortal from '@/components/CreatorPortal';
 import { CreatorBlocksDashboard } from '@/components/CreatorBlocksDashboard';
 import { useAuth } from '@/contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
@@ -26,6 +27,7 @@ import { Link } from 'react-router-dom';
 
 export default function VideoUploadPage() {
   const { user, isLoading } = useAuth();
+  const [creatorData, setCreatorData] = useState(null);
 
   if (isLoading) {
     return (
@@ -43,12 +45,16 @@ export default function VideoUploadPage() {
 
   const handleUploadComplete = (video: any) => {
     console.log('Upload completed:', video);
-    // You could show a success toast here or redirect
+    // Refresh creator data after upload
+    setCreatorData(null);
   };
 
   const handleUploadError = (error: string) => {
     console.error('Upload error:', error);
-    // You could show an error toast here
+  };
+
+  const handleDataUpdate = () => {
+    setCreatorData(null); // This will trigger a refresh
   };
 
   return (
@@ -188,14 +194,18 @@ export default function VideoUploadPage() {
             </TabsList>
 
             <TabsContent value="upload" className="mt-6">
-              <VideoUploadWithBlocks
+              <VideoUploadForm
+                creatorData={creatorData}
                 onUploadComplete={handleUploadComplete}
                 onUploadError={handleUploadError}
               />
             </TabsContent>
 
             <TabsContent value="blocks" className="mt-6">
-              <CreatorBlocksDashboard />
+              <CreatorPortal
+                creatorData={creatorData}
+                onDataUpdate={handleDataUpdate}
+              />
             </TabsContent>
           </Tabs>
 
