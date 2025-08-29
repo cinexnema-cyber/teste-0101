@@ -105,7 +105,7 @@ export default function LoginSelect() {
                 </Button>
                 
                 <p className="text-xs text-center text-blue-700 dark:text-blue-300">
-                  Já tem sua assinatura? Faça login e comece a assistir!
+                  J�� tem sua assinatura? Faça login e comece a assistir!
                 </p>
               </div>
             </CardContent>
@@ -236,6 +236,15 @@ export default function LoginSelect() {
             >
               <Crown className="w-4 h-4" />
               Acesso Admin
+            </Button>
+
+            <Button
+              variant="ghost"
+              onClick={() => navigate('/login-diagnostic')}
+              className="flex items-center gap-2 px-6 text-xs text-muted-foreground"
+              size="sm"
+            >
+              🔧 Diagnóstico Completo
             </Button>
           </div>
         </div>
