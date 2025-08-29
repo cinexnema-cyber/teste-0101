@@ -130,7 +130,7 @@ export default function SubscriberDashboard() {
                         Premium Ativo
                       </p>
                       <p className="text-xs text-blue-700 dark:text-blue-300">
-                        Acesso total ao conteúdo
+                        Acesso total ao conte��do
                       </p>
                     </div>
                     <Button variant="outline" size="sm" className="w-full">
@@ -202,20 +202,39 @@ export default function SubscriberDashboard() {
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="grid grid-cols-2 gap-3">
-                  <Button 
+                  <Button
                     onClick={() => navigate('/catalog')}
                     className="flex items-center gap-2"
                   >
                     <Play className="w-4 h-4" />
                     Catálogo
                   </Button>
-                  <Button 
-                    onClick={() => navigate('/categories')}
+                  <Button
+                    onClick={() => navigate('/catalog?type=movie')}
                     variant="outline"
                     className="flex items-center gap-2"
                   >
                     <Film className="w-4 h-4" />
-                    Categorias
+                    Filmes
+                  </Button>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <Button
+                    onClick={() => navigate('/catalog?type=series')}
+                    variant="outline"
+                    className="flex items-center gap-2"
+                  >
+                    <Film className="w-4 h-4" />
+                    Séries
+                  </Button>
+                  <Button
+                    onClick={() => navigate('/catalog?type=documentary')}
+                    variant="outline"
+                    className="flex items-center gap-2"
+                  >
+                    <Film className="w-4 h-4" />
+                    Documentários
                   </Button>
                 </div>
                 
