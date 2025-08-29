@@ -247,21 +247,24 @@ export const getCreatorVideos = async (req: Request, res: Response) => {
 
     res.json({
       success: true,
-      videos: videos.map(video => ({
-        id: video._id,
-        title: video.title,
-        type: video.type,
-        season: video.season,
-        episode: video.episode,
-        duration: video.duration,
-        status: video.status,
-        approved: video.approved,
-        viewCount: video.viewCount,
-        revenue: video.revenue,
-        uploadedAt: video.uploadedAt,
-        approvedAt: video.approvedAt,
-        thumbnailUrl: video.thumbnailUrl || video.thumbnailUrl
-      })),
+      videos: videos.map(video => {
+        const fallbackThumb = video.thumbnailUrl || (video.muxPlaybackId ? `https://image.mux.com/${video.muxPlaybackId}/thumbnail.png` : null);
+        return ({
+          id: video._id,
+          title: video.title,
+          type: video.type,
+          season: video.season,
+          episode: video.episode,
+          duration: video.duration,
+          status: video.status,
+          approved: video.approved,
+          viewCount: video.viewCount,
+          revenue: video.revenue,
+          uploadedAt: video.uploadedAt,
+          approvedAt: video.approvedAt,
+          thumbnailUrl: fallbackThumb
+        });
+      }),
       pagination: {
         page: Number(page),
         limit: Number(limit),
@@ -313,7 +316,7 @@ export const getPendingVideos = async (req: AuthenticatedRequest, res: Response)
         creatorId: video.creatorId,
         creatorName: video.creatorName,
         uploadedAt: video.uploadedAt,
-        thumbnailUrl: video.thumbnailUrl,
+        thumbnailUrl: video.thumbnailUrl || (video.muxPlaybackId ? `https://image.mux.com/${video.muxPlaybackId}/thumbnail.png` : null),
         videoUrl: video.videoUrl,
         fileSize: video.fileSize
       })),
@@ -502,8 +505,8 @@ export const getVideoDetails = async (req: Request, res: Response) => {
         revenue: video.revenue,
         tags: video.tags,
         category: video.category,
-        thumbnailUrl: video.thumbnailUrl,
-        videoUrl: video.videoUrl,
+        thumbnailUrl: video.thumbnailUrl || (video.muxPlaybackId ? `https://image.mux.com/${video.muxPlaybackId}/thumbnail.png` : null),
+        videoUrl: video.videoUrl || (video.muxPlaybackId ? `https://stream.mux.com/${video.muxPlaybackId}.m3u8` : null),
         uploadedAt: video.uploadedAt,
         approvedAt: video.approvedAt,
         approvalStatus: video.approvalStatus
