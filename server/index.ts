@@ -884,35 +884,34 @@ export function createServer() {
         return res.status(403).json({ message: "Acesso negado" });
       }
 
-      const User = require("./models/User").default;
-      const users = await User.find({})
-        .select("-password")
-        .sort({ createdAt: -1 });
+      const { createClient } = require('@supabase/supabase-js');
+      const supabaseUrl = process.env.SUPABASE_URL!;
+      const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+      const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+      const { data: users, error } = await supabase
+        .from('users')
+        .select('id, email, name, role, is_premium, created_at')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        throw error;
+      }
 
       // Statistics
       const stats = {
-        total: users.length,
-        subscribers: users.filter((u) => u.role === "subscriber").length,
-        creators: users.filter((u) => u.role === "creator").length,
-        admins: users.filter((u) => u.role === "admin").length,
-        activeSubscribers: users.filter(
-          (u) =>
-            u.role === "subscriber" &&
-            (u.subscription?.status === "active" || u.assinante === true),
-        ).length,
-        pendingCreators: users.filter(
-          (u) => u.role === "creator" && u.profile?.status === "pending",
-        ).length,
-        approvedCreators: users.filter(
-          (u) => u.role === "creator" && u.profile?.status === "approved",
-        ).length,
+        total: users?.length || 0,
+        subscribers: users?.filter((u) => u.role === "subscriber").length || 0,
+        creators: users?.filter((u) => u.role === "creator").length || 0,
+        admins: users?.filter((u) => u.role === "admin").length || 0,
+        activeSubscribers: users?.filter((u) => u.role === "subscriber" && u.is_premium).length || 0,
       };
 
       console.log("📊 Usuários cadastrados:", stats);
 
       res.json({
         success: true,
-        users,
+        users: users || [],
         stats,
         timestamp: new Date().toISOString(),
       });
