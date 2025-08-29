@@ -22,10 +22,11 @@ import {
   Smartphone
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import type { AuthUser } from '@/contexts/AuthContext';
 
 export default function SubscriberLogin() {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { setUser } = useAuth();
   
   const [formData, setFormData] = useState({
     email: '',
@@ -74,16 +75,29 @@ export default function SubscriberLogin() {
         // Store token
         localStorage.setItem('xnema_token', data.token);
 
-        // Use AuthContext to perform full login flow with provided credentials
-        const loginOk = await login(formData.email.trim(), formData.password);
-        if (!loginOk) {
-          setError('Falha ao iniciar sessão. Tente novamente.');
-          return;
-        }
+        // Transform user data to AuthUser format
+        const transformedUser: AuthUser = {
+          id: data.user.id,
+          user_id: data.user.id,
+          email: data.user.email,
+          username: data.user.name || data.user.email.split('@')[0],
+          displayName: data.user.name || data.user.email.split('@')[0],
+          bio: data.user.bio || '',
+          subscriptionStatus: data.user.isPremium ? 'ativo' : 'inativo',
+          subscriptionStart: data.user.subscriptionStart ? new Date(data.user.subscriptionStart) : undefined,
+          subscriptionPlan: data.user.subscriptionPlan || 'monthly',
+          name: data.user.name || data.user.email.split('@')[0],
+          assinante: data.user.isPremium || false,
+          role: data.user.role || 'subscriber'
+        };
+
+        // Update auth context
+        setUser(transformedUser);
+        localStorage.setItem('xnema_user', JSON.stringify(transformedUser));
 
         setSuccess('Login realizado com sucesso!');
 
-        // Redirect based on user status from backend response (fallback to context on next render)
+        // Redirect based on user status
         setTimeout(() => {
           if (data.user?.isPremium) {
             navigate('/dashboard');
@@ -98,7 +112,7 @@ export default function SubscriberLogin() {
 
     } catch (error) {
       console.error('Erro no login:', error);
-      setError('Erro de conexão. Tente novamente.');
+      setError('Erro de conexão. Verifique sua internet e tente novamente.');
     } finally {
       setIsLoading(false);
     }
