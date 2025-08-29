@@ -55,10 +55,10 @@ export const createPayment = async (req: AuthenticatedRequest, res: Response) =>
       return res.status(404).json({ message: "Usuário não encontrado" });
     }
 
-    // Verificar se o usuário já tem assinatura ativa
-    if (user.subscriptionStatus === "ativo") {
-      return res.status(400).json({ 
-        message: "Usuário já possui assinatura ativa" 
+    // Verificar se o usuário já é premium
+    if (user.isPremium && user.subscriptionStatus === "active") {
+      return res.status(400).json({
+        message: "Usuário já possui assinatura ativa"
       });
     }
 
@@ -108,9 +108,11 @@ export const createPayment = async (req: AuthenticatedRequest, res: Response) =>
     await newSubscription.save();
 
     // Atualizar usuário para estado pendente
-    user.subscriptionStatus = "inativo";
-    user.subscriptionPlan = planId as "monthly" | "yearly";
-    user.assinante = false;
+    user.subscriptionStatus = "pending";
+    user.subscriptionPlan = planId === "monthly" ? "basic" : "premium";
+    user.role = "subscriber"; // Manter como subscriber até pagamento aprovado
+    user.isPremium = false; // NÃO é premium até pagamento confirmado
+    user.assinante = false; // Backward compatibility
     await user.save();
 
     // Construir URL de checkout com parâmetros personalizados
@@ -185,19 +187,22 @@ export const handleWebhook = async (req: Request, res: Response) => {
         subscription.ativo = true;
         subscription.data_pagamento = new Date();
         subscription.detalhes_pagamento.referencia_externa = paymentId;
-        
+
         await subscription.save();
 
-        // Atualizar usuário
+        // SEGURANÇA: Só atualizar para premium após confirmação do pagamento
         const user = subscription.id_usuario as any;
         if (user) {
-          user.subscriptionStatus = "ativo";
+          user.role = "premium"; // Mudar para premium APENAS após pagamento aprovado
+          user.isPremium = true; // Ativar status premium APENAS após pagamento aprovado
+          user.subscriptionStatus = "active";
           user.subscriptionStart = subscription.data_inicio_periodo;
           user.subscriptionEnd = subscription.data_fim_periodo;
-          user.assinante = true;
+          user.assinante = true; // Backward compatibility
           await user.save();
 
-          console.log(`Assinatura ativada para usuário ${user.email} - Plano: ${subscription.plano}`);
+          console.log(`✅ PREMIUM ATIVADO para usuário ${user.email} - Plano: ${subscription.plano}`);
+          console.log(`✅ Status: role=${user.role}, isPremium=${user.isPremium}`);
         }
 
       } else if (paymentStatus === "rejected") {
@@ -206,11 +211,29 @@ export const handleWebhook = async (req: Request, res: Response) => {
         subscription.ativo = false;
         await subscription.save();
 
-        console.log(`Pagamento rejeitado para transaction_id: ${externalReference}`);
+        // Atualizar usuário para falha
+        const user = subscription.id_usuario as any;
+        if (user) {
+          user.role = "subscriber"; // Voltar para subscriber
+          user.isPremium = false; // NÃO é premium
+          user.subscriptionStatus = "failed";
+          user.assinante = false;
+          await user.save();
+        }
+
+        console.log(`❌ PAGAMENTO REJEITADO para transaction_id: ${externalReference}`);
 
       } else if (paymentStatus === "pending") {
-        // Manter como pendente
-        console.log(`Pagamento pendente para transaction_id: ${externalReference}`);
+        // Manter como pendente - NÃO ativar premium
+        const user = subscription.id_usuario as any;
+        if (user) {
+          user.role = "subscriber"; // Manter como subscriber
+          user.isPremium = false; // NÃO é premium até aprovação
+          user.subscriptionStatus = "pending";
+          user.assinante = false;
+          await user.save();
+        }
+        console.log(`⏳ PAGAMENTO PENDENTE para transaction_id: ${externalReference}`);
       }
     }
 
