@@ -314,19 +314,64 @@ export function createServer() {
   // Universal login (works for any role)
   app.post("/api/auth/login", universalLogin);
 
-  // Real authentication system
+  // Supabase authentication system
   const {
-    registerSubscriber,
-    loginSubscriber,
-    activateSubscription,
-    getCurrentUser
-  } = require("./routes/auth-real");
+    registerSubscriberSupabase,
+    loginSubscriberSupabase,
+    activateSubscriptionSupabase,
+    getCurrentUserSupabase
+  } = require("./routes/auth-supabase");
 
   // Subscriber authentication routes
-  app.post("/api/auth/register-subscriber", registerSubscriber);
-  app.post("/api/auth/login-subscriber", loginSubscriber);
-  app.post("/api/auth/activate-subscription", activateSubscription);
-  app.get("/api/auth/me", authenticateToken, getCurrentUser);
+  app.post("/api/auth/register-subscriber", registerSubscriberSupabase);
+  app.post("/api/auth/login-subscriber", loginSubscriberSupabase);
+  app.post("/api/auth/activate-subscription", activateSubscriptionSupabase);
+  app.get("/api/auth/me", authenticateToken, getCurrentUserSupabase);
+
+  // Payment system with Stripe
+  const {
+    createCheckoutSession,
+    getSessionStatus,
+    handleStripeWebhook,
+    getPlans,
+    cancelSubscription
+  } = require("./routes/payment-stripe");
+
+  app.post("/api/payment/create-checkout-session", createCheckoutSession);
+  app.get("/api/payment/session-status/:sessionId", getSessionStatus);
+  app.post("/api/payment/stripe-webhook", express.raw({type: 'application/json'}), handleStripeWebhook);
+  app.get("/api/payment/plans", getPlans);
+  app.post("/api/payment/cancel-subscription", cancelSubscription);
+
+  // Content catalog system
+  const {
+    getCatalog,
+    getContentById,
+    recordWatch,
+    getWatchHistory,
+    getGenres,
+    getFeaturedContent
+  } = require("./routes/content-catalog");
+
+  app.get("/api/content/catalog", authenticateToken, getCatalog);
+  app.get("/api/content/featured", authenticateToken, getFeaturedContent);
+  app.get("/api/content/genres", getGenres);
+  app.get("/api/content/watch-history", authenticateToken, getWatchHistory);
+  app.get("/api/content/:id", authenticateToken, getContentById);
+  app.post("/api/content/:id/watch", authenticateToken, recordWatch);
+
+  // Recommendations system
+  const {
+    getPersonalizedRecommendations,
+    getSimilarContent,
+    getTrendingContent,
+    rateContent
+  } = require("./routes/recommendations");
+
+  app.get("/api/recommendations/for-you", authenticateToken, getPersonalizedRecommendations);
+  app.get("/api/recommendations/similar/:contentId", getSimilarContent);
+  app.get("/api/recommendations/trending", authenticateToken, getTrendingContent);
+  app.post("/api/recommendations/rate/:contentId", authenticateToken, rateContent);
 
   // Creator login (keep existing)
   app.post("/api/auth/login-creator", creatorLogin);
