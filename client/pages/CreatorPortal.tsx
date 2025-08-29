@@ -530,8 +530,17 @@ export default function CreatorPortal() {
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={mockRevenueData}>
                           <CartesianGrid strokeDasharray="3 3" />
-                          <XAxis dataKey="month" />
-                          <YAxis />
+                          <XAxis
+                            dataKey="month"
+                            fontSize={12}
+                            tickLine={false}
+                            axisLine={false}
+                          />
+                          <YAxis
+                            fontSize={12}
+                            tickLine={false}
+                            axisLine={false}
+                          />
                           <Tooltip />
                           <Bar dataKey="views" fill="#9B59B6" name="Visualizações" />
                         </BarChart>
