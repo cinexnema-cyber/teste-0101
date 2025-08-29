@@ -314,43 +314,22 @@ export function createServer() {
   // Universal login (works for any role)
   app.post("/api/auth/login", universalLogin);
 
-  // Specific login routes
-  const { subscriberLogin: newSubscriberLogin, checkSubscribers, createSubscriber, createTestUsersIfNeeded } = require("./routes/subscriber-login");
-  app.post("/api/auth/login-subscriber", newSubscriberLogin);
+  // Real authentication system
+  const {
+    registerSubscriber,
+    loginSubscriber,
+    activateSubscription,
+    getCurrentUser
+  } = require("./routes/auth-real");
+
+  // Subscriber authentication routes
+  app.post("/api/auth/register-subscriber", registerSubscriber);
+  app.post("/api/auth/login-subscriber", loginSubscriber);
+  app.post("/api/auth/activate-subscription", activateSubscription);
+  app.get("/api/auth/me", authenticateToken, getCurrentUser);
+
+  // Creator login (keep existing)
   app.post("/api/auth/login-creator", creatorLogin);
-
-  // Subscriber management routes
-  app.get("/api/subscribers/check", checkSubscribers);
-  app.post("/api/subscribers/create", createSubscriber);
-
-  // Manual initialization route
-  app.post("/api/admin/init-users", async (req, res) => {
-    try {
-      const result = await createTestUsersIfNeeded();
-
-      if (result) {
-        const User = require("./models/User").default;
-        const totalUsers = await User.countDocuments();
-
-        res.json({
-          success: true,
-          message: "Usuários inicializados com sucesso",
-          totalUsers
-        });
-      } else {
-        res.status(500).json({
-          success: false,
-          message: "Erro ao inicializar usuários"
-        });
-      }
-    } catch (error) {
-      console.error("❌ Erro na inicialização:", error);
-      res.status(500).json({
-        success: false,
-        message: "Erro interno do servidor"
-      });
-    }
-  });
 
   // Emergency and admin routes
   app.post("/api/admin/create-emergency-user", createEmergencyUser);
