@@ -221,4 +221,4 @@ VideoSchema.set('toObject', { virtuals: true });
 // Export the model
 const Video = mongoose.model<IVideo>('Video', VideoSchema);
 export default Video;
-export { IVideo };
+export type { IVideo };
