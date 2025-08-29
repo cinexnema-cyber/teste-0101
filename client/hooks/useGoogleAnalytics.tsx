@@ -66,7 +66,7 @@ export const useGoogleAnalytics = () => {
         page_title: page,
         page_location: window.location.href,
         custom_map: {
-          dimension1: user?.id || 'anonymous',
+          dimension1: user?.id ? String(user.id) : 'anonymous',
           dimension2: user?.role || 'visitor'
         }
       });
