@@ -24,6 +24,12 @@ import {
   handleMercadoPagoWebhook,
 } from "./routes/subscription";
 import {
+  createPayment,
+  handleWebhook,
+  getPaymentStatus,
+  getUserPayments
+} from "./routes/mercado-pago";
+import {
   uploadContent,
   getCreatorContent,
   updateContentStatus,
