@@ -6,15 +6,20 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { 
-  User, 
-  Lock, 
-  Mail, 
-  Crown, 
-  AlertCircle, 
+import {
+  User,
+  Lock,
+  Mail,
+  Crown,
+  AlertCircle,
   Loader2,
   ArrowRight,
-  Shield
+  Shield,
+  Play,
+  Star,
+  Eye,
+  Download,
+  Smartphone
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -103,28 +108,31 @@ export default function SubscriberLogin() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
       <div className="w-full max-w-md space-y-6">
         {/* Header */}
-        <div className="text-center space-y-2">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <div className="w-12 h-12 bg-gradient-to-r from-xnema-orange to-xnema-purple rounded-full flex items-center justify-center">
-              <User className="w-6 h-6 text-white" />
+        <div className="text-center space-y-4">
+          <div className="flex items-center justify-center gap-3 mb-6">
+            <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg">
+              <Play className="w-8 h-8 text-white" />
             </div>
-            <h1 className="text-3xl font-bold">XNEMA</h1>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">XNEMA</h1>
           </div>
-          
-          <Badge className="bg-blue-500 text-white">
-            <Crown className="w-3 h-3 mr-1" />
-            Área do Assinante
-          </Badge>
+
+          <div className="space-y-2">
+            <Badge className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-1.5 text-sm">
+              <Crown className="w-4 h-4 mr-2" />
+              Área Premium do Assinante
+            </Badge>
+            <p className="text-sm text-muted-foreground">Streaming de alta qualidade sem limites</p>
+          </div>
         </div>
 
         {/* Login Form */}
-        <Card>
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold text-center">
-              Login Assinante
+        <Card className="border-blue-200 dark:border-blue-800 shadow-xl">
+          <CardHeader className="space-y-3 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 rounded-t-lg">
+            <CardTitle className="text-2xl font-bold text-center text-blue-900 dark:text-blue-100">
+              Entrar na Área Premium
             </CardTitle>
-            <CardDescription className="text-center">
-              Acesse sua conta e desfrute do melhor conteúdo
+            <CardDescription className="text-center text-blue-700 dark:text-blue-200">
+              Acesse sua conta e desfrute do melhor conteúdo em streaming
             </CardDescription>
           </CardHeader>
           
@@ -204,67 +212,83 @@ export default function SubscriberLogin() {
             {/* Links */}
             <div className="mt-6 space-y-4">
               <div className="text-center">
-                <Link 
-                  to="/forgot-password" 
-                  className="text-sm text-blue-600 hover:text-blue-800 underline"
-                >
-                  Esqueceu sua senha?
-                </Link>
-              </div>
+            <Link
+              to="/forgot-password"
+              className="text-sm text-blue-600 hover:text-blue-800 underline font-medium"
+            >
+              Esqueceu sua senha?
+            </Link>
+          </div>
 
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
                   <span className="w-full border-t" />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-background px-2 text-muted-foreground">
-                    Outros acessos
+                  <span className="bg-background px-3 text-muted-foreground font-medium">
+                    Outras opções de acesso
                   </span>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   onClick={() => navigate('/login/creator')}
-                  className="text-sm"
+                  className="text-sm border-xnema-orange text-xnema-orange hover:bg-xnema-orange hover:text-black"
                 >
-                  Sou Criador
+                  Área do Criador
                 </Button>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   onClick={() => navigate('/register')}
-                  className="text-sm"
+                  className="text-sm border-blue-500 text-blue-600 hover:bg-blue-500 hover:text-white"
                 >
-                  Cadastrar-se
+                  Criar Conta
                 </Button>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Benefits Preview */}
-        <Card className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950 dark:to-purple-950 border-blue-200 dark:border-blue-800">
+        {/* Premium Benefits */}
+        <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 border-blue-200 dark:border-blue-800 shadow-lg">
           <CardContent className="p-6">
-            <div className="text-center space-y-3">
-              <Crown className="w-8 h-8 text-blue-600 mx-auto" />
-              <h3 className="font-semibold text-blue-900 dark:text-blue-100">
-                Benefícios Premium
+            <div className="text-center space-y-4">
+              <div className="flex items-center justify-center gap-2">
+                <Star className="w-6 h-6 text-blue-500" />
+                <Crown className="w-8 h-8 text-blue-600" />
+                <Star className="w-6 h-6 text-blue-500" />
+              </div>
+              <h3 className="text-lg font-bold text-blue-900 dark:text-blue-100">
+                Experiência Premium Completa
               </h3>
-              <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1">
-                <li>• Acesso a todo catálogo de filmes e séries</li>
-                <li>• Streaming em qualidade 4K</li>
-                <li>• Sem anúncios ou interrupções</li>
-                <li>• Download para assistir offline</li>
-              </ul>
-              <Button 
-                variant="outline" 
+              <div className="grid grid-cols-2 gap-3 text-sm">
+                <div className="flex items-center gap-2 text-blue-800 dark:text-blue-200">
+                  <Play className="w-4 h-4 text-blue-500" />
+                  <span>Streaming 4K Ultra HD</span>
+                </div>
+                <div className="flex items-center gap-2 text-blue-800 dark:text-blue-200">
+                  <Eye className="w-4 h-4 text-blue-500" />
+                  <span>Catálogo completo</span>
+                </div>
+                <div className="flex items-center gap-2 text-blue-800 dark:text-blue-200">
+                  <Download className="w-4 h-4 text-blue-500" />
+                  <span>Download offline</span>
+                </div>
+                <div className="flex items-center gap-2 text-blue-800 dark:text-blue-200">
+                  <Smartphone className="w-4 h-4 text-blue-500" />
+                  <span>Múltiplos dispositivos</span>
+                </div>
+              </div>
+              <Button
+                variant="outline"
                 size="sm"
                 onClick={() => navigate('/pricing')}
-                className="border-blue-500 text-blue-600 hover:bg-blue-500 hover:text-white"
+                className="border-blue-500 text-blue-600 hover:bg-blue-500 hover:text-white font-medium"
               >
-                Ver Planos
-                <ArrowRight className="w-3 h-3 ml-1" />
+                Ver Planos Premium
+                <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </div>
           </CardContent>
