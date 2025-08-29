@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { SubscriberOnlyVideos } from "@/components/SubscriberOnlyVideos";
 import { Link } from "react-router-dom";
 import { Play, Crown, Star, Users, Zap, Shield, Lock, Eye } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContextReal";
 import { XnemaLogo } from "@/components/XnemaLogo";
 
 export default function Index() {
