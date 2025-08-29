@@ -306,6 +306,9 @@ const App = () => (
                 }
               />
               <Route path="/payment-success" element={<PaymentSuccess />} />
+              <Route path="/payment-success-new" element={<PaymentSuccessNew />} />
+              <Route path="/payment-error" element={<PaymentError />} />
+              <Route path="/payment-pending" element={<PaymentError />} />
               <Route path="/payment-cancelled" element={<PaymentCancelled />} />
               <Route
                 path="/platform-analytics"
