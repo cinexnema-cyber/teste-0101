@@ -17,7 +17,7 @@ interface AuthUser {
   bio?: string;
   subscriptionStatus: "ativo" | "inativo";
   subscriptionStart?: Date;
-  subscriptionPlan?: "monthly" | "yearly";
+  subscriptionPlan?: "monthly" | "yearly" | "lifetime";
   role: "user" | "admin" | "creator" | "subscriber";
   assinante: boolean;
   name: string;
