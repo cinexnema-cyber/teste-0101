@@ -394,6 +394,12 @@ export function createServer() {
   app.get("/api/subscription/status", authenticateToken, getSubscriptionStatus);
   app.post("/api/webhook/mercadopago", handleMercadoPagoWebhook);
 
+  // New Mercado Pago payment routes
+  app.post("/api/payments/create", authenticateToken, createPayment);
+  app.post("/api/payments/webhook", handleWebhook);
+  app.get("/api/payments/status/:transactionId", getPaymentStatus);
+  app.get("/api/payments/user/:userId", authenticateToken, getUserPayments);
+
   // Pre-payment user registration (with limited access)
   app.post("/api/subscription/pre-register", async (req, res) => {
     try {
