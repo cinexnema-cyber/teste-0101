@@ -112,6 +112,34 @@ export function createServer() {
   // Demo route
   app.get("/api/demo", handleDemo);
 
+  // Criar usuários de teste route
+  app.post("/api/admin/create-test-users", async (_req, res) => {
+    try {
+      const { createTestUsers } = require("./scripts/createTestUsers");
+      const result = await createTestUsers();
+
+      if (result.success) {
+        res.json({
+          success: true,
+          message: "Usuários de teste criados com sucesso",
+          users: result.users
+        });
+      } else {
+        res.status(500).json({
+          success: false,
+          message: "Erro ao criar usuários de teste",
+          error: result.error
+        });
+      }
+    } catch (error) {
+      console.error("❌ Erro ao criar usuários de teste:", error);
+      res.status(500).json({
+        success: false,
+        error: error.message,
+      });
+    }
+  });
+
   // Create test user route
   app.post("/api/admin/create-test-user", async (_req, res) => {
     try {
