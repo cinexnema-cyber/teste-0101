@@ -1,22 +1,26 @@
 import React from 'react';
 import { Layout } from '@/components/layout/Layout';
-import { VideoUpload } from '@/components/VideoUpload';
+import { VideoUploadWithBlocks } from '@/components/VideoUploadWithBlocks';
+import { CreatorBlocksDashboard } from '@/components/CreatorBlocksDashboard';
 import { useAuth } from '@/contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { 
-  Upload, 
-  Crown, 
-  CheckCircle, 
-  Clock, 
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Upload,
+  Crown,
+  CheckCircle,
+  Clock,
   DollarSign,
   Users,
   FileVideo,
   Shield,
-  Zap
+  Zap,
+  Calculator,
+  HardDrive
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
