@@ -60,7 +60,6 @@ import SeriesDetail from "./pages/SeriesDetail";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import VisitorDashboard from "./pages/VisitorDashboard";
-import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentCancelled from "./pages/PaymentCancelled";
 import PaymentOptions from "./pages/PaymentOptions";
 import PaymentOptionsEnhanced from "./pages/PaymentOptionsEnhanced";
