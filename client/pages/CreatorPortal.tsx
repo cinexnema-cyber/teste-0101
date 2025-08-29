@@ -399,9 +399,11 @@ export default function CreatorPortal() {
                   <h2 className="text-2xl font-bold text-foreground">Gerenciar Conteúdo</h2>
                   <p className="text-muted-foreground">Upload, edite e monitore seus vídeos</p>
                 </div>
-                <Button className="bg-xnema-orange hover:bg-xnema-orange/90 text-black">
-                  <Upload className="w-4 h-4 mr-2" />
-                  Novo Upload
+                <Button asChild className="bg-xnema-orange hover:bg-xnema-orange/90 text-black">
+                  <Link to="/video-upload">
+                    <Upload className="w-4 h-4 mr-2" />
+                    Novo Upload
+                  </Link>
                 </Button>
               </div>
 
