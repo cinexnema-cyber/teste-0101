@@ -220,6 +220,36 @@ const UserSchema = new Schema<IUser>(
         type: String,
         required: false,
       },
+
+      // Analytics e earnings
+      totalVideos: {
+        type: Number,
+        default: 0,
+      },
+      approvedVideos: {
+        type: Number,
+        default: 0,
+      },
+      rejectedVideos: {
+        type: Number,
+        default: 0,
+      },
+      totalViews: {
+        type: Number,
+        default: 0,
+      },
+      monthlyEarnings: {
+        type: Number,
+        default: 0,
+      },
+      affiliateEarnings: {
+        type: Number,
+        default: 0,
+      },
+      referralCount: {
+        type: Number,
+        default: 0,
+      },
     },
   },
   {
