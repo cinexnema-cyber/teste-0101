@@ -121,7 +121,7 @@ export const useGoogleAnalytics = () => {
           'Authorization': `Bearer ${localStorage.getItem('xnema_token')}`
         },
         body: JSON.stringify({
-          creatorId: user?.id,
+          creatorId: user?.id ? String(user.id) : '',
           timeRange: '30d'
         })
       });
