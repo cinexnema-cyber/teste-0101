@@ -131,7 +131,8 @@ export const useGoogleAnalytics = () => {
         realData = await response.json();
       } else {
         // Fallback to simulated real data based on user
-        const baseViews = user?.id ? parseInt(user.id.slice(-4), 16) : 1000;
+        const userId = user?.id ? String(user.id) : '';
+        const baseViews = userId ? parseInt(userId.slice(-4), 16) : 1000;
         realData = {
           views: baseViews + Math.floor(Math.random() * 5000),
           subscribers: Math.floor((baseViews + Math.random() * 1000) / 10),
