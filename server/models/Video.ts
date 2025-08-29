@@ -1,186 +1,224 @@
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, { Document, Schema } from 'mongoose';
 
-export interface IVideo extends Document {
-  id: string;
-  titulo: string;
-  descricao?: string;
-  url: string;
+// Interface for Video document
+interface IVideo extends Document {
+  title: string;
+  description: string;
+  muxAssetId: string;
+  muxPlaybackId: string;
+  creatorId: string;
+  creatorName: string;
   thumbnail?: string;
-  id_criador: mongoose.Types.ObjectId;
-  data_upload: Date;
-  status: "ativo" | "inativo" | "processando" | "rejeitado";
-  categoria: string;
-  tags: string[];
-  duracao?: number; // em segundos
-  visualizacoes: number;
-  curtidas: number;
-  tipo: "video" | "serie" | "filme";
-  temporada?: number;
-  episodio?: number;
-  preco_individual?: number; // preço para compra individual (em centavos)
-  premium: boolean; // se requer assinatura
-  data_publicacao?: Date;
-  metadados: {
-    resolucao?: string;
-    formato?: string;
-    tamanho_arquivo?: number;
-    fps?: number;
+  duration?: number;
+  fileSize: number;
+  originalFilename: string;
+  status: 'uploading' | 'processing' | 'pending_approval' | 'approved' | 'rejected' | 'failed';
+  approvalStatus: {
+    approvedBy?: string;
+    approvedAt?: Date;
+    rejectedBy?: string;
+    rejectedAt?: Date;
+    rejectionReason?: string;
   };
+  viewCount: number;
+  revenue: number;
+  tags: string[];
+  category: string;
+  isPrivate: boolean;
+  uploadedAt: Date;
+  processedAt?: Date;
+  approvedAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-const VideoSchema = new Schema<IVideo>(
-  {
-    titulo: {
-      type: String,
-      required: true,
-      trim: true,
-      maxlength: 200,
-    },
-    descricao: {
-      type: String,
-      maxlength: 2000,
-    },
-    url: {
-      type: String,
-      required: true,
-    },
-    thumbnail: {
-      type: String,
-    },
-    id_criador: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
-    data_upload: {
-      type: Date,
-      default: Date.now,
-    },
-    status: {
-      type: String,
-      enum: ["ativo", "inativo", "processando", "rejeitado"],
-      default: "processando",
-    },
-    categoria: {
-      type: String,
-      required: true,
-      enum: [
-        "acao",
-        "aventura",
-        "comedia",
-        "drama",
-        "ficcao_cientifica",
-        "horror",
-        "romance",
-        "thriller",
-        "documentario",
-        "animacao",
-        "musical",
-        "guerra",
-        "crime",
-        "biografia",
-        "historia",
-        "familia",
-        "misterio",
-        "fantasia",
-        "western",
-        "esporte",
-      ],
-    },
-    tags: [
-      {
-        type: String,
-        trim: true,
-      },
-    ],
-    duracao: {
-      type: Number,
-      min: 0,
-    },
-    visualizacoes: {
-      type: Number,
-      default: 0,
-      min: 0,
-    },
-    curtidas: {
-      type: Number,
-      default: 0,
-      min: 0,
-    },
-    tipo: {
-      type: String,
-      enum: ["video", "serie", "filme"],
-      default: "video",
-    },
-    temporada: {
-      type: Number,
-      min: 1,
-    },
-    episodio: {
-      type: Number,
-      min: 1,
-    },
-    preco_individual: {
-      type: Number,
-      min: 0, // preço em centavos
-    },
-    premium: {
-      type: Boolean,
-      default: true, // por padrão, conteúdo requer assinatura
-    },
-    data_publicacao: {
-      type: Date,
-    },
-    metadados: {
-      resolucao: String,
-      formato: String,
-      tamanho_arquivo: Number,
-      fps: Number,
-    },
+// Video schema
+const VideoSchema = new Schema<IVideo>({
+  title: {
+    type: String,
+    required: true,
+    trim: true,
+    maxlength: 200
   },
-  {
-    timestamps: true,
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true },
+  description: {
+    type: String,
+    required: true,
+    trim: true,
+    maxlength: 2000
   },
-);
+  muxAssetId: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  muxPlaybackId: {
+    type: String,
+    required: true
+  },
+  creatorId: {
+    type: String,
+    required: true,
+    ref: 'User'
+  },
+  creatorName: {
+    type: String,
+    required: true
+  },
+  thumbnail: {
+    type: String,
+    default: null
+  },
+  duration: {
+    type: Number, // Duration in seconds
+    default: 0
+  },
+  fileSize: {
+    type: Number, // File size in bytes
+    required: true
+  },
+  originalFilename: {
+    type: String,
+    required: true
+  },
+  status: {
+    type: String,
+    enum: ['uploading', 'processing', 'pending_approval', 'approved', 'rejected', 'failed'],
+    default: 'uploading'
+  },
+  approvalStatus: {
+    approvedBy: {
+      type: String,
+      ref: 'User'
+    },
+    approvedAt: {
+      type: Date
+    },
+    rejectedBy: {
+      type: String,
+      ref: 'User'
+    },
+    rejectedAt: {
+      type: Date
+    },
+    rejectionReason: {
+      type: String,
+      maxlength: 500
+    }
+  },
+  viewCount: {
+    type: Number,
+    default: 0
+  },
+  revenue: {
+    type: Number,
+    default: 0
+  },
+  tags: [{
+    type: String,
+    trim: true
+  }],
+  category: {
+    type: String,
+    default: 'geral'
+  },
+  isPrivate: {
+    type: Boolean,
+    default: true // All videos start as private
+  },
+  uploadedAt: {
+    type: Date,
+    default: Date.now
+  },
+  processedAt: {
+    type: Date
+  },
+  approvedAt: {
+    type: Date
+  }
+}, {
+  timestamps: true
+});
 
-// Índices para otimização
-VideoSchema.index({ id_criador: 1 });
+// Indexes for better query performance
+VideoSchema.index({ creatorId: 1 });
 VideoSchema.index({ status: 1 });
-VideoSchema.index({ categoria: 1 });
-VideoSchema.index({ premium: 1 });
-VideoSchema.index({ data_publicacao: -1 });
-VideoSchema.index({ visualizacoes: -1 });
-VideoSchema.index({ curtidas: -1 });
+VideoSchema.index({ approvedAt: -1 });
+VideoSchema.index({ viewCount: -1 });
+VideoSchema.index({ createdAt: -1 });
 
-// Índice composto para séries
-VideoSchema.index({ tipo: 1, temporada: 1, episodio: 1 });
-
-// Virtual para ID string
-VideoSchema.virtual("id").get(function () {
-  return this._id.toHexString();
-});
-
-// Virtual para criador populado
-VideoSchema.virtual("criador", {
-  ref: "User",
-  localField: "id_criador",
-  foreignField: "_id",
-  justOne: true,
-});
-
-// Método para incrementar visualizações
-VideoSchema.methods.incrementarVisualizacoes = function () {
-  this.visualizacoes += 1;
+// Instance methods
+VideoSchema.methods.approve = function(adminId: string) {
+  this.status = 'approved';
+  this.approvalStatus.approvedBy = adminId;
+  this.approvalStatus.approvedAt = new Date();
+  this.approvedAt = new Date();
   return this.save();
 };
 
-// Método para incrementar curtidas
-VideoSchema.methods.incrementarCurtidas = function () {
-  this.curtidas += 1;
+VideoSchema.methods.reject = function(adminId: string, reason: string) {
+  this.status = 'rejected';
+  this.approvalStatus.rejectedBy = adminId;
+  this.approvalStatus.rejectedAt = new Date();
+  this.approvalStatus.rejectionReason = reason;
   return this.save();
 };
 
-export const Video = mongoose.model<IVideo>("Video", VideoSchema);
+VideoSchema.methods.incrementViews = function() {
+  this.viewCount += 1;
+  return this.save();
+};
+
+VideoSchema.methods.addRevenue = function(amount: number) {
+  this.revenue += amount;
+  return this.save();
+};
+
+// Static methods
+VideoSchema.statics.getByCreator = function(creatorId: string) {
+  return this.find({ creatorId }).sort({ createdAt: -1 });
+};
+
+VideoSchema.statics.getPendingApproval = function() {
+  return this.find({ status: 'pending_approval' }).sort({ uploadedAt: 1 });
+};
+
+VideoSchema.statics.getApproved = function() {
+  return this.find({ status: 'approved' }).sort({ approvedAt: -1 });
+};
+
+VideoSchema.statics.getCreatorStorageUsed = function(creatorId: string) {
+  return this.aggregate([
+    { $match: { creatorId: creatorId } },
+    { $group: { _id: null, totalSize: { $sum: '$fileSize' } } }
+  ]);
+};
+
+// Virtual for getting secure playback URL
+VideoSchema.virtual('securePlaybackUrl').get(function() {
+  // This will be implemented with Mux signed URLs for subscribers only
+  if (this.status === 'approved' && this.muxPlaybackId) {
+    return `https://stream.mux.com/${this.muxPlaybackId}.m3u8`;
+  }
+  return null;
+});
+
+// Virtual for thumbnail URL
+VideoSchema.virtual('thumbnailUrl').get(function() {
+  if (this.thumbnail) {
+    return this.thumbnail;
+  }
+  // Default Mux thumbnail
+  if (this.muxPlaybackId) {
+    return `https://image.mux.com/${this.muxPlaybackId}/thumbnail.png`;
+  }
+  return null;
+});
+
+// Ensure virtual fields are serialised
+VideoSchema.set('toJSON', { virtuals: true });
+VideoSchema.set('toObject', { virtuals: true });
+
+// Export the model
+const Video = mongoose.model<IVideo>('Video', VideoSchema);
 export default Video;
+export { IVideo };
