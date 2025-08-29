@@ -101,7 +101,7 @@ const UserSchema = new Schema<IUser>(
     },
     subscriptionPlan: {
       type: String,
-      enum: ["monthly", "yearly"],
+      enum: ["basic", "premium", "vip"], // R$19,90 / R$59,90 / R$199,00
       required: false,
     },
     subscriptionStart: {
@@ -111,6 +111,21 @@ const UserSchema = new Schema<IUser>(
     subscriptionEnd: {
       type: Date,
       required: false,
+    },
+    freeMonthsRemaining: {
+      type: Number,
+      default: 1, // 1 mês grátis para novos usuários
+      min: 0,
+    },
+    subscriptionType: {
+      type: String,
+      enum: ["recurrent", "prepaid"],
+      default: "recurrent",
+    },
+    prepaidMonths: {
+      type: Number,
+      default: 0,
+      min: 0,
     },
     comissaoPercentual: {
       type: Number,
