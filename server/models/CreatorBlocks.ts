@@ -4,9 +4,12 @@ import mongoose, { Document, Schema } from 'mongoose';
 interface ICreatorBlocks extends Document {
   creatorId: string;
   creatorName: string;
-  
+
   // Block management
-  totalBlocks: number; // Total blocks purchased
+  blocksFree: number; // Free blocks (default 1)
+  blocksPurchased: number; // Purchased blocks
+  freeBlockExpiry: Date; // Free blocks expiry (3 months from creation)
+  totalBlocks: number; // Total blocks (free + purchased)
   usedBlocks: number; // Blocks currently used by uploaded videos
   availableBlocks: number; // Remaining blocks available
   
@@ -68,10 +71,24 @@ const CreatorBlocksSchema = new Schema<ICreatorBlocks>({
     type: String,
     required: true
   },
-  
-  totalBlocks: {
+
+  blocksFree: {
+    type: Number,
+    default: 1, // 1 bloco gratuito
+    min: 0
+  },
+  blocksPurchased: {
     type: Number,
     default: 0,
+    min: 0
+  },
+  freeBlockExpiry: {
+    type: Date,
+    default: () => new Date(Date.now() + 90*24*60*60*1000) // 3 meses
+  },
+  totalBlocks: {
+    type: Number,
+    default: 1, // Starts with 1 free block
     min: 0
   },
   usedBlocks: {
@@ -209,18 +226,23 @@ CreatorBlocksSchema.methods.canUploadVideo = function(sizeGB: number): { canUplo
       reason: this.restrictions?.reason || 'Upload restrito para este criador'
     };
   }
-  
+
+  // Calculate total available blocks (free + purchased)
+  const now = new Date();
+  const freeActive = this.freeBlockExpiry > now ? this.blocksFree : 0;
+  const totalAvailable = freeActive + this.blocksPurchased - this.usedBlocks;
+
   // Calculate blocks needed for this video
   const blocksNeeded = Math.ceil(sizeGB / 7.3);
-  
-  if (blocksNeeded > this.availableBlocks) {
+
+  if (blocksNeeded > totalAvailable) {
     return {
       canUpload: false,
-      reason: `Blocos insuficientes. Necessário: ${blocksNeeded}, Disponível: ${this.availableBlocks}`,
+      reason: `Blocos insuficientes. Necessário: ${blocksNeeded}, Disponível: ${totalAvailable}`,
       blocksNeeded
     };
   }
-  
+
   return {
     canUpload: true,
     blocksNeeded
@@ -242,20 +264,21 @@ CreatorBlocksSchema.methods.purchaseBlocks = function(blocks: number, transactio
 
 CreatorBlocksSchema.methods.confirmPurchase = function(transactionId: string, mercadoPagoId?: string) {
   const purchase = this.purchases.find((p: any) => p.transactionId === transactionId);
-  
+
   if (!purchase) {
     throw new Error('Purchase not found');
   }
-  
+
   purchase.status = 'approved';
   purchase.mercadoPagoId = mercadoPagoId;
-  
-  // Add blocks to account
-  this.totalBlocks += purchase.blocks;
-  this.availableBlocks += purchase.blocks;
+
+  // Add purchased blocks
+  this.blocksPurchased += purchase.blocks;
+  this.totalBlocks = this.getActiveFreeBlocks() + this.blocksPurchased;
+  this.availableBlocks = this.totalBlocks - this.usedBlocks;
   this.totalStorageGB += purchase.blocks * 7.3;
-  this.availableStorageGB += purchase.blocks * 7.3;
-  
+  this.availableStorageGB = this.totalStorageGB - this.usedStorageGB;
+
   return this.save();
 };
 
@@ -385,12 +408,15 @@ CreatorBlocksSchema.statics.createForCreator = function(creatorId: string, creat
   return this.create({
     creatorId,
     creatorName,
-    totalBlocks: 0,
+    blocksFree: 1, // 1 bloco gratuito
+    blocksPurchased: 0,
+    freeBlockExpiry: new Date(Date.now() + 90*24*60*60*1000), // 3 meses
+    totalBlocks: 1, // Inicia com 1 bloco gratuito
     usedBlocks: 0,
-    availableBlocks: 0,
-    totalStorageGB: 0,
+    availableBlocks: 1, // 1 bloco disponível inicialmente
+    totalStorageGB: 7.3, // 1 bloco = 7.3GB
     usedStorageGB: 0,
-    availableStorageGB: 0,
+    availableStorageGB: 7.3,
     purchases: [],
     videos: [],
     stats: {
