@@ -337,19 +337,30 @@ export default function CreatorPortal() {
                     <ResponsiveContainer width="100%" height="100%">
                       <LineChart data={revenueData}>
                         <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                        <XAxis dataKey="month" className="text-xs" />
-                        <YAxis className="text-xs" />
-                        <Tooltip 
-                          contentStyle={{ 
-                            backgroundColor: 'hsl(var(--background))', 
+                        <XAxis
+                          dataKey="month"
+                          className="text-xs"
+                          fontSize={12}
+                          tickLine={false}
+                          axisLine={false}
+                        />
+                        <YAxis
+                          className="text-xs"
+                          fontSize={12}
+                          tickLine={false}
+                          axisLine={false}
+                        />
+                        <Tooltip
+                          contentStyle={{
+                            backgroundColor: 'hsl(var(--background))',
                             border: '1px solid hsl(var(--border))',
                             borderRadius: '8px'
                           }}
                         />
-                        <Line 
-                          type="monotone" 
-                          dataKey="revenue" 
-                          stroke="#FF8C42" 
+                        <Line
+                          type="monotone"
+                          dataKey="revenue"
+                          stroke="#FF8C42"
                           strokeWidth={3}
                           dot={{ fill: '#FF8C42', strokeWidth: 2, r: 6 }}
                         />
