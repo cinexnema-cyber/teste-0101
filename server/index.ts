@@ -553,6 +553,15 @@ export function createServer() {
   app.delete("/api/admin/videos/:videoId", authenticateToken, deleteVideoAdmin);
   app.get("/api/admin/stats", authenticateToken, getAdminStats);
 
+  // Creator limits routes
+  app.get("/api/creators/:creatorId/limits", authenticateToken, getCreatorLimits);
+  app.post("/api/creators/:creatorId/check-upload", authenticateToken, checkUploadCapacity);
+  app.get("/api/admin/creators/limits", authenticateToken, getAllCreatorsLimits);
+  app.put("/api/admin/creators/:creatorId/limits", authenticateToken, updateCreatorLimits);
+  app.post("/api/admin/creators/:creatorId/restrict", authenticateToken, restrictCreatorUpload);
+  app.post("/api/admin/creators/:creatorId/allow", authenticateToken, allowCreatorUpload);
+  app.post("/api/admin/creators/update-grace-periods", authenticateToken, updateAllGracePeriods);
+
   // Protected routes (examples)
   app.get("/api/admin/users", authenticateToken, async (req, res) => {
     try {
