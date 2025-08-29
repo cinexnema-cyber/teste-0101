@@ -174,6 +174,12 @@ export function createServer() {
   app.post("/api/auth/check-user", checkUserExists);
   app.get("/api/auth/validate", authenticateToken, validateToken);
 
+  // Separate login routes for subscribers and creators
+  const { loginSubscriber, loginCreator, loginAdmin } = require("./routes/auth-separate");
+  app.post("/api/auth/login-subscriber", loginSubscriber);
+  app.post("/api/auth/login-creator", loginCreator);
+  app.post("/api/auth/login-admin", loginAdmin);
+
   // Creator registration routes
   app.post("/api/creators/register", registerCreator);
   app.get("/api/creators/pending", authenticateToken, getPendingCreators);
@@ -377,7 +383,7 @@ export function createServer() {
       res.json({
         success: true,
         message:
-          "Se o email existir, você receberá instruções para redefinir sua senha.",
+          "Se o email existir, voc�� receberá instruções para redefinir sua senha.",
       });
     } catch (error) {
       console.error("❌ Erro na recuperação de senha:", error);
