@@ -323,6 +323,36 @@ export function createServer() {
   app.get("/api/subscribers/check", checkSubscribers);
   app.post("/api/subscribers/create", createSubscriber);
 
+  // Manual initialization route
+  app.post("/api/admin/init-users", async (req, res) => {
+    try {
+      const { createTestUsersIfNeeded } = require("./routes/subscriber-login");
+      const result = await createTestUsersIfNeeded();
+
+      if (result) {
+        const User = require("./models/User").default;
+        const totalUsers = await User.countDocuments();
+
+        res.json({
+          success: true,
+          message: "Usuários inicializados com sucesso",
+          totalUsers
+        });
+      } else {
+        res.status(500).json({
+          success: false,
+          message: "Erro ao inicializar usuários"
+        });
+      }
+    } catch (error) {
+      console.error("❌ Erro na inicialização:", error);
+      res.status(500).json({
+        success: false,
+        message: "Erro interno do servidor"
+      });
+    }
+  });
+
   // Emergency and admin routes
   app.post("/api/admin/create-emergency-user", createEmergencyUser);
   app.get("/api/admin/list-users", listAllUsers);
