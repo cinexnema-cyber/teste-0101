@@ -20,7 +20,7 @@ const registerSchema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().min(6).required(),
   name: Joi.string().min(2).required(),
-  role: Joi.string().valid("subscriber", "creator").required(),
+  role: Joi.string().valid("subscriber", "creator").optional().default("subscriber"), // Default to subscriber
   bio: Joi.string().optional(),
   portfolio: Joi.string().uri().optional(),
   paymentMethod: Joi.string().optional(),
@@ -73,6 +73,13 @@ export const login = async (req: Request, res: Response) => {
         message: `Usuário não tem permissão para acessar como ${role}`,
       } as LoginResponse);
     }
+
+    // Log user status for debugging
+    console.log("📊 Status do usuário:", {
+      role: user.role,
+      isPremium: user.isPremium,
+      subscriptionStatus: user.subscriptionStatus
+    });
 
     // Special check for admin login
     if (user.role === "admin") {
@@ -152,38 +159,36 @@ export const register = async (req: Request, res: Response) => {
       } as RegisterResponse);
     }
 
-    // Create user data based on role
+    // SEGURANÇA: Todos novos usuários começam como subscriber com isPremium: false
     const userData: any = {
       email: email.toLowerCase().trim(),
       password,
-      name: name.trim(),
-      role,
+      nome: name.trim(), // Using 'nome' to match schema
+      role: role || "subscriber", // Default to subscriber if not specified
+      isPremium: false, // CRÍTICO: Nunca premium na criação
+      subscriptionStatus: "pending", // Pendente até pagamento
+      assinante: false, // Backward compatibility
+      freeMonthsRemaining: 1, // 1 mês grátis para novos usuários
     };
 
-    if (role === "subscriber") {
-      userData.subscription = {
-        plan: "premium",
-        status: "inactive",
-        startDate: new Date(),
-      };
-      userData.watchHistory = [];
-      userData.assinante = false; // Initially false until subscription is active
-
-      console.log("👤 Criando usuário assinante:", { email, name });
+    if (role === "subscriber" || !role) {
+      console.log("👤 Criando usuário assinante:", { email, name, role: "subscriber", isPremium: false });
     } else if (role === "creator") {
-      userData.profile = {
+      userData.role = "creator";
+      userData.creatorProfile = {
         bio: bio || "",
         portfolio: portfolio || "",
         status: "pending",
-      };
-      userData.content = {
         totalVideos: 0,
+        approvedVideos: 0,
+        rejectedVideos: 0,
         totalViews: 0,
-        totalEarnings: 0,
         monthlyEarnings: 0,
+        affiliateEarnings: 0,
+        referralCount: 0,
       };
 
-      console.log("🎨 Criando usuário criador:", { email, name, bio: userData.profile.bio });
+      console.log("🎨 Criando usuário criador:", { email, name, bio: userData.creatorProfile.bio });
     }
 
     const user = new User(userData);
@@ -193,6 +198,8 @@ export const register = async (req: Request, res: Response) => {
       id: savedUser._id,
       email: savedUser.email,
       role: savedUser.role,
+      isPremium: savedUser.isPremium,
+      subscriptionStatus: savedUser.subscriptionStatus,
       timestamp: new Date().toISOString()
     });
 
