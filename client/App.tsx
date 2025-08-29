@@ -304,6 +304,14 @@ const App = () => (
                   </ProtectedRoute>
                 }
               />
+              <Route
+                path="/video-approval"
+                element={
+                  <ProtectedRoute allowedRoles={["admin"]}>
+                    <VideoApprovalPage />
+                  </ProtectedRoute>
+                }
+              />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
