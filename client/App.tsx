@@ -56,6 +56,7 @@ import PaymentOptionsEnhanced from "./pages/PaymentOptionsEnhanced";
 import PaymentPage from "./pages/PaymentPage";
 import PaymentSuccessNew from "./pages/PaymentSuccessNew";
 import PaymentError from "./pages/PaymentError";
+import BlocksPurchaseSuccess from "./pages/BlocksPurchaseSuccess";
 import ContentInfo from "./pages/ContentInfo";
 import PasswordRecovery from "./pages/PasswordRecovery";
 import AreaSelection from "./pages/AreaSelection";
