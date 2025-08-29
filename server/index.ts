@@ -76,7 +76,7 @@ import {
   updateAllGracePeriods
 } from "./routes/creator-limits";
 import handleMuxWebhook, { verifyMuxWebhook } from "./routes/mux-webhook";
-import { initializeAdmin, initializeSampleData } from "./scripts/initAdmin";
+// MongoDB initialization removed - using Supabase only
 
 export function createServer() {
   const app = express();
