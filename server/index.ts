@@ -383,7 +383,7 @@ export function createServer() {
       res.json({
         success: true,
         message:
-          "Se o email existir, voc�� receberá instruções para redefinir sua senha.",
+          "Se o email existir, você receberá instruções para redefinir sua senha.",
       });
     } catch (error) {
       console.error("❌ Erro na recuperação de senha:", error);
@@ -440,6 +440,55 @@ export function createServer() {
   app.post("/api/videos/:videoId/approve", authenticateToken, approveVideo);
   app.post("/api/videos/:videoId/reject", authenticateToken, rejectVideo);
   app.get("/api/videos/:videoId", getVideoDetails);
+
+  // Protected routes examples using authRole middleware
+  const { authRole, authSubscriber, authCreator, authAdmin, requirePremium, requireApprovedCreator } = require("./middleware/authRole");
+
+  // Creator dashboard - only for creators
+  app.get("/api/creator/dashboard", authCreator, async (req, res) => {
+    res.json({
+      success: true,
+      message: "Bem-vindo, criador!",
+      user: req.user
+    });
+  });
+
+  // Subscriber dashboard - only for subscribers/premium
+  app.get("/api/subscriber/dashboard", authSubscriber, async (req, res) => {
+    res.json({
+      success: true,
+      message: "Bem-vindo, assinante!",
+      user: req.user,
+      isPremium: req.user.isPremium
+    });
+  });
+
+  // Premium content - only for premium subscribers
+  app.get("/api/content/premium", requirePremium, async (req, res) => {
+    res.json({
+      success: true,
+      message: "Conteúdo premium desbloqueado!",
+      content: "Este é um conteúdo exclusivo para assinantes premium"
+    });
+  });
+
+  // Admin panel - only for admins
+  app.get("/api/admin/panel", authAdmin, async (req, res) => {
+    res.json({
+      success: true,
+      message: "Painel administrativo",
+      user: req.user
+    });
+  });
+
+  // Approved creator features - only for approved creators
+  app.get("/api/creator/advanced-features", requireApprovedCreator, async (req, res) => {
+    res.json({
+      success: true,
+      message: "Funcionalidades avançadas desbloqueadas!",
+      features: ["analytics_advanced", "monetization_tools", "priority_support"]
+    });
+  });
 
   // Creator blocks routes
   app.get("/api/creator-blocks/:creatorId", authenticateToken, getCreatorBlocks);
@@ -578,7 +627,7 @@ export function createServer() {
         user: user.toJSON(),
       });
     } catch (error) {
-      console.error("❌ Erro no registro automático:", error);
+      console.error("��� Erro no registro automático:", error);
       res.status(500).json({
         success: false,
         message: "Erro interno do servidor",
