@@ -261,6 +261,17 @@ const App = () => (
                   </ProtectedRoute>
                 }
               />
+              <Route
+                path="/video-upload"
+                element={
+                  <ProtectedRoute
+                    allowedRoles={["user", "subscriber", "creator", "admin"]}
+                    requireApproval={false}
+                  >
+                    <VideoUploadPage />
+                  </ProtectedRoute>
+                }
+              />
 
               {/* Smart Dashboard - Acesso sem login */}
               <Route path="/smart-dashboard" element={<SmartDashboard />} />
