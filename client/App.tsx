@@ -38,7 +38,6 @@ import CreatorLogin from "./pages/CreatorLogin";
 import CreatorLoginSimple from "./pages/CreatorLoginSimple";
 import AdminLoginSimple from "./pages/AdminLoginSimple";
 import LoginSelect from "./pages/LoginSelect";
-import TestLogin from "./pages/TestLogin";
 import LoginDiagnostic from "./pages/LoginDiagnostic";
 import CreatorPayments from "./pages/CreatorPayments";
 import ContentCreator from "./pages/ContentCreator";
@@ -101,7 +100,6 @@ const App = () => (
               <Route path="/creators" element={<Creators />} />
               <Route path="/login" element={<Login />} />
               <Route path="/login-select" element={<LoginSelect />} />
-              <Route path="/test-login" element={<TestLogin />} />
               <Route path="/login-diagnostic" element={<LoginDiagnostic />} />
               <Route path="/login/subscriber" element={<SubscriberLogin />} />
               <Route path="/register-subscriber" element={<SubscriberRegister />} />
