@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SubscriptionManager } from "@/components/SubscriptionManager";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContextReal";
 import { useNavigate } from "react-router-dom";
 import {
   Crown,
@@ -458,7 +458,7 @@ export default function SmartDashboard() {
                         {user.assinante ? 'Assinatura Premium Ativa' : 'Sem Assinatura Ativa'}
                       </h4>
                       <p className="text-sm text-muted-foreground">
-                        {user.assinante ? `Próxima cobrança: ${userProfile.nextBilling}` : 'Assine para ter acesso completo ao conteúdo'}
+                        {user.assinante ? `Pr��xima cobrança: ${userProfile.nextBilling}` : 'Assine para ter acesso completo ao conteúdo'}
                       </p>
                     </div>
                     <div className="text-right">
