@@ -25,6 +25,7 @@ import {
 
 export default function SubscriberLogin() {
   const navigate = useNavigate();
+  const { login, user } = useAuth();
   
   const [formData, setFormData] = useState({
     email: '',
