@@ -49,6 +49,15 @@ import {
   getVideoForReview,
   getAdminStats
 } from "./routes/video-admin";
+import {
+  getCreatorLimits,
+  updateCreatorLimits,
+  restrictCreatorUpload,
+  allowCreatorUpload,
+  getAllCreatorsLimits,
+  checkUploadCapacity,
+  updateAllGracePeriods
+} from "./routes/creator-limits";
 import { initializeAdmin, initializeSampleData } from "./scripts/initAdmin";
 
 export function createServer() {
