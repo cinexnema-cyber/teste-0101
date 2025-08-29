@@ -53,6 +53,7 @@ import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentCancelled from "./pages/PaymentCancelled";
 import PaymentOptions from "./pages/PaymentOptions";
 import PaymentOptionsEnhanced from "./pages/PaymentOptionsEnhanced";
+import PaymentPage from "./pages/PaymentPage";
 import ContentInfo from "./pages/ContentInfo";
 import PasswordRecovery from "./pages/PasswordRecovery";
 import AreaSelection from "./pages/AreaSelection";
