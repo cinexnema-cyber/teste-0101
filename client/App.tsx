@@ -21,6 +21,7 @@ import Creators from "./pages/Creators";
 import Login from "./pages/Login";
 import SubscriberLogin from "./pages/SubscriberLogin";
 import SubscriberRegister from "./pages/SubscriberRegister";
+import SubscriberDashboard from "./pages/SubscriberDashboard";
 import Register from "./pages/Register";
 import ResetPassword from "./pages/ResetPassword";
 import Subscribe from "./pages/Subscribe";
