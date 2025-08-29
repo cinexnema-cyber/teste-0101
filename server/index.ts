@@ -411,6 +411,17 @@ export function createServer() {
   app.get("/api/payments/status/:transactionId", getPaymentStatus);
   app.get("/api/payments/user/:userId", authenticateToken, getUserPayments);
 
+  // Creator blocks routes
+  app.get("/api/creator-blocks/:creatorId", authenticateToken, getCreatorBlocks);
+  app.post("/api/creator-blocks/calculate", calculateBlocks);
+  app.post("/api/creator-blocks/:creatorId/check-upload", authenticateToken, checkUploadCapacity);
+  app.post("/api/creator-blocks/:creatorId/purchase", authenticateToken, purchaseBlocks);
+  app.post("/api/creator-blocks/webhook", handleBlocksWebhook);
+  app.get("/api/creator-blocks/:creatorId/purchases", authenticateToken, getPurchaseHistory);
+  app.post("/api/creator-blocks/:creatorId/add-video", authenticateToken, addVideoToBlocks);
+  app.post("/api/creator-blocks/:creatorId/remove-video", authenticateToken, removeVideoFromBlocks);
+  app.get("/api/admin/creator-blocks", authenticateToken, getAllCreatorsBlocks);
+
   // Pre-payment user registration (with limited access)
   app.post("/api/subscription/pre-register", async (req, res) => {
     try {
