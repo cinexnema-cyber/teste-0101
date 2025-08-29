@@ -213,7 +213,7 @@ export function InlinePaymentGate({
     if (contentType === 'creator') {
       navigate('/creator-login');
     } else {
-      navigate(SmartNavigator.getPaymentRedirect(user, 'monthly'));
+      navigate('/payments?plan=monthly');
     }
   };
 
