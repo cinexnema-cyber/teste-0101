@@ -211,13 +211,22 @@ export default function LoginSelect() {
               Login Geral
             </Button>
             
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => navigate('/visitor')}
               className="flex items-center gap-2 px-6"
             >
               <Eye className="w-4 h-4" />
               Visitar como Convidado
+            </Button>
+
+            <Button
+              variant="ghost"
+              onClick={() => navigate('/test-login')}
+              className="flex items-center gap-2 px-6 text-xs"
+              size="sm"
+            >
+              🧪 Teste de Login
             </Button>
           </div>
         </div>
