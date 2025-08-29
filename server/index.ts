@@ -31,6 +31,24 @@ import {
   recordView,
 } from "./routes/content";
 import { handleCreatorAnalytics, handleVideoAnalytics } from "./routes/analytics-creator";
+import {
+  createDirectUpload,
+  uploadVideo,
+  getCreatorVideos,
+  getVideoById,
+  updateVideo,
+  deleteVideo,
+  videoUpload
+} from "./routes/video-upload";
+import {
+  getPendingVideos,
+  getAllVideos,
+  approveVideo,
+  rejectVideo,
+  deleteVideoAdmin,
+  getVideoForReview,
+  getAdminStats
+} from "./routes/video-admin";
 import { initializeAdmin, initializeSampleData } from "./scripts/initAdmin";
 
 export function createServer() {
