@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/AuthContext";
 import { Crown, Loader2, CreditCard, Zap } from "lucide-react";
 
-// Carregar Stripe com a chave pública
+// Carregar Stripe com a chave p��blica
 const stripePromise = loadStripe(
   import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY ||
     "pk_live_51RxFGeJm8jhPLplQbsh5Ga8jtpjQcCvYchEWuCRSZsA2ZcRA4N0gzex4JU61PhQNTmGa7t40NflVKfhCSjE7Y6Di00LzdvlbZV",
@@ -168,7 +168,7 @@ const SubscribeButton: React.FC<SubscribeButtonProps> = ({
       <Button
         onClick={handleSubscribe}
         disabled={isLoading || !user}
-        size={size}
+        size={size as "default" | "sm" | "lg" | "icon"}
         className={`${config.className} ${className} transition-all duration-200 shadow-lg hover:shadow-xl`}
       >
         {isLoading ? (
