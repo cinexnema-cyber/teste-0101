@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import Joi from "joi";
-import User from "../models/User";
 import { generateToken } from "../middleware/auth";
 
 // Validation schema
