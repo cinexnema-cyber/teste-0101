@@ -322,6 +322,12 @@ export function createServer() {
   app.post("/api/admin/create-emergency-user", createEmergencyUser);
   app.get("/api/admin/list-users", listAllUsers);
 
+  // Admin login routes for Iarima
+  const { adminLogin, createAdminUsers, checkAdminStatus } = require("./routes/admin-login");
+  app.post("/api/admin/login", adminLogin);
+  app.post("/api/admin/create-admins", createAdminUsers);
+  app.get("/api/admin/status", checkAdminStatus);
+
   // Initialize system users on startup
   setTimeout(async () => {
     await initializeSystemUsers();
@@ -524,7 +530,7 @@ export function createServer() {
       // Em produção, enviaria email real aqui
       console.log(`📧 Solicitação de recuperação de senha para: ${email}`);
       console.log(
-        `✅ ${user ? "Usuário encontrado" : "Usu��rio não encontrado"} - Email de recuperação "enviado"`,
+        `✅ ${user ? "Usuário encontrado" : "Usuário não encontrado"} - Email de recuperação "enviado"`,
       );
 
       res.json({
