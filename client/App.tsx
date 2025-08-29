@@ -50,7 +50,6 @@ import CreatorTerms from "./pages/CreatorTerms";
 import ForgotPassword from "./pages/ForgotPassword";
 import Welcome from "./pages/Welcome";
 import UserDashboard from "./pages/UserDashboard";
-import SubscriberDashboard from "./pages/SubscriberDashboard";
 import EditProfile from "./pages/EditProfile";
 import PaymentHistory from "./pages/PaymentHistory";
 import PublicCatalog from "./pages/PublicCatalog";
