@@ -251,6 +251,19 @@ const UserSchema = new Schema<IUser>(
         default: 0,
       },
     },
+
+    // Affiliate system
+    referredBy: {
+      type: String,
+      ref: 'User',
+      required: false,
+    },
+    referralCode: {
+      type: String,
+      unique: true,
+      sparse: true,
+      required: false,
+    },
   },
   {
     timestamps: true,
