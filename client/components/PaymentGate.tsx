@@ -68,7 +68,7 @@ export function PaymentGate({
           description: description || 'Este vídeo está disponível apenas para assinantes',
           badge: 'Premium',
           buttonText: 'Assinar para Assistir',
-          buttonAction: () => navigate(SmartNavigator.getPaymentRedirect(user, 'monthly'))
+          buttonAction: () => navigate('/payments?plan=monthly')
         };
 
       case 'series':
