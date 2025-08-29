@@ -417,6 +417,24 @@ export function createServer() {
   app.get("/api/webhooks/logs", getWebhookLogs);
   app.post("/api/webhooks/retry/:webhookId", retrySpecificWebhook);
 
+  // Video routes with movie/series support
+  const {
+    createVideo,
+    getCreatorAccess,
+    getCreatorVideos,
+    getPendingVideos,
+    approveVideo,
+    rejectVideo,
+    getVideoDetails
+  } = require("./routes/videos");
+  app.post("/api/videos/create", authenticateToken, createVideo);
+  app.get("/api/creator/access", authenticateToken, getCreatorAccess);
+  app.get("/api/videos/creator/:creatorId", getCreatorVideos);
+  app.get("/api/videos/pending-approval", authenticateToken, getPendingVideos);
+  app.post("/api/videos/:videoId/approve", authenticateToken, approveVideo);
+  app.post("/api/videos/:videoId/reject", authenticateToken, rejectVideo);
+  app.get("/api/videos/:videoId", getVideoDetails);
+
   // Creator blocks routes
   app.get("/api/creator-blocks/:creatorId", authenticateToken, getCreatorBlocks);
   app.post("/api/creator-blocks/calculate", calculateBlocks);
