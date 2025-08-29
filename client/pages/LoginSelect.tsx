@@ -105,7 +105,7 @@ export default function LoginSelect() {
                 </Button>
                 
                 <p className="text-xs text-center text-blue-700 dark:text-blue-300">
-                  J�� tem sua assinatura? Faça login e comece a assistir!
+                  Já tem sua assinatura? Faça login e comece a assistir!
                 </p>
               </div>
             </CardContent>
@@ -193,13 +193,13 @@ export default function LoginSelect() {
           </div>
 
           <div className="flex flex-wrap justify-center gap-4">
-            <Button 
-              variant="outline" 
-              onClick={() => navigate('/register')}
+            <Button
+              variant="outline"
+              onClick={() => navigate('/register-subscriber')}
               className="flex items-center gap-2 px-6"
             >
               <User className="w-4 h-4" />
-              Criar Conta
+              Criar Conta Assinante
             </Button>
             
             <Button 
