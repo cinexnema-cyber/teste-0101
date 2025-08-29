@@ -109,10 +109,16 @@ export const useGoogleAnalytics = () => {
   const fetchAnalyticsData = async () => {
     try {
       setAnalyticsData(prev => ({ ...prev, loading: true }));
-      
+
+      // Safety check - ensure user exists
+      if (!user) {
+        setAnalyticsData(prev => ({ ...prev, loading: false }));
+        return;
+      }
+
       // In a real implementation, you would use Google Analytics Reporting API
       // For now, we'll simulate real data based on user activity
-      
+
       // Simulate API call to get real data
       const response = await fetch('/api/analytics/creator-data', {
         method: 'POST',
@@ -132,7 +138,16 @@ export const useGoogleAnalytics = () => {
       } else {
         // Fallback to simulated real data based on user
         const userId = user?.id ? String(user.id) : '';
-        const baseViews = userId ? parseInt(userId.slice(-4), 16) : 1000;
+        let baseViews = 1000;
+
+        // Safe extraction of ID hash for randomization
+        if (userId && userId.length >= 4) {
+          try {
+            baseViews = parseInt(userId.slice(-4), 16) || 1000;
+          } catch (e) {
+            baseViews = 1000; // Fallback if parsing fails
+          }
+        }
         realData = {
           views: baseViews + Math.floor(Math.random() * 5000),
           subscribers: Math.floor((baseViews + Math.random() * 1000) / 10),
