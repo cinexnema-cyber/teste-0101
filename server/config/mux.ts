@@ -49,13 +49,7 @@ export const MuxHelpers = {
         normalize_audio: MUX_CONFIG.encoding.normalize_audio,
         video_quality: MUX_CONFIG.encoding.video_quality,
         test: MUX_CONFIG.test,
-        master_access: 'none',
-        metadata: {
-          title: metadata.title,
-          description: metadata.description,
-          creator_id: metadata.creatorId,
-          platform: 'xnema'
-        }
+        master_access: 'none'
       });
 
       return {
@@ -89,13 +83,7 @@ export const MuxHelpers = {
           normalize_audio: MUX_CONFIG.encoding.normalize_audio,
           video_quality: MUX_CONFIG.encoding.video_quality,
           test: MUX_CONFIG.test,
-          master_access: 'none',
-          metadata: {
-            title: metadata.title,
-            description: metadata.description,
-            creator_id: metadata.creatorId,
-            platform: 'xnema'
-          }
+          master_access: 'none'
         },
         cors_origin: process.env.FRONTEND_URL || 'http://localhost:8080'
       });
