@@ -80,7 +80,7 @@ export const useGoogleAnalytics = () => {
         event_category: 'Content',
         event_label: videoTitle,
         video_id: videoId,
-        user_id: userId || user?.id || 'anonymous',
+        user_id: userId || (user?.id ? String(user.id) : 'anonymous'),
         custom_map: {
           dimension3: videoId,
           dimension4: 'video_view'
