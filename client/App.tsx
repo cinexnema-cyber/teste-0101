@@ -295,6 +295,14 @@ const App = () => (
               <Route path="/content/:id" element={<ContentInfo />} />
               <Route path="/payment-options" element={<PaymentOptions />} />
               <Route path="/payment-options-enhanced" element={<PaymentOptionsEnhanced />} />
+              <Route
+                path="/payments"
+                element={
+                  <ProtectedRoute allowedRoles={["user", "subscriber", "creator", "admin"]}>
+                    <PaymentPage />
+                  </ProtectedRoute>
+                }
+              />
               <Route path="/payment-success" element={<PaymentSuccess />} />
               <Route path="/payment-cancelled" element={<PaymentCancelled />} />
               <Route
