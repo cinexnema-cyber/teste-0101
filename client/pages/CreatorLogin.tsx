@@ -25,10 +25,11 @@ import {
   Target
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import type { AuthUser } from '@/contexts/AuthContext';
 
 export default function CreatorLogin() {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { setUser } = useAuth();
   
   const [formData, setFormData] = useState({
     email: '',
@@ -76,14 +77,29 @@ export default function CreatorLogin() {
       if (data.success && data.token) {
         // Store token
         localStorage.setItem('xnema_token', data.token);
-        
+
+        // Transform user data to AuthUser format
+        const transformedUser: AuthUser = {
+          id: data.user.id,
+          user_id: data.user.id,
+          email: data.user.email,
+          username: data.user.name || data.user.email.split('@')[0],
+          displayName: data.user.name || data.user.email.split('@')[0],
+          bio: data.user.creatorProfile?.bio || '',
+          subscriptionStatus: 'inativo', // Criadores não são assinantes
+          subscriptionStart: undefined,
+          subscriptionPlan: undefined,
+          name: data.user.name || data.user.email.split('@')[0],
+          assinante: false, // Criadores não são assinantes
+          role: data.user.role || 'creator'
+        };
+
         // Update auth context
-        if (login) {
-          await login(data.user, data.token);
-        }
+        setUser(transformedUser);
+        localStorage.setItem('xnema_user', JSON.stringify(transformedUser));
 
         setSuccess('Login realizado com sucesso!');
-        
+
         // Redirect to creator portal
         setTimeout(() => {
           navigate('/creator-portal');
@@ -95,7 +111,7 @@ export default function CreatorLogin() {
 
     } catch (error) {
       console.error('Erro no login:', error);
-      setError('Erro de conexão. Tente novamente.');
+      setError('Erro de conexão. Verifique sua internet e tente novamente.');
     } finally {
       setIsLoading(false);
     }
