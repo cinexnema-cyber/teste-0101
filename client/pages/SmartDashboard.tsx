@@ -42,9 +42,15 @@ export default function SmartDashboard() {
   const [watchTime, setWatchTime] = useState(0);
   const [recommendedContent, setRecommendedContent] = useState<any[]>([]);
 
-  // Only show real user data when logged in
+  // Handle user authentication
+  useEffect(() => {
+    if (!user) {
+      navigate("/login");
+    }
+  }, [user, navigate]);
+
+  // Don't render anything if user is not logged in
   if (!user) {
-    navigate("/login");
     return null;
   }
 
