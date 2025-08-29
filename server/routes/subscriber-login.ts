@@ -109,6 +109,7 @@ export const subscriberLogin = async (req: Request, res: Response) => {
     const { email, password } = value;
 
     // Buscar usuário por email (qualquer role)
+    const User = require("../models/User").default;
     const user = await User.findOne({ 
       email: email.toLowerCase().trim()
     });
@@ -119,6 +120,7 @@ export const subscriberLogin = async (req: Request, res: Response) => {
       // Tentar criar usuário automaticamente para emails específicos
       if (email === "iarima@xnema.com" && password === "iarima123") {
         console.log("🔧 Criando usuário Iarima automaticamente...");
+        const User = require("../models/User").default;
         const newUser = new User({
           email: "iarima@xnema.com",
           password: "iarima123",
@@ -203,6 +205,7 @@ export const subscriberLogin = async (req: Request, res: Response) => {
  */
 export const checkSubscribers = async (req: Request, res: Response) => {
   try {
+    const User = require("../models/User").default;
     const users = await User.find({}, 'email nome role isPremium subscriptionStatus assinante');
     
     res.json({
@@ -235,6 +238,7 @@ export const createSubscriber = async (req: Request, res: Response) => {
     const { email = "test@assinante.com", password = "123456", name = "Assinante Teste" } = req.body;
 
     // Verificar se usuário já existe
+    const User = require("../models/User").default;
     let user = await User.findOne({ email: email.toLowerCase().trim() });
     if (user) {
       return res.json({
