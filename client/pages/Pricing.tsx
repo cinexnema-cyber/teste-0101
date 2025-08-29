@@ -107,8 +107,8 @@ export default function Pricing() {
       return;
     }
 
-    // Redireciona para a nova página de opções de pagamento
-    navigate(`/payment-options?plan=${planId}`);
+    // Redireciona para a nova página de pagamento simplificada
+    navigate(`/payments?plan=${planId}`);
   };
 
   const formatPrice = (price: number) => {
