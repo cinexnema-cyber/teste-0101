@@ -112,25 +112,124 @@ export function createServer() {
   // Demo route
   app.get("/api/demo", handleDemo);
 
+  // Verificar status do banco de dados
+  app.get("/api/admin/db-status", async (_req, res) => {
+    try {
+      const User = require("./models/User").default;
+      const usersCount = await User.countDocuments();
+
+      res.json({
+        success: true,
+        message: "Banco de dados conectado",
+        usersCount,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error("❌ Erro ao verificar banco:", error);
+      res.status(500).json({
+        success: false,
+        message: "Erro de conexão com banco de dados",
+        error: error.message
+      });
+    }
+  });
+
   // Criar usuários de teste route
   app.post("/api/admin/create-test-users", async (_req, res) => {
     try {
-      const { createTestUsers } = require("./scripts/createTestUsers");
-      const result = await createTestUsers();
+      const User = require("./models/User").default;
 
-      if (result.success) {
-        res.json({
-          success: true,
-          message: "Usuários de teste criados com sucesso",
-          users: result.users
+      // Verificar se usuários já existem
+      const usersCount = await User.countDocuments();
+      console.log(`📊 Usuários existentes: ${usersCount}`);
+
+      const testUsers = [];
+
+      // 1. Criar Assinante de teste
+      const subscriberExists = await User.findOne({ email: 'assinante@teste.com' });
+      if (!subscriberExists) {
+        const subscriberUser = new User({
+          email: 'assinante@teste.com',
+          password: '123456',
+          nome: 'Assinante Teste',
+          role: 'subscriber',
+          isPremium: true,
+          subscriptionStatus: 'active',
+          assinante: true,
+          subscriptionPlan: 'monthly',
+          subscriptionStart: new Date(),
+          watchHistory: []
         });
+        await subscriberUser.save();
+        testUsers.push({ email: 'assinante@teste.com', role: 'subscriber' });
+        console.log('✅ Usuário Assinante criado');
       } else {
-        res.status(500).json({
-          success: false,
-          message: "Erro ao criar usuários de teste",
-          error: result.error
-        });
+        console.log('ℹ️ Usuário Assinante já existe');
       }
+
+      // 2. Criar Criador de teste
+      const creatorExists = await User.findOne({ email: 'criador@teste.com' });
+      if (!creatorExists) {
+        const creatorUser = new User({
+          email: 'criador@teste.com',
+          password: '123456',
+          nome: 'Criador Teste',
+          role: 'creator',
+          isPremium: false,
+          subscriptionStatus: 'pending',
+          assinante: false,
+          creatorProfile: {
+            bio: 'Criador de conteúdo de teste',
+            portfolio: 'https://portfolio-teste.com',
+            status: 'approved',
+            totalVideos: 0,
+            approvedVideos: 0,
+            rejectedVideos: 0,
+            totalViews: 0,
+            monthlyEarnings: 0,
+            affiliateEarnings: 0,
+            referralCount: 0
+          }
+        });
+        await creatorUser.save();
+        testUsers.push({ email: 'criador@teste.com', role: 'creator' });
+        console.log('✅ Usuário Criador criado');
+      } else {
+        console.log('ℹ️ Usuário Criador já existe');
+      }
+
+      // 3. Criar Admin de teste
+      const adminExists = await User.findOne({ email: 'admin@teste.com' });
+      if (!adminExists) {
+        const adminUser = new User({
+          email: 'admin@teste.com',
+          password: '123456',
+          nome: 'Admin Teste',
+          role: 'admin',
+          isPremium: true,
+          subscriptionStatus: 'active',
+          assinante: true
+        });
+        await adminUser.save();
+        testUsers.push({ email: 'admin@teste.com', role: 'admin' });
+        console.log('✅ Usuário Admin criado');
+      } else {
+        console.log('ℹ️ Usuário Admin já existe');
+      }
+
+      const finalUsersCount = await User.countDocuments();
+
+      res.json({
+        success: true,
+        message: "Usuários de teste criados com sucesso",
+        usersCreated: testUsers,
+        totalUsers: finalUsersCount,
+        credentials: [
+          { email: 'assinante@teste.com', password: '123456', role: 'subscriber' },
+          { email: 'criador@teste.com', password: '123456', role: 'creator' },
+          { email: 'admin@teste.com', password: '123456', role: 'admin' }
+        ]
+      });
     } catch (error) {
       console.error("❌ Erro ao criar usuários de teste:", error);
       res.status(500).json({
