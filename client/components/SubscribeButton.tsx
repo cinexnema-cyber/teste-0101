@@ -98,7 +98,7 @@ const SubscribeButton: React.FC<SubscribeButtonProps> = ({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             email: user.email,
-            nome: user.nome || user.displayName || user.username,
+            nome: user.name || user.displayName || user.username,
           }),
         });
 
