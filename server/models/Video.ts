@@ -276,17 +276,7 @@ VideoSchema.virtual('securePlaybackUrl').get(function() {
   return null;
 });
 
-// Virtual for thumbnail URL
-VideoSchema.virtual('thumbnailUrl').get(function() {
-  if (this.thumbnail) {
-    return this.thumbnail;
-  }
-  // Default Mux thumbnail
-  if (this.muxPlaybackId) {
-    return `https://image.mux.com/${this.muxPlaybackId}/thumbnail.png`;
-  }
-  return null;
-});
+// Note: Thumbnail URL fallback is handled in route serializers to avoid conflicts with real schema fields.
 
 // Ensure virtual fields are serialised
 VideoSchema.set('toJSON', { virtuals: true });
