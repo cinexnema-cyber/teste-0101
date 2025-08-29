@@ -228,6 +228,15 @@ export default function LoginSelect() {
             >
               🧪 Teste de Login
             </Button>
+
+            <Button
+              variant="outline"
+              onClick={() => navigate('/login/admin')}
+              className="flex items-center gap-2 px-6 border-red-500 text-red-600 hover:bg-red-500 hover:text-white"
+            >
+              <Crown className="w-4 h-4" />
+              Acesso Admin
+            </Button>
           </div>
         </div>
 
