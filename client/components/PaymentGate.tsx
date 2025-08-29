@@ -78,7 +78,7 @@ export function PaymentGate({
           description: description || 'Conteúdo exclusivo para assinantes premium',
           badge: 'Exclusivo',
           buttonText: 'Assinar Agora',
-          buttonAction: () => navigate(SmartNavigator.getPaymentRedirect(user, 'yearly'))
+          buttonAction: () => navigate('/payments?plan=yearly')
         };
 
       default:
