@@ -44,11 +44,12 @@ export const MuxHelpers = {
     try {
       const asset = await mux.video.assets.create({
         input: [{ url: videoUrl }],
-        playback_policy: MUX_CONFIG.playback_policy,
+        playback_policy: MUX_CONFIG.playback_policy as any,
         mp4_support: MUX_CONFIG.encoding.mp4_support,
         normalize_audio: MUX_CONFIG.encoding.normalize_audio,
         video_quality: MUX_CONFIG.encoding.video_quality,
         test: MUX_CONFIG.test,
+        master_access: 'none',
         metadata: {
           title: metadata.title,
           description: metadata.description,
