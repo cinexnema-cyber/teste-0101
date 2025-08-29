@@ -64,6 +64,15 @@ export function Header() {
               <span>Portal do Criador</span>
             </Link>
           )}
+          {user?.role === 'admin' && (
+            <Link
+              to="/video-approval"
+              className="flex items-center space-x-1 text-foreground hover:text-xnema-orange transition-colors"
+            >
+              <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+              <span>Aprovação</span>
+            </Link>
+          )}
         </nav>
 
         {/* Search and Actions */}
