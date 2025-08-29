@@ -96,9 +96,9 @@ export const useGoogleAnalytics = () => {
         event_category: 'Creator',
         event_action: action,
         event_label: contentId,
-        creator_id: creatorId || user?.id,
+        creator_id: creatorId || (user?.id ? String(user.id) : ''),
         custom_map: {
-          dimension5: creatorId || user?.id,
+          dimension5: creatorId || (user?.id ? String(user.id) : ''),
           dimension6: action
         }
       });
