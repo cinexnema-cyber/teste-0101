@@ -98,8 +98,8 @@ const App = () => (
               <Route path="/login" element={<Login />} />
               <Route path="/login-select" element={<LoginSelect />} />
               <Route path="/test-login" element={<TestLogin />} />
-              <Route path="/login/subscriber" element={<SubscriberLogin />} />
-              <Route path="/login/creator" element={<CreatorLogin />} />
+              <Route path="/login/subscriber" element={<SubscriberLoginSimple />} />
+              <Route path="/login/creator" element={<CreatorLoginSimple />} />
               <Route path="/register" element={<Register />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
