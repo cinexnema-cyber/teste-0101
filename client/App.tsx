@@ -30,6 +30,7 @@ import Series from "./pages/Series";
 import Category from "./pages/Category";
 import CreatorPortal from "./pages/CreatorPortal";
 import CreatorLogin from "./pages/CreatorLogin";
+import LoginSelect from "./pages/LoginSelect";
 import CreatorPayments from "./pages/CreatorPayments";
 import ContentCreator from "./pages/ContentCreator";
 import SmartDashboard from "./pages/SmartDashboard";
