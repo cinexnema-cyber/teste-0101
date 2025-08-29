@@ -527,6 +527,23 @@ export function createServer() {
   app.post("/api/analytics/creator-data", handleCreatorAnalytics);
   app.post("/api/analytics/video-data", handleVideoAnalytics);
 
+  // Video upload routes for creators
+  app.post("/api/videos/direct-upload", authenticateToken, createDirectUpload);
+  app.post("/api/videos/upload", authenticateToken, videoUpload.single('video'), uploadVideo);
+  app.get("/api/videos/creator", authenticateToken, getCreatorVideos);
+  app.get("/api/videos/:videoId", authenticateToken, getVideoById);
+  app.put("/api/videos/:videoId", authenticateToken, updateVideo);
+  app.delete("/api/videos/:videoId", authenticateToken, deleteVideo);
+
+  // Video admin routes
+  app.get("/api/admin/videos/pending", authenticateToken, getPendingVideos);
+  app.get("/api/admin/videos", authenticateToken, getAllVideos);
+  app.get("/api/admin/videos/:videoId/review", authenticateToken, getVideoForReview);
+  app.post("/api/admin/videos/:videoId/approve", authenticateToken, approveVideo);
+  app.post("/api/admin/videos/:videoId/reject", authenticateToken, rejectVideo);
+  app.delete("/api/admin/videos/:videoId", authenticateToken, deleteVideoAdmin);
+  app.get("/api/admin/stats", authenticateToken, getAdminStats);
+
   // Protected routes (examples)
   app.get("/api/admin/users", authenticateToken, async (req, res) => {
     try {
