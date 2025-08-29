@@ -190,7 +190,7 @@ export const MuxHelpers = {
   /**
    * Validate video file before upload
    */
-  validateVideoFile: (file: Express.Multer.File) => {
+  validateVideoFile: (file: any) => {
     const validTypes = ['video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/webm'];
     const maxSize = 2 * 1024 * 1024 * 1024; // 2GB
 
