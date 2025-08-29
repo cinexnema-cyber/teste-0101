@@ -57,9 +57,17 @@ export default function SmartDashboard() {
   const userProfile = {
     name: user.name,
     email: user.email,
-    subscriptionDate: user.subscriptionStart ? new Date(user.subscriptionStart).toLocaleDateString('pt-BR') : "2024-12-15",
-    nextBilling: user.subscriptionStart ? new Date(Date.now() + 30*24*60*60*1000).toLocaleDateString('pt-BR') : "2025-01-15",
-    plan: user.assinante ? "Premium" : user.role.charAt(0).toUpperCase() + user.role.slice(1),
+    subscriptionDate: user.subscriptionStart
+      ? new Date(user.subscriptionStart).toLocaleDateString("pt-BR")
+      : "2024-12-15",
+    nextBilling: user.subscriptionStart
+      ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString(
+          "pt-BR",
+        )
+      : "2025-01-15",
+    plan: user.assinante
+      ? "Premium"
+      : user.role.charAt(0).toUpperCase() + user.role.slice(1),
     devices: 4,
     activeDevices: 2,
   };
@@ -175,7 +183,8 @@ export default function SmartDashboard() {
                   Olá, {userProfile.name}! 👋
                 </h1>
                 <p className="text-muted-foreground">
-                  Bem-vindo de volta à sua experiência XNEMA {user.assinante ? 'Premium' : ''}
+                  Bem-vindo de volta à sua experiência XNEMA{" "}
+                  {user.assinante ? "Premium" : ""}
                 </p>
               </div>
               <div className="flex items-center space-x-3 bg-gradient-to-r from-xnema-orange to-xnema-purple rounded-lg px-4 py-2">
@@ -197,11 +206,15 @@ export default function SmartDashboard() {
                 <Crown className="h-4 w-4 text-xnema-orange" />
               </CardHeader>
               <CardContent>
-                <div className={`text-2xl font-bold ${user.assinante ? 'text-green-500' : 'text-yellow-500'}`}>
-                  {user.assinante ? 'Ativa' : 'Inativa'}
+                <div
+                  className={`text-2xl font-bold ${user.assinante ? "text-green-500" : "text-yellow-500"}`}
+                >
+                  {user.assinante ? "Ativa" : "Inativa"}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  {user.assinante ? `Renova em ${userProfile.nextBilling}` : 'Assine para ter acesso completo'}
+                  {user.assinante
+                    ? `Renova em ${userProfile.nextBilling}`
+                    : "Assine para ter acesso completo"}
                 </p>
               </CardContent>
             </Card>
@@ -452,17 +465,25 @@ export default function SmartDashboard() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div className={`flex items-center justify-between p-4 ${user.assinante ? 'bg-gradient-to-r from-green-500/20 to-green-600/20 border border-green-500/30' : 'bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/30'} rounded-lg`}>
+                  <div
+                    className={`flex items-center justify-between p-4 ${user.assinante ? "bg-gradient-to-r from-green-500/20 to-green-600/20 border border-green-500/30" : "bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/30"} rounded-lg`}
+                  >
                     <div>
                       <h4 className="font-semibold text-foreground">
-                        {user.assinante ? 'Assinatura Premium Ativa' : 'Sem Assinatura Ativa'}
+                        {user.assinante
+                          ? "Assinatura Premium Ativa"
+                          : "Sem Assinatura Ativa"}
                       </h4>
                       <p className="text-sm text-muted-foreground">
-                        {user.assinante ? `Pr��xima cobrança: ${userProfile.nextBilling}` : 'Assine para ter acesso completo ao conteúdo'}
+                        {user.assinante
+                          ? `Pr��xima cobrança: ${userProfile.nextBilling}`
+                          : "Assine para ter acesso completo ao conteúdo"}
                       </p>
                     </div>
                     <div className="text-right">
-                      <div className={`text-2xl font-bold ${user.assinante ? 'text-green-500' : 'text-yellow-500'}`}>
+                      <div
+                        className={`text-2xl font-bold ${user.assinante ? "text-green-500" : "text-yellow-500"}`}
+                      >
                         R$ 19,90
                       </div>
                       <div className="text-sm text-muted-foreground">
@@ -515,7 +536,7 @@ export default function SmartDashboard() {
                         ) : (
                           <>
                             <Button
-                              onClick={() => navigate('/pricing')}
+                              onClick={() => navigate("/pricing")}
                               className="w-full bg-xnema-orange hover:bg-xnema-orange/90 text-black"
                             >
                               Assinar Premium
@@ -523,7 +544,7 @@ export default function SmartDashboard() {
                             <Button
                               variant="outline"
                               className="w-full"
-                              onClick={() => navigate('/pricing')}
+                              onClick={() => navigate("/pricing")}
                             >
                               Ver Planos
                             </Button>

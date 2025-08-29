@@ -1,19 +1,19 @@
-import React from 'react';
-import { Layout } from '@/components/layout/Layout';
-import { VideoApproval } from '@/components/VideoApproval';
-import { useAuth } from '@/contexts/AuthContext';
-import { Navigate } from 'react-router-dom';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
-import { 
-  Shield, 
+import React from "react";
+import { Layout } from "@/components/layout/Layout";
+import { VideoApproval } from "@/components/VideoApproval";
+import { useAuth } from "@/contexts/AuthContext";
+import { Navigate } from "react-router-dom";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import {
+  Shield,
   ArrowLeft,
   CheckCircle,
   Clock,
   Users,
-  Video
-} from 'lucide-react';
+  Video,
+} from "lucide-react";
 
 export default function VideoApprovalPage() {
   const { user, isLoading } = useAuth();
@@ -28,7 +28,7 @@ export default function VideoApprovalPage() {
     );
   }
 
-  if (!user || user.role !== 'admin') {
+  if (!user || user.role !== "admin") {
     return <Navigate to="/login" replace />;
   }
 
@@ -48,10 +48,14 @@ export default function VideoApprovalPage() {
                 </Button>
                 <div>
                   <h1 className="text-4xl font-bold text-foreground mb-2">
-                    Aprovação de <span className="text-transparent bg-gradient-to-r from-xnema-orange to-xnema-purple bg-clip-text">Vídeos</span>
+                    Aprovação de{" "}
+                    <span className="text-transparent bg-gradient-to-r from-xnema-orange to-xnema-purple bg-clip-text">
+                      Vídeos
+                    </span>
                   </h1>
                   <p className="text-muted-foreground">
-                    Gerencie e aprove vídeos enviados pelos criadores da plataforma
+                    Gerencie e aprove vídeos enviados pelos criadores da
+                    plataforma
                   </p>
                 </div>
               </div>
@@ -74,7 +78,7 @@ export default function VideoApprovalPage() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-gradient-to-r from-green-500 to-green-600 text-white p-4 rounded-lg">
                 <div className="flex items-center gap-3">
                   <CheckCircle className="w-8 h-8" />
@@ -84,7 +88,7 @@ export default function VideoApprovalPage() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-gradient-to-r from-purple-500 to-purple-600 text-white p-4 rounded-lg">
                 <div className="flex items-center gap-3">
                   <Users className="w-8 h-8" />
@@ -94,7 +98,7 @@ export default function VideoApprovalPage() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white p-4 rounded-lg">
                 <div className="flex items-center gap-3">
                   <Video className="w-8 h-8" />
@@ -140,10 +144,12 @@ export default function VideoApprovalPage() {
           {/* Footer Info */}
           <div className="mt-12 text-center text-sm text-muted-foreground">
             <p>
-              Como administrador, você é responsável por manter a qualidade e segurança do conteúdo na plataforma XNEMA.
+              Como administrador, você é responsável por manter a qualidade e
+              segurança do conteúdo na plataforma XNEMA.
             </p>
             <p className="mt-1">
-              Para dúvidas sobre diretrizes de aprovação, consulte o manual do administrador.
+              Para dúvidas sobre diretrizes de aprovação, consulte o manual do
+              administrador.
             </p>
           </div>
         </div>

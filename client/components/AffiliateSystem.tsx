@@ -1,22 +1,28 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-  Link, 
-  Copy, 
-  Share2, 
-  Users, 
-  DollarSign, 
+import React, { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  Link,
+  Copy,
+  Share2,
+  Users,
+  DollarSign,
   TrendingUp,
   QrCode,
   ExternalLink,
   CheckCircle,
-  Gift
-} from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
+  Gift,
+} from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface AffiliateStats {
   totalClicks: number;
@@ -29,7 +35,7 @@ interface AffiliateStats {
     signupDate: string;
     planType: string;
     commission: number;
-    status: 'pending' | 'paid';
+    status: "pending" | "paid";
   }>;
 }
 
@@ -37,16 +43,18 @@ interface AffiliateSystemProps {
   className?: string;
 }
 
-export const AffiliateSystem: React.FC<AffiliateSystemProps> = ({ className = '' }) => {
+export const AffiliateSystem: React.FC<AffiliateSystemProps> = ({
+  className = "",
+}) => {
   const { user } = useAuth();
-  const [affiliateLink, setAffiliateLink] = useState('');
-  const [qrCodeUrl, setQrCodeUrl] = useState('');
+  const [affiliateLink, setAffiliateLink] = useState("");
+  const [qrCodeUrl, setQrCodeUrl] = useState("");
   const [stats, setStats] = useState<AffiliateStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [copySuccess, setCopySuccess] = useState(false);
 
   useEffect(() => {
-    if (user && user.tipo === 'criador') {
+    if (user && user.tipo === "criador") {
       generateAffiliateLink();
       fetchAffiliateStats();
     }
@@ -54,15 +62,15 @@ export const AffiliateSystem: React.FC<AffiliateSystemProps> = ({ className = ''
 
   const generateAffiliateLink = async () => {
     try {
-      const response = await fetch('/api/affiliate/generate-link', {
-        method: 'POST',
+      const response = await fetch("/api/affiliate/generate-link", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('xnema_token')}`
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("xnema_token")}`,
         },
         body: JSON.stringify({
-          creatorId: user?.id
-        })
+          creatorId: user?.id,
+        }),
       });
 
       if (response.ok) {
@@ -71,7 +79,7 @@ export const AffiliateSystem: React.FC<AffiliateSystemProps> = ({ className = ''
         setQrCodeUrl(result.qrCodeUrl);
       }
     } catch (error) {
-      console.error('Erro ao gerar link de afiliação:', error);
+      console.error("Erro ao gerar link de afiliação:", error);
     }
   };
 
@@ -80,8 +88,8 @@ export const AffiliateSystem: React.FC<AffiliateSystemProps> = ({ className = ''
       setLoading(true);
       const response = await fetch(`/api/affiliate/stats/${user?.id}`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('xnema_token')}`
-        }
+          Authorization: `Bearer ${localStorage.getItem("xnema_token")}`,
+        },
       });
 
       if (response.ok) {
@@ -89,7 +97,7 @@ export const AffiliateSystem: React.FC<AffiliateSystemProps> = ({ className = ''
         setStats(result.stats);
       }
     } catch (error) {
-      console.error('Erro ao buscar estatísticas:', error);
+      console.error("Erro ao buscar estatísticas:", error);
     } finally {
       setLoading(false);
     }
@@ -101,14 +109,16 @@ export const AffiliateSystem: React.FC<AffiliateSystemProps> = ({ className = ''
       setCopySuccess(true);
       setTimeout(() => setCopySuccess(false), 2000);
     } catch (error) {
-      console.error('Erro ao copiar link:', error);
+      console.error("Erro ao copiar link:", error);
     }
   };
 
   const shareOnSocialMedia = (platform: string) => {
-    const message = encodeURIComponent('Descubra o melhor conteúdo brasileiro na XNEMA! Use meu link para 1 mês grátis:');
+    const message = encodeURIComponent(
+      "Descubra o melhor conteúdo brasileiro na XNEMA! Use meu link para 1 mês grátis:",
+    );
     const url = encodeURIComponent(affiliateLink);
-    
+
     const shareUrls = {
       whatsapp: `https://wa.me/?text=${message}%20${url}`,
       telegram: `https://t.me/share/url?url=${url}&text=${message}`,
@@ -117,29 +127,30 @@ export const AffiliateSystem: React.FC<AffiliateSystemProps> = ({ className = ''
       instagram: `https://www.instagram.com/`, // Instagram não permite links diretos
     };
 
-    if (platform === 'instagram') {
+    if (platform === "instagram") {
       // Para Instagram, copiamos o link e orientamos o usuário
       copyToClipboard();
-      alert('Link copiado! Cole na bio ou stories do Instagram.');
+      alert("Link copiado! Cole na bio ou stories do Instagram.");
       return;
     }
 
-    window.open(shareUrls[platform as keyof typeof shareUrls], '_blank');
+    window.open(shareUrls[platform as keyof typeof shareUrls], "_blank");
   };
 
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
     }).format(value);
   };
 
-  if (!user || user.tipo !== 'criador') {
+  if (!user || user.tipo !== "criador") {
     return (
       <Alert className="border-yellow-500 bg-yellow-50 dark:bg-yellow-950">
         <Gift className="h-4 w-4" />
         <AlertDescription>
-          O sistema de afiliação está disponível apenas para criadores aprovados.
+          O sistema de afiliação está disponível apenas para criadores
+          aprovados.
         </AlertDescription>
       </Alert>
     );
@@ -155,18 +166,19 @@ export const AffiliateSystem: React.FC<AffiliateSystemProps> = ({ className = ''
             Seu Link de Afiliação
           </CardTitle>
           <CardDescription>
-            Compartilhe este link e ganhe 15% de comissão sobre cada nova assinatura
+            Compartilhe este link e ganhe 15% de comissão sobre cada nova
+            assinatura
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex gap-2">
-            <Input 
-              value={affiliateLink} 
-              readOnly 
+            <Input
+              value={affiliateLink}
+              readOnly
               className="font-mono text-sm bg-muted"
               placeholder="Gerando link..."
             />
-            <Button 
+            <Button
               onClick={copyToClipboard}
               variant="outline"
               className="flex items-center gap-2"
@@ -176,7 +188,7 @@ export const AffiliateSystem: React.FC<AffiliateSystemProps> = ({ className = ''
               ) : (
                 <Copy className="w-4 h-4" />
               )}
-              {copySuccess ? 'Copiado!' : 'Copiar'}
+              {copySuccess ? "Copiado!" : "Copiar"}
             </Button>
             <Button variant="outline">
               <QrCode className="w-4 h-4" />
@@ -186,8 +198,9 @@ export const AffiliateSystem: React.FC<AffiliateSystemProps> = ({ className = ''
           <Alert className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950">
             <Gift className="h-4 w-4 text-blue-600" />
             <AlertDescription className="text-blue-800 dark:text-blue-200">
-              <strong>Como funciona:</strong> Cada pessoa que se cadastrar através do seu link 
-              ganhará 1 mês grátis e você receberá 15% de comissão sobre os pagamentos mensais dela.
+              <strong>Como funciona:</strong> Cada pessoa que se cadastrar
+              através do seu link ganhará 1 mês grátis e você receberá 15% de
+              comissão sobre os pagamentos mensais dela.
             </AlertDescription>
           </Alert>
         </CardContent>
@@ -206,41 +219,41 @@ export const AffiliateSystem: React.FC<AffiliateSystemProps> = ({ className = ''
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-            <Button 
-              variant="outline" 
-              onClick={() => shareOnSocialMedia('whatsapp')}
+            <Button
+              variant="outline"
+              onClick={() => shareOnSocialMedia("whatsapp")}
               className="flex items-center gap-2 bg-green-500/10 hover:bg-green-500/20 border-green-500/20"
             >
               <span className="text-lg">📱</span>
               WhatsApp
             </Button>
-            <Button 
+            <Button
               variant="outline"
-              onClick={() => shareOnSocialMedia('instagram')}
+              onClick={() => shareOnSocialMedia("instagram")}
               className="flex items-center gap-2 bg-pink-500/10 hover:bg-pink-500/20 border-pink-500/20"
             >
               <span className="text-lg">📷</span>
               Instagram
             </Button>
-            <Button 
+            <Button
               variant="outline"
-              onClick={() => shareOnSocialMedia('facebook')}
+              onClick={() => shareOnSocialMedia("facebook")}
               className="flex items-center gap-2 bg-blue-600/10 hover:bg-blue-600/20 border-blue-600/20"
             >
               <span className="text-lg">👤</span>
               Facebook
             </Button>
-            <Button 
+            <Button
               variant="outline"
-              onClick={() => shareOnSocialMedia('twitter')}
+              onClick={() => shareOnSocialMedia("twitter")}
               className="flex items-center gap-2 bg-sky-500/10 hover:bg-sky-500/20 border-sky-500/20"
             >
               <span className="text-lg">🐦</span>
               Twitter
             </Button>
-            <Button 
+            <Button
               variant="outline"
-              onClick={() => shareOnSocialMedia('telegram')}
+              onClick={() => shareOnSocialMedia("telegram")}
               className="flex items-center gap-2 bg-blue-500/10 hover:bg-blue-500/20 border-blue-500/20"
             >
               <span className="text-lg">✈️</span>
@@ -260,7 +273,9 @@ export const AffiliateSystem: React.FC<AffiliateSystemProps> = ({ className = ''
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Cliques Totais</p>
-                <p className="text-2xl font-bold">{loading ? '...' : stats?.totalClicks || 0}</p>
+                <p className="text-2xl font-bold">
+                  {loading ? "..." : stats?.totalClicks || 0}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -273,8 +288,12 @@ export const AffiliateSystem: React.FC<AffiliateSystemProps> = ({ className = ''
                 <Users className="w-5 h-5 text-green-500" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Novos Assinantes</p>
-                <p className="text-2xl font-bold">{loading ? '...' : stats?.totalSignups || 0}</p>
+                <p className="text-sm text-muted-foreground">
+                  Novos Assinantes
+                </p>
+                <p className="text-2xl font-bold">
+                  {loading ? "..." : stats?.totalSignups || 0}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -287,9 +306,13 @@ export const AffiliateSystem: React.FC<AffiliateSystemProps> = ({ className = ''
                 <TrendingUp className="w-5 h-5 text-purple-500" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Taxa de Conversão</p>
+                <p className="text-sm text-muted-foreground">
+                  Taxa de Conversão
+                </p>
                 <p className="text-2xl font-bold">
-                  {loading ? '...' : `${(stats?.conversionRate || 0).toFixed(1)}%`}
+                  {loading
+                    ? "..."
+                    : `${(stats?.conversionRate || 0).toFixed(1)}%`}
                 </p>
               </div>
             </div>
@@ -303,9 +326,11 @@ export const AffiliateSystem: React.FC<AffiliateSystemProps> = ({ className = ''
                 <DollarSign className="w-5 h-5 text-xnema-orange" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Comissões Acumuladas</p>
+                <p className="text-sm text-muted-foreground">
+                  Comissões Acumuladas
+                </p>
                 <p className="text-2xl font-bold text-xnema-orange">
-                  {loading ? '...' : formatCurrency(stats?.totalEarnings || 0)}
+                  {loading ? "..." : formatCurrency(stats?.totalEarnings || 0)}
                 </p>
               </div>
             </div>
@@ -318,12 +343,17 @@ export const AffiliateSystem: React.FC<AffiliateSystemProps> = ({ className = ''
         <Card>
           <CardHeader>
             <CardTitle>Referidos Recentes</CardTitle>
-            <CardDescription>Últimas pessoas que se cadastraram com seu link</CardDescription>
+            <CardDescription>
+              Últimas pessoas que se cadastraram com seu link
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {stats.recentReferrals.map((referral) => (
-                <div key={referral.id} className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
+                <div
+                  key={referral.id}
+                  className="flex items-center justify-between p-4 bg-muted/50 rounded-lg"
+                >
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-gradient-to-br from-xnema-orange to-xnema-purple rounded-full flex items-center justify-center">
                       <Users className="w-5 h-5 text-white" />
@@ -331,14 +361,25 @@ export const AffiliateSystem: React.FC<AffiliateSystemProps> = ({ className = ''
                     <div>
                       <p className="font-medium">{referral.userName}</p>
                       <p className="text-sm text-muted-foreground">
-                        {referral.planType} • {new Date(referral.signupDate).toLocaleDateString('pt-BR')}
+                        {referral.planType} •{" "}
+                        {new Date(referral.signupDate).toLocaleDateString(
+                          "pt-BR",
+                        )}
                       </p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="font-bold text-green-600">{formatCurrency(referral.commission)}</p>
-                    <Badge className={referral.status === 'paid' ? 'bg-green-500' : 'bg-yellow-500'}>
-                      {referral.status === 'paid' ? 'Pago' : 'Pendente'}
+                    <p className="font-bold text-green-600">
+                      {formatCurrency(referral.commission)}
+                    </p>
+                    <Badge
+                      className={
+                        referral.status === "paid"
+                          ? "bg-green-500"
+                          : "bg-yellow-500"
+                      }
+                    >
+                      {referral.status === "paid" ? "Pago" : "Pendente"}
                     </Badge>
                   </div>
                 </div>
@@ -351,19 +392,35 @@ export const AffiliateSystem: React.FC<AffiliateSystemProps> = ({ className = ''
       {/* Dicas para Melhorar Conversão */}
       <Card className="bg-gradient-to-br from-xnema-orange/10 to-xnema-purple/10 border-xnema-orange/20">
         <CardHeader>
-          <CardTitle className="text-xnema-orange">💡 Dicas para Aumentar suas Comissões</CardTitle>
+          <CardTitle className="text-xnema-orange">
+            💡 Dicas para Aumentar suas Comissões
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid md:grid-cols-2 gap-4 text-sm">
             <div className="space-y-2">
-              <p>✅ <strong>Crie conteúdo autêntico</strong> sobre a XNEMA</p>
-              <p>✅ <strong>Compartilhe nos stories</strong> do Instagram regularmente</p>
-              <p>✅ <strong>Use chamadas atrativas</strong> como "1 mês grátis"</p>
+              <p>
+                ✅ <strong>Crie conteúdo autêntico</strong> sobre a XNEMA
+              </p>
+              <p>
+                ✅ <strong>Compartilhe nos stories</strong> do Instagram
+                regularmente
+              </p>
+              <p>
+                ✅ <strong>Use chamadas atrativas</strong> como "1 mês grátis"
+              </p>
             </div>
             <div className="space-y-2">
-              <p>✅ <strong>Engaje com seguidores</strong> que comentam sobre filmes</p>
-              <p>✅ <strong>Publique reviews</strong> dos conteúdos exclusivos</p>
-              <p>✅ <strong>Mencione benefícios</strong> como qualidade 4K</p>
+              <p>
+                ✅ <strong>Engaje com seguidores</strong> que comentam sobre
+                filmes
+              </p>
+              <p>
+                ✅ <strong>Publique reviews</strong> dos conteúdos exclusivos
+              </p>
+              <p>
+                ✅ <strong>Mencione benefícios</strong> como qualidade 4K
+              </p>
             </div>
           </div>
         </CardContent>

@@ -7,6 +7,7 @@ Implementação completa do novo fluxo de pagamento simplificado usando Mercado 
 ## 🎯 Funcionalidades Implementadas
 
 ### 1. **Frontend - Nova Página de Pagamentos**
+
 - **Arquivo**: `client/pages/PaymentPage.tsx`
 - **Rota**: `/payments`
 - **Funcionalidades**:
@@ -17,35 +18,42 @@ Implementação completa do novo fluxo de pagamento simplificado usando Mercado 
   - Responsive design
 
 ### 2. **Backend - API Endpoints**
+
 - **Arquivo**: `server/routes/mercado-pago.ts`
 - **Endpoints Implementados**:
 
 #### `POST /api/payments/create`
+
 - Cria preferência de pagamento no Mercado Pago
 - Gera transaction_id único
 - Cria registro de assinatura pendente
 - Retorna URL de checkout
 
 #### `POST /api/payments/webhook`
+
 - Recebe notificações do Mercado Pago
 - Atualiza status do usuário automaticamente
 - Processa aprovação/rejeição de pagamentos
 - Ativa assinatura quando aprovado
 
 #### `GET /api/payments/status/:transactionId`
+
 - Consulta status de pagamento específico
 - Retorna detalhes da transação
 
 #### `GET /api/payments/user/:userId`
+
 - Lista histórico de pagamentos do usuário
 - Protegido por autenticação
 
 ### 3. **Páginas de Retorno**
+
 - **Sucesso**: `client/pages/PaymentSuccessNew.tsx` (`/payment-success-new`)
 - **Erro**: `client/pages/PaymentError.tsx` (`/payment-error`)
 - **Pendente**: Usa a mesma página de erro (`/payment-pending`)
 
 ### 4. **Atualizações de Navegação**
+
 - Atualizado `client/pages/Pricing.tsx` para usar `/payments`
 - Atualizado `client/components/PaymentGate.tsx` para novo fluxo
 - Removidas dependências do `SmartNavigator.getPaymentRedirect`
@@ -57,24 +65,25 @@ Os planos existentes foram preservados:
 ```javascript
 const plans = [
   {
-    id: 'monthly',
-    name: 'Plano Mensal',
-    price: 19.90,
-    period: 'mês'
+    id: "monthly",
+    name: "Plano Mensal",
+    price: 19.9,
+    period: "mês",
   },
   {
-    id: 'yearly', 
-    name: 'Plano Anual',
-    price: 199.00,
-    period: 'ano',
-    savings: 'Economize R$ 39,80 (16%)'
-  }
+    id: "yearly",
+    name: "Plano Anual",
+    price: 199.0,
+    period: "ano",
+    savings: "Economize R$ 39,80 (16%)",
+  },
 ];
 ```
 
 ## 🔄 Fluxo de Pagamento
 
 ### Experiência do Usuário:
+
 1. **Acesso**: Usuário acessa `/payments` ou é redirecionado de `/pricing`
 2. **Seleção**: Escolhe o plano desejado (Mensal/Anual)
 3. **Pagamento**: Clica em "Pagar com Mercado Pago"
@@ -83,6 +92,7 @@ const plans = [
 6. **Ativação**: Webhook ativa automaticamente a assinatura
 
 ### Fluxo Técnico:
+
 1. **Frontend** → `POST /api/payments/create`
 2. **Backend** → Cria assinatura pendente + transaction_id
 3. **Backend** → Retorna URL do Mercado Pago
@@ -95,6 +105,7 @@ const plans = [
 ## 🛠 Configurações Necessárias
 
 ### Variáveis de Ambiente:
+
 ```env
 # URLs para redirects do Mercado Pago
 WEBHOOK_URL=https://seudominio.com
@@ -106,6 +117,7 @@ MERCADO_PAGO_YEARLY_PLAN_ID=yearly_plan_id
 ```
 
 ### No Painel do Mercado Pago:
+
 1. Criar planos de assinatura
 2. Configurar URLs de notificação:
    - **Webhook**: `https://seudominio.com/api/payments/webhook`
@@ -116,6 +128,7 @@ MERCADO_PAGO_YEARLY_PLAN_ID=yearly_plan_id
 ## 📊 Modelos de Dados
 
 ### Subscription (MongoDB):
+
 ```javascript
 {
   id_usuario: ObjectId,
@@ -137,10 +150,11 @@ MERCADO_PAGO_YEARLY_PLAN_ID=yearly_plan_id
 ```
 
 ### User (MongoDB) - Campos de Assinatura:
+
 ```javascript
 {
   assinante: Boolean,
-  subscriptionStatus: "ativo" | "inativo", 
+  subscriptionStatus: "ativo" | "inativo",
   subscriptionPlan: "monthly" | "yearly",
   subscriptionStart: Date,
   subscriptionEnd: Date
@@ -168,6 +182,7 @@ MERCADO_PAGO_YEARLY_PLAN_ID=yearly_plan_id
 ## 🧪 Como Testar
 
 ### Teste Local:
+
 1. Acesse `http://localhost:3000/payments`
 2. Selecione um plano
 3. Clique em "Pagar com Mercado Pago"
@@ -176,6 +191,7 @@ MERCADO_PAGO_YEARLY_PLAN_ID=yearly_plan_id
 6. Verifique ativação automática da assinatura
 
 ### Webhook Testing:
+
 ```bash
 # Simular webhook de aprovação
 curl -X POST http://localhost:3001/api/payments/webhook \
@@ -190,12 +206,14 @@ curl -X POST http://localhost:3001/api/payments/webhook \
 ## 📁 Arquivos Modificados/Criados
 
 ### Novos Arquivos:
+
 - `client/pages/PaymentPage.tsx`
 - `client/pages/PaymentSuccessNew.tsx`
 - `client/pages/PaymentError.tsx`
 - `server/routes/mercado-pago.ts`
 
 ### Arquivos Modificados:
+
 - `client/App.tsx` (novas rotas)
 - `client/pages/Pricing.tsx` (redirecionamento)
 - `client/components/PaymentGate.tsx` (novo fluxo)

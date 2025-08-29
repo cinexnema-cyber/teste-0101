@@ -8,12 +8,12 @@ const registerSchema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().min(6).required(),
   phone: Joi.string().optional(),
-  plan: Joi.string().valid('monthly', 'yearly', 'lifetime').default('monthly')
+  plan: Joi.string().valid("monthly", "yearly", "lifetime").default("monthly"),
 });
 
 const loginSchema = Joi.object({
   email: Joi.string().email().required(),
-  password: Joi.string().min(1).required()
+  password: Joi.string().min(1).required(),
 });
 
 /**
@@ -25,14 +25,14 @@ export const registerSubscriber = async (req: Request, res: Response) => {
     console.log("📝 Tentativa de cadastro de assinante:", {
       email: req.body.email,
       name: req.body.name,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
 
     const { error, value } = registerSchema.validate(req.body);
     if (error) {
       return res.status(400).json({
         success: false,
-        message: error.details[0].message
+        message: error.details[0].message,
       });
     }
 
@@ -40,15 +40,15 @@ export const registerSubscriber = async (req: Request, res: Response) => {
     const User = require("../models/User").default;
 
     // Verificar se email já existe
-    const existingUser = await User.findOne({ 
-      email: email.toLowerCase().trim() 
+    const existingUser = await User.findOne({
+      email: email.toLowerCase().trim(),
     });
 
     if (existingUser) {
       console.log("❌ Email já existe:", email);
       return res.status(409).json({
         success: false,
-        message: 'Este email já está cadastrado'
+        message: "Este email já está cadastrado",
       });
     }
 
@@ -57,14 +57,14 @@ export const registerSubscriber = async (req: Request, res: Response) => {
       email: email.toLowerCase().trim(),
       password: password, // Será hasheado automaticamente pelo modelo
       nome: name.trim(),
-      role: 'subscriber',
+      role: "subscriber",
       isPremium: false, // Inicialmente false até confirmar pagamento
-      subscriptionStatus: 'pending',
+      subscriptionStatus: "pending",
       subscriptionPlan: plan,
       assinante: false, // Será true após pagamento
-      phone: phone || '',
+      phone: phone || "",
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     });
 
     const savedUser = await newUser.save();
@@ -73,15 +73,19 @@ export const registerSubscriber = async (req: Request, res: Response) => {
       id: savedUser._id,
       email: savedUser.email,
       name: savedUser.nome,
-      role: savedUser.role
+      role: savedUser.role,
     });
 
     // Gerar token para login automático
-    const token = generateToken(savedUser._id.toString(), savedUser.email, savedUser.role);
+    const token = generateToken(
+      savedUser._id.toString(),
+      savedUser.email,
+      savedUser.role,
+    );
 
     res.status(201).json({
       success: true,
-      message: 'Cadastro realizado com sucesso!',
+      message: "Cadastro realizado com sucesso!",
       token,
       user: {
         id: savedUser._id,
@@ -91,15 +95,14 @@ export const registerSubscriber = async (req: Request, res: Response) => {
         isPremium: savedUser.isPremium,
         subscriptionStatus: savedUser.subscriptionStatus,
         subscriptionPlan: savedUser.subscriptionPlan,
-        assinante: savedUser.assinante
-      }
+        assinante: savedUser.assinante,
+      },
     });
-
   } catch (error) {
     console.error("❌ Erro no cadastro:", error);
     res.status(500).json({
       success: false,
-      message: "Erro interno do servidor"
+      message: "Erro interno do servidor",
     });
   }
 };
@@ -112,14 +115,14 @@ export const loginSubscriber = async (req: Request, res: Response) => {
   try {
     console.log("🔐 Tentativa de login de assinante:", {
       email: req.body.email,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
 
     const { error, value } = loginSchema.validate(req.body);
     if (error) {
       return res.status(400).json({
         success: false,
-        message: error.details[0].message
+        message: error.details[0].message,
       });
     }
 
@@ -127,15 +130,15 @@ export const loginSubscriber = async (req: Request, res: Response) => {
     const User = require("../models/User").default;
 
     // Buscar usuário por email
-    const user = await User.findOne({ 
-      email: email.toLowerCase().trim()
+    const user = await User.findOne({
+      email: email.toLowerCase().trim(),
     });
 
     if (!user) {
       console.log("❌ Usuário não encontrado:", email);
       return res.status(401).json({
         success: false,
-        message: 'Email ou senha incorretos'
+        message: "Email ou senha incorretos",
       });
     }
 
@@ -145,7 +148,7 @@ export const loginSubscriber = async (req: Request, res: Response) => {
       console.log("❌ Senha incorreta para:", email);
       return res.status(401).json({
         success: false,
-        message: 'Email ou senha incorretos'
+        message: "Email ou senha incorretos",
       });
     }
 
@@ -156,12 +159,12 @@ export const loginSubscriber = async (req: Request, res: Response) => {
       id: user._id,
       email: user.email,
       role: user.role,
-      isPremium: user.isPremium
+      isPremium: user.isPremium,
     });
 
     res.json({
       success: true,
-      message: 'Login realizado com sucesso!',
+      message: "Login realizado com sucesso!",
       token,
       user: {
         id: user._id,
@@ -172,15 +175,14 @@ export const loginSubscriber = async (req: Request, res: Response) => {
         subscriptionStatus: user.subscriptionStatus,
         subscriptionPlan: user.subscriptionPlan,
         assinante: user.assinante,
-        phone: user.phone || ''
-      }
+        phone: user.phone || "",
+      },
     });
-
   } catch (error) {
     console.error("❌ Erro no login:", error);
     res.status(500).json({
       success: false,
-      message: "Erro interno do servidor"
+      message: "Erro interno do servidor",
     });
   }
 };
@@ -191,34 +193,34 @@ export const loginSubscriber = async (req: Request, res: Response) => {
  */
 export const activateSubscription = async (req: Request, res: Response) => {
   try {
-    const { userId, plan = 'monthly' } = req.body;
+    const { userId, plan = "monthly" } = req.body;
     const User = require("../models/User").default;
 
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: 'Usuário não encontrado'
+        message: "Usuário não encontrado",
       });
     }
 
     // Ativar assinatura
     user.isPremium = true;
     user.assinante = true;
-    user.subscriptionStatus = 'active';
+    user.subscriptionStatus = "active";
     user.subscriptionPlan = plan;
     user.subscriptionStart = new Date();
-    
+
     // Calcular próxima cobrança
     const nextBilling = new Date();
-    if (plan === 'monthly') {
+    if (plan === "monthly") {
       nextBilling.setMonth(nextBilling.getMonth() + 1);
-    } else if (plan === 'yearly') {
+    } else if (plan === "yearly") {
       nextBilling.setFullYear(nextBilling.getFullYear() + 1);
-    } else if (plan === 'lifetime') {
+    } else if (plan === "lifetime") {
       nextBilling.setFullYear(nextBilling.getFullYear() + 100); // Lifetime
     }
-    
+
     user.subscriptionEnd = nextBilling;
     user.updatedAt = new Date();
 
@@ -227,12 +229,12 @@ export const activateSubscription = async (req: Request, res: Response) => {
     console.log("✅ Assinatura ativada:", {
       userId: user._id,
       email: user.email,
-      plan: plan
+      plan: plan,
     });
 
     res.json({
       success: true,
-      message: 'Assinatura ativada com sucesso!',
+      message: "Assinatura ativada com sucesso!",
       user: {
         id: user._id,
         email: user.email,
@@ -241,15 +243,14 @@ export const activateSubscription = async (req: Request, res: Response) => {
         isPremium: user.isPremium,
         subscriptionStatus: user.subscriptionStatus,
         subscriptionPlan: user.subscriptionPlan,
-        assinante: user.assinante
-      }
+        assinante: user.assinante,
+      },
     });
-
   } catch (error) {
     console.error("❌ Erro ao ativar assinatura:", error);
     res.status(500).json({
       success: false,
-      message: "Erro interno do servidor"
+      message: "Erro interno do servidor",
     });
   }
 };
@@ -263,13 +264,16 @@ interface AuthenticatedRequest extends Request {
   userId?: string;
 }
 
-export const getCurrentUser = async (req: AuthenticatedRequest, res: Response) => {
+export const getCurrentUser = async (
+  req: AuthenticatedRequest,
+  res: Response,
+) => {
   try {
     const userId = req.userId || req.user?.id || req.user?._id;
     if (!userId) {
       return res.status(401).json({
         success: false,
-        message: 'Token inválido'
+        message: "Token inválido",
       });
     }
 
@@ -279,7 +283,7 @@ export const getCurrentUser = async (req: AuthenticatedRequest, res: Response) =
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: 'Usuário não encontrado'
+        message: "Usuário não encontrado",
       });
     }
 
@@ -294,15 +298,14 @@ export const getCurrentUser = async (req: AuthenticatedRequest, res: Response) =
         subscriptionStatus: user.subscriptionStatus,
         subscriptionPlan: user.subscriptionPlan,
         assinante: user.assinante,
-        phone: user.phone || ''
-      }
+        phone: user.phone || "",
+      },
     });
-
   } catch (error) {
     console.error("❌ Erro ao buscar usuário:", error);
     res.status(500).json({
       success: false,
-      message: "Erro interno do servidor"
+      message: "Erro interno do servidor",
     });
   }
 };

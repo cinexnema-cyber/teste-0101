@@ -7,23 +7,23 @@ export const checkUserExists = async (req: Request, res: Response) => {
     if (!email) {
       return res.status(400).json({
         success: false,
-        message: "Email é obrigatório"
+        message: "Email é obrigatório",
       });
     }
 
     // Check if user exists in Supabase
-    const { createClient } = require('@supabase/supabase-js');
+    const { createClient } = require("@supabase/supabase-js");
     const supabaseUrl = process.env.SUPABASE_URL!;
     const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     const { data: user, error } = await supabase
-      .from('users')
-      .select('id, email, role')
-      .eq('email', email.toLowerCase().trim())
+      .from("users")
+      .select("id, email, role")
+      .eq("email", email.toLowerCase().trim())
       .single();
 
-    if (error && error.code !== 'PGRST116') {
+    if (error && error.code !== "PGRST116") {
       throw error;
     }
 
@@ -34,21 +34,20 @@ export const checkUserExists = async (req: Request, res: Response) => {
         user: {
           id: user.id,
           email: user.email,
-          role: user.role
-        }
+          role: user.role,
+        },
       });
     }
 
     return res.json({
       success: true,
-      exists: false
+      exists: false,
     });
-
   } catch (error) {
     console.error("❌ Erro ao verificar usuário:", error);
     res.status(500).json({
       success: false,
-      message: "Erro interno do servidor"
+      message: "Erro interno do servidor",
     });
   }
 };

@@ -1,25 +1,37 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContextReal';
-import { Layout } from '@/components/layout/Layout';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
-import { 
-  CreditCard, 
-  Shield, 
-  CheckCircle, 
+import React, { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContextReal";
+import { Layout } from "@/components/layout/Layout";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import {
+  CreditCard,
+  Shield,
+  CheckCircle,
   Calendar,
   DollarSign,
   Gift,
   Calculator,
   Clock,
-  Loader2
-} from 'lucide-react';
+  Loader2,
+} from "lucide-react";
 
 interface PlanOption {
   id: string;
@@ -31,115 +43,131 @@ interface PlanOption {
 
 const PLANS: PlanOption[] = [
   {
-    id: 'basic',
-    name: 'Plano Básico',
-    monthlyPrice: 19.90,
-    description: 'Acesso ao catálogo básico',
-    features: ['Catálogo básico', 'Qualidade HD', '1 tela simultânea']
+    id: "basic",
+    name: "Plano Básico",
+    monthlyPrice: 19.9,
+    description: "Acesso ao catálogo básico",
+    features: ["Catálogo básico", "Qualidade HD", "1 tela simultânea"],
   },
   {
-    id: 'premium', 
-    name: 'Plano Premium',
-    monthlyPrice: 59.90,
-    description: 'Acesso completo + conteúdo exclusivo',
-    features: ['Catálogo completo', 'Qualidade 4K', '3 telas simultâneas', 'Conteúdo exclusivo']
+    id: "premium",
+    name: "Plano Premium",
+    monthlyPrice: 59.9,
+    description: "Acesso completo + conteúdo exclusivo",
+    features: [
+      "Catálogo completo",
+      "Qualidade 4K",
+      "3 telas simultâneas",
+      "Conteúdo exclusivo",
+    ],
   },
   {
-    id: 'vip',
-    name: 'Plano VIP',
-    monthlyPrice: 199.00,
-    description: 'Acesso total + benefícios especiais',
-    features: ['Tudo do Premium', '5 telas simultâneas', 'Download offline', 'Suporte prioritário']
-  }
+    id: "vip",
+    name: "Plano VIP",
+    monthlyPrice: 199.0,
+    description: "Acesso total + benefícios especiais",
+    features: [
+      "Tudo do Premium",
+      "5 telas simultâneas",
+      "Download offline",
+      "Suporte prioritário",
+    ],
+  },
 ];
 
 export default function TransparentCheckout() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  
-  const [selectedPlan, setSelectedPlan] = useState('premium');
+
+  const [selectedPlan, setSelectedPlan] = useState("premium");
   const [selectedMonths, setSelectedMonths] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  
+  const [error, setError] = useState("");
+
   const [cardData, setCardData] = useState({
-    number: '',
-    name: '',
-    expiry: '',
-    cvv: '',
-    cpf: ''
+    number: "",
+    name: "",
+    expiry: "",
+    cvv: "",
+    cpf: "",
   });
 
   useEffect(() => {
     if (!user) {
-      navigate('/login?redirect=/payments');
+      navigate("/login?redirect=/payments");
       return;
     }
 
     // Se já é assinante ativo, redireciona
-    if (user.subscriptionStatus === 'ativo') {
-      navigate('/subscriber-dashboard');
+    if (user.subscriptionStatus === "ativo") {
+      navigate("/subscriber-dashboard");
       return;
     }
 
-    const planFromUrl = searchParams.get('plan');
-    if (planFromUrl && PLANS.find(p => p.id === planFromUrl)) {
+    const planFromUrl = searchParams.get("plan");
+    if (planFromUrl && PLANS.find((p) => p.id === planFromUrl)) {
       setSelectedPlan(planFromUrl);
     }
   }, [user, navigate, searchParams]);
 
   const calculateTotalPrice = () => {
-    const plan = PLANS.find(p => p.id === selectedPlan);
+    const plan = PLANS.find((p) => p.id === selectedPlan);
     if (!plan) return 0;
 
     // Se é novo usuário, tem 1 mês grátis
     const isNewUser = !user?.subscriptionStart;
-    const freeMonths = isNewUser ? 1 : (user?.freeMonthsRemaining || 0);
-    
+    const freeMonths = isNewUser ? 1 : user?.freeMonthsRemaining || 0;
+
     const billableMonths = Math.max(0, selectedMonths - freeMonths);
     return billableMonths * plan.monthlyPrice;
   };
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
     }).format(price);
   };
 
   const handleCardInputChange = (field: string, value: string) => {
-    setCardData(prev => ({ ...prev, [field]: value }));
+    setCardData((prev) => ({ ...prev, [field]: value }));
   };
 
   const formatCardNumber = (value: string) => {
-    return value.replace(/\D/g, '').replace(/(\d{4})(?=\d)/g, '$1 ').trim();
+    return value
+      .replace(/\D/g, "")
+      .replace(/(\d{4})(?=\d)/g, "$1 ")
+      .trim();
   };
 
   const formatExpiry = (value: string) => {
-    return value.replace(/\D/g, '').replace(/(\d{2})(\d)/, '$1/$2').slice(0, 5);
+    return value
+      .replace(/\D/g, "")
+      .replace(/(\d{2})(\d)/, "$1/$2")
+      .slice(0, 5);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!user) return;
-    
+
     setLoading(true);
-    setError('');
+    setError("");
 
     try {
-      const plan = PLANS.find(p => p.id === selectedPlan);
-      if (!plan) throw new Error('Plano não encontrado');
+      const plan = PLANS.find((p) => p.id === selectedPlan);
+      if (!plan) throw new Error("Plano não encontrado");
 
       const totalPrice = calculateTotalPrice();
-      
+
       // Criar pagamento no Mercado Pago
-      const response = await fetch('/api/checkout/transparent', {
-        method: 'POST',
+      const response = await fetch("/api/checkout/transparent", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('xnema_token')}`
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("xnema_token")}`,
         },
         body: JSON.stringify({
           userId: user.id,
@@ -148,31 +176,30 @@ export default function TransparentCheckout() {
           totalAmount: totalPrice,
           cardData: {
             ...cardData,
-            number: cardData.number.replace(/\s/g, '')
-          }
-        })
+            number: cardData.number.replace(/\s/g, ""),
+          },
+        }),
       });
 
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.message || 'Erro ao processar pagamento');
+        throw new Error(result.message || "Erro ao processar pagamento");
       }
 
       // Redirecionar para sucesso
-      navigate('/payment-success-transparent?payment_id=' + result.paymentId);
-
+      navigate("/payment-success-transparent?payment_id=" + result.paymentId);
     } catch (err: any) {
-      setError(err.message || 'Erro ao processar pagamento');
+      setError(err.message || "Erro ao processar pagamento");
     } finally {
       setLoading(false);
     }
   };
 
-  const selectedPlanData = PLANS.find(p => p.id === selectedPlan);
+  const selectedPlanData = PLANS.find((p) => p.id === selectedPlan);
   const totalPrice = calculateTotalPrice();
   const isNewUser = !user?.subscriptionStart;
-  const freeMonths = isNewUser ? 1 : (user?.freeMonthsRemaining || 0);
+  const freeMonths = isNewUser ? 1 : user?.freeMonthsRemaining || 0;
 
   if (!user) return null;
 
@@ -186,7 +213,7 @@ export default function TransparentCheckout() {
               🔒 Checkout Transparente
             </Badge>
             <h1 className="text-4xl lg:text-5xl font-bold text-white mb-4">
-              Finalize sua{' '}
+              Finalize sua{" "}
               <span className="text-transparent bg-gradient-to-r from-xnema-orange to-xnema-purple bg-clip-text">
                 Assinatura
               </span>
@@ -210,8 +237,12 @@ export default function TransparentCheckout() {
             <div className="space-y-6">
               <Card className="bg-xnema-surface border-gray-700">
                 <CardHeader>
-                  <CardTitle className="text-white">Escolha seu Plano</CardTitle>
-                  <CardDescription>Selecione o plano ideal para você</CardDescription>
+                  <CardTitle className="text-white">
+                    Escolha seu Plano
+                  </CardTitle>
+                  <CardDescription>
+                    Selecione o plano ideal para você
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {PLANS.map((plan) => (
@@ -219,8 +250,8 @@ export default function TransparentCheckout() {
                       key={plan.id}
                       className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
                         selectedPlan === plan.id
-                          ? 'border-xnema-orange bg-xnema-orange/10'
-                          : 'border-gray-600 hover:border-gray-500'
+                          ? "border-xnema-orange bg-xnema-orange/10"
+                          : "border-gray-600 hover:border-gray-500"
                       }`}
                       onClick={() => setSelectedPlan(plan.id)}
                     >
@@ -230,10 +261,16 @@ export default function TransparentCheckout() {
                           {formatPrice(plan.monthlyPrice)}/mês
                         </span>
                       </div>
-                      <p className="text-gray-400 text-sm mb-3">{plan.description}</p>
+                      <p className="text-gray-400 text-sm mb-3">
+                        {plan.description}
+                      </p>
                       <div className="flex flex-wrap gap-2">
                         {plan.features.map((feature, index) => (
-                          <Badge key={index} variant="secondary" className="text-xs">
+                          <Badge
+                            key={index}
+                            variant="secondary"
+                            className="text-xs"
+                          >
                             {feature}
                           </Badge>
                         ))}
@@ -246,20 +283,25 @@ export default function TransparentCheckout() {
               <Card className="bg-xnema-surface border-gray-700">
                 <CardHeader>
                   <CardTitle className="text-white">Duração</CardTitle>
-                  <CardDescription>Quantos meses deseja pagar antecipadamente?</CardDescription>
+                  <CardDescription>
+                    Quantos meses deseja pagar antecipadamente?
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Select value={selectedMonths.toString()} onValueChange={(value) => setSelectedMonths(Number(value))}>
+                  <Select
+                    value={selectedMonths.toString()}
+                    onValueChange={(value) => setSelectedMonths(Number(value))}
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       {[1, 3, 6, 12].map((months) => (
                         <SelectItem key={months} value={months.toString()}>
-                          {months} mês{months > 1 ? 'es' : ''}
+                          {months} mês{months > 1 ? "es" : ""}
                           {months >= 6 && (
                             <span className="text-green-400 ml-2">
-                              (Desconto de {months === 6 ? '5' : '10'}%)
+                              (Desconto de {months === 6 ? "5" : "10"}%)
                             </span>
                           )}
                         </SelectItem>
@@ -284,34 +326,52 @@ export default function TransparentCheckout() {
                   {selectedPlanData && (
                     <>
                       <div className="flex justify-between">
-                        <span className="text-gray-300">{selectedPlanData.name}:</span>
-                        <span className="text-white">{formatPrice(selectedPlanData.monthlyPrice)}/mês</span>
+                        <span className="text-gray-300">
+                          {selectedPlanData.name}:
+                        </span>
+                        <span className="text-white">
+                          {formatPrice(selectedPlanData.monthlyPrice)}/mês
+                        </span>
                       </div>
-                      
+
                       <div className="flex justify-between">
                         <span className="text-gray-300">Duração:</span>
-                        <span className="text-white">{selectedMonths} mês{selectedMonths > 1 ? 'es' : ''}</span>
+                        <span className="text-white">
+                          {selectedMonths} mês{selectedMonths > 1 ? "es" : ""}
+                        </span>
                       </div>
 
                       <div className="flex justify-between">
                         <span className="text-gray-300">Subtotal:</span>
-                        <span className="text-white">{formatPrice(selectedMonths * selectedPlanData.monthlyPrice)}</span>
+                        <span className="text-white">
+                          {formatPrice(
+                            selectedMonths * selectedPlanData.monthlyPrice,
+                          )}
+                        </span>
                       </div>
 
                       {freeMonths > 0 && (
                         <div className="flex justify-between text-green-400">
                           <span className="flex items-center gap-2">
                             <Gift className="w-4 h-4" />
-                            {freeMonths} mês{freeMonths > 1 ? 'es' : ''} grátis:
+                            {freeMonths} mês{freeMonths > 1 ? "es" : ""} grátis:
                           </span>
-                          <span>-{formatPrice(Math.min(freeMonths, selectedMonths) * selectedPlanData.monthlyPrice)}</span>
+                          <span>
+                            -
+                            {formatPrice(
+                              Math.min(freeMonths, selectedMonths) *
+                                selectedPlanData.monthlyPrice,
+                            )}
+                          </span>
                         </div>
                       )}
 
                       <div className="border-t border-gray-600 pt-4">
                         <div className="flex justify-between text-lg font-bold">
                           <span className="text-white">Total a pagar:</span>
-                          <span className="text-xnema-orange">{formatPrice(totalPrice)}</span>
+                          <span className="text-xnema-orange">
+                            {formatPrice(totalPrice)}
+                          </span>
                         </div>
                         {totalPrice === 0 && (
                           <p className="text-green-400 text-sm mt-2">
@@ -332,7 +392,9 @@ export default function TransparentCheckout() {
                       <CreditCard className="w-5 h-5 text-xnema-orange" />
                       Dados do Cartão
                     </CardTitle>
-                    <CardDescription>Informações seguras processadas pelo Mercado Pago</CardDescription>
+                    <CardDescription>
+                      Informações seguras processadas pelo Mercado Pago
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-4">
@@ -341,7 +403,12 @@ export default function TransparentCheckout() {
                         <Input
                           id="cardNumber"
                           value={cardData.number}
-                          onChange={(e) => handleCardInputChange('number', formatCardNumber(e.target.value))}
+                          onChange={(e) =>
+                            handleCardInputChange(
+                              "number",
+                              formatCardNumber(e.target.value),
+                            )
+                          }
                           placeholder="1234 5678 9012 3456"
                           maxLength={19}
                           required
@@ -353,7 +420,12 @@ export default function TransparentCheckout() {
                         <Input
                           id="cardName"
                           value={cardData.name}
-                          onChange={(e) => handleCardInputChange('name', e.target.value.toUpperCase())}
+                          onChange={(e) =>
+                            handleCardInputChange(
+                              "name",
+                              e.target.value.toUpperCase(),
+                            )
+                          }
                           placeholder="NOME COMO NO CARTÃO"
                           required
                         />
@@ -365,19 +437,29 @@ export default function TransparentCheckout() {
                           <Input
                             id="cardExpiry"
                             value={cardData.expiry}
-                            onChange={(e) => handleCardInputChange('expiry', formatExpiry(e.target.value))}
+                            onChange={(e) =>
+                              handleCardInputChange(
+                                "expiry",
+                                formatExpiry(e.target.value),
+                              )
+                            }
                             placeholder="MM/AA"
                             maxLength={5}
                             required
                           />
                         </div>
-                        
+
                         <div className="space-y-2">
                           <Label htmlFor="cardCvv">CVV</Label>
                           <Input
                             id="cardCvv"
                             value={cardData.cvv}
-                            onChange={(e) => handleCardInputChange('cvv', e.target.value.replace(/\D/g, ''))}
+                            onChange={(e) =>
+                              handleCardInputChange(
+                                "cvv",
+                                e.target.value.replace(/\D/g, ""),
+                              )
+                            }
                             placeholder="123"
                             maxLength={4}
                             required
@@ -390,7 +472,12 @@ export default function TransparentCheckout() {
                         <Input
                           id="cardCpf"
                           value={cardData.cpf}
-                          onChange={(e) => handleCardInputChange('cpf', e.target.value.replace(/\D/g, ''))}
+                          onChange={(e) =>
+                            handleCardInputChange(
+                              "cpf",
+                              e.target.value.replace(/\D/g, ""),
+                            )
+                          }
                           placeholder="00000000000"
                           maxLength={11}
                           required
@@ -410,7 +497,9 @@ export default function TransparentCheckout() {
                         ) : (
                           <>
                             <Shield className="w-5 h-5 mr-2" />
-                            {totalPrice > 0 ? `Pagar ${formatPrice(totalPrice)}` : 'Ativar Assinatura Gratuita'}
+                            {totalPrice > 0
+                              ? `Pagar ${formatPrice(totalPrice)}`
+                              : "Ativar Assinatura Gratuita"}
                           </>
                         )}
                       </Button>
@@ -428,10 +517,13 @@ export default function TransparentCheckout() {
                       Período Gratuito Ativo!
                     </h3>
                     <p className="text-green-300 mb-4">
-                      Você tem {freeMonths} mês{freeMonths > 1 ? 'es' : ''} gratuitos para aproveitar todo o conteúdo.
+                      Você tem {freeMonths} mês{freeMonths > 1 ? "es" : ""}{" "}
+                      gratuitos para aproveitar todo o conteúdo.
                     </p>
                     <Button
-                      onClick={() => handleSubmit({ preventDefault: () => {} } as any)}
+                      onClick={() =>
+                        handleSubmit({ preventDefault: () => {} } as any)
+                      }
                       disabled={loading}
                       className="bg-green-500 hover:bg-green-600 text-white"
                     >
@@ -455,11 +547,13 @@ export default function TransparentCheckout() {
               <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
                 <div className="flex items-center gap-3 mb-2">
                   <Shield className="w-5 h-5 text-blue-400" />
-                  <h4 className="font-semibold text-blue-400">Pagamento Seguro</h4>
+                  <h4 className="font-semibold text-blue-400">
+                    Pagamento Seguro
+                  </h4>
                 </div>
                 <p className="text-blue-300 text-sm">
-                  Seus dados são criptografados e processados diretamente pelo Mercado Pago. 
-                  Não armazenamos informações do cartão.
+                  Seus dados são criptografados e processados diretamente pelo
+                  Mercado Pago. Não armazenamos informações do cartão.
                 </p>
               </div>
             </div>

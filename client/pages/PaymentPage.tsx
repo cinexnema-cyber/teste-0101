@@ -1,21 +1,27 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContextReal';
-import { Layout } from '@/components/layout/Layout';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { 
-  CreditCard, 
-  Crown, 
-  Star, 
-  Check, 
-  ArrowRight, 
+import React, { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContextReal";
+import { Layout } from "@/components/layout/Layout";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  CreditCard,
+  Crown,
+  Star,
+  Check,
+  ArrowRight,
   Loader2,
   AlertCircle,
-  ExternalLink 
-} from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+  ExternalLink,
+} from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface Plan {
   id: string;
@@ -33,119 +39,118 @@ export default function PaymentPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [selectedPlan, setSelectedPlan] = useState<string>('');
+  const [selectedPlan, setSelectedPlan] = useState<string>("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState<string>("");
 
   // Planos mantidos da estrutura atual
   const plans: Plan[] = [
     {
-      id: 'monthly',
-      name: 'Plano Mensal',
-      price: 19.90,
-      period: 'mês',
-      description: 'Acesso completo por 30 dias',
+      id: "monthly",
+      name: "Plano Mensal",
+      price: 19.9,
+      period: "mês",
+      description: "Acesso completo por 30 dias",
       popular: false,
       features: [
-        'Catálogo completo sem limites',
-        'Qualidade 4K e HDR',
-        'Sem anúncios',
-        '2 telas simultâneas',
-        'Suporte via chat',
-        'Acesso a lançamentos exclusivos'
-      ]
+        "Catálogo completo sem limites",
+        "Qualidade 4K e HDR",
+        "Sem anúncios",
+        "2 telas simultâneas",
+        "Suporte via chat",
+        "Acesso a lançamentos exclusivos",
+      ],
     },
     {
-      id: 'yearly',
-      name: 'Plano Anual',
-      price: 199.00,
-      originalPrice: 238.80,
-      period: 'ano',
-      description: 'Melhor custo-benefício',
+      id: "yearly",
+      name: "Plano Anual",
+      price: 199.0,
+      originalPrice: 238.8,
+      period: "ano",
+      description: "Melhor custo-benefício",
       popular: true,
-      savings: 'Economize R$ 39,80 (16%)',
+      savings: "Economize R$ 39,80 (16%)",
       features: [
-        'Catálogo completo sem limites',
-        'Qualidade 4K e HDR',
-        'Sem anúncios',
-        '4 telas simultâneas',
-        'Download para assistir offline',
-        'Suporte prioritário',
-        'Acesso antecipado a novos lançamentos',
-        'Primeiro mês incluído'
-      ]
-    }
+        "Catálogo completo sem limites",
+        "Qualidade 4K e HDR",
+        "Sem anúncios",
+        "4 telas simultâneas",
+        "Download para assistir offline",
+        "Suporte prioritário",
+        "Acesso antecipado a novos lançamentos",
+        "Primeiro mês incluído",
+      ],
+    },
   ];
 
   useEffect(() => {
     // Se não está logado, redireciona para login
     if (!user) {
-      navigate('/login?redirect=/payments');
+      navigate("/login?redirect=/payments");
       return;
     }
 
     // Se já é assinante ativo, redireciona para dashboard
-    if (user.subscriptionStatus === 'ativo') {
-      navigate('/subscriber-dashboard');
+    if (user.subscriptionStatus === "ativo") {
+      navigate("/subscriber-dashboard");
       return;
     }
 
     // Seleciona plano da URL ou define padrão
-    const planFromUrl = searchParams.get('plan');
-    if (planFromUrl && plans.find(p => p.id === planFromUrl)) {
+    const planFromUrl = searchParams.get("plan");
+    if (planFromUrl && plans.find((p) => p.id === planFromUrl)) {
       setSelectedPlan(planFromUrl);
     } else {
-      setSelectedPlan('yearly'); // Plano padrão (mais popular)
+      setSelectedPlan("yearly"); // Plano padrão (mais popular)
     }
   }, [user, navigate, searchParams]);
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
     }).format(price);
   };
 
   const handlePayment = async (planId: string) => {
     if (!user) {
-      navigate('/login');
+      navigate("/login");
       return;
     }
 
     setLoading(true);
-    setError('');
+    setError("");
 
     try {
-      const response = await fetch('/api/payments/create', {
-        method: 'POST',
+      const response = await fetch("/api/payments/create", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify({
           userId: user.id,
-          planId: planId
-        })
+          planId: planId,
+        }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'Erro ao criar pagamento');
+        throw new Error(data.message || "Erro ao criar pagamento");
       }
 
       // Redireciona para o Mercado Pago
       window.location.href = data.checkoutUrl;
-
     } catch (err: any) {
-      console.error('Payment error:', err);
-      setError(err.message || 'Erro ao processar pagamento. Tente novamente.');
+      console.error("Payment error:", err);
+      setError(err.message || "Erro ao processar pagamento. Tente novamente.");
     } finally {
       setLoading(false);
     }
   };
 
-  const selectedPlanData = plans.find(p => p.id === selectedPlan);
+  const selectedPlanData = plans.find((p) => p.id === selectedPlan);
 
   if (!user) {
     return null; // Loading será gerenciado pelo useEffect
@@ -161,13 +166,14 @@ export default function PaymentPage() {
               💳 Pagamento Seguro
             </Badge>
             <h1 className="text-4xl lg:text-5xl font-bold text-white mb-4">
-              Finalize sua{' '}
+              Finalize sua{" "}
               <span className="text-transparent bg-gradient-to-r from-xnema-orange to-xnema-purple bg-clip-text">
                 Assinatura
               </span>
             </h1>
             <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-              Você será redirecionado para o Mercado Pago para concluir seu pagamento de forma segura
+              Você será redirecionado para o Mercado Pago para concluir seu
+              pagamento de forma segura
             </p>
           </div>
 
@@ -183,16 +189,18 @@ export default function PaymentPage() {
           <div className="grid lg:grid-cols-2 gap-8">
             {/* Seleção de Plano */}
             <div>
-              <h2 className="text-2xl font-bold text-white mb-6">Escolha seu Plano</h2>
-              
+              <h2 className="text-2xl font-bold text-white mb-6">
+                Escolha seu Plano
+              </h2>
+
               <div className="space-y-4">
                 {plans.map((plan) => (
                   <Card
                     key={plan.id}
                     className={`relative cursor-pointer transition-all ${
                       selectedPlan === plan.id
-                        ? 'bg-gradient-to-br from-xnema-purple/20 to-xnema-orange/20 border-xnema-orange'
-                        : 'bg-xnema-surface border-gray-700 hover:border-gray-600'
+                        ? "bg-gradient-to-br from-xnema-purple/20 to-xnema-orange/20 border-xnema-orange"
+                        : "bg-xnema-surface border-gray-700 hover:border-gray-600"
                     }`}
                     onClick={() => setSelectedPlan(plan.id)}
                   >
@@ -208,25 +216,33 @@ export default function PaymentPage() {
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-2">
-                            <div className={`w-4 h-4 rounded-full border-2 ${
-                              selectedPlan === plan.id 
-                                ? 'bg-xnema-orange border-xnema-orange' 
-                                : 'border-gray-400'
-                            }`}>
+                            <div
+                              className={`w-4 h-4 rounded-full border-2 ${
+                                selectedPlan === plan.id
+                                  ? "bg-xnema-orange border-xnema-orange"
+                                  : "border-gray-400"
+                              }`}
+                            >
                               {selectedPlan === plan.id && (
                                 <div className="w-2 h-2 bg-black rounded-full m-0.5" />
                               )}
                             </div>
-                            <h3 className="text-xl font-bold text-white">{plan.name}</h3>
+                            <h3 className="text-xl font-bold text-white">
+                              {plan.name}
+                            </h3>
                           </div>
-                          
-                          <p className="text-gray-400 text-sm mb-3">{plan.description}</p>
-                          
+
+                          <p className="text-gray-400 text-sm mb-3">
+                            {plan.description}
+                          </p>
+
                           <div className="flex items-baseline gap-2">
                             <span className="text-2xl font-bold text-xnema-orange">
                               {formatPrice(plan.price)}
                             </span>
-                            <span className="text-gray-400">/{plan.period}</span>
+                            <span className="text-gray-400">
+                              /{plan.period}
+                            </span>
                           </div>
 
                           {plan.originalPrice && (
@@ -241,7 +257,7 @@ export default function PaymentPage() {
                           )}
                         </div>
 
-                        {plan.id === 'yearly' && (
+                        {plan.id === "yearly" && (
                           <div className="text-right">
                             <Crown className="w-8 h-8 text-xnema-orange mb-2" />
                             <p className="text-xs text-green-400 font-semibold">
@@ -258,8 +274,10 @@ export default function PaymentPage() {
 
             {/* Resumo e Pagamento */}
             <div>
-              <h2 className="text-2xl font-bold text-white mb-6">Resumo do Pedido</h2>
-              
+              <h2 className="text-2xl font-bold text-white mb-6">
+                Resumo do Pedido
+              </h2>
+
               {selectedPlanData && (
                 <Card className="bg-xnema-surface border-gray-700 mb-6">
                   <CardHeader>
@@ -267,20 +285,27 @@ export default function PaymentPage() {
                       <Star className="w-5 h-5 text-xnema-orange" />
                       {selectedPlanData.name}
                     </CardTitle>
-                    <CardDescription>{selectedPlanData.description}</CardDescription>
+                    <CardDescription>
+                      {selectedPlanData.description}
+                    </CardDescription>
                   </CardHeader>
-                  
+
                   <CardContent>
                     <div className="space-y-3 mb-6">
-                      {selectedPlanData.features.slice(0, 4).map((feature, index) => (
-                        <div key={index} className="flex items-center gap-2">
-                          <Check className="w-4 h-4 text-green-500" />
-                          <span className="text-gray-300 text-sm">{feature}</span>
-                        </div>
-                      ))}
+                      {selectedPlanData.features
+                        .slice(0, 4)
+                        .map((feature, index) => (
+                          <div key={index} className="flex items-center gap-2">
+                            <Check className="w-4 h-4 text-green-500" />
+                            <span className="text-gray-300 text-sm">
+                              {feature}
+                            </span>
+                          </div>
+                        ))}
                       {selectedPlanData.features.length > 4 && (
                         <p className="text-gray-400 text-sm">
-                          +{selectedPlanData.features.length - 4} recursos adicionais
+                          +{selectedPlanData.features.length - 4} recursos
+                          adicionais
                         </p>
                       )}
                     </div>
@@ -292,16 +317,20 @@ export default function PaymentPage() {
                           {formatPrice(selectedPlanData.price)}
                         </span>
                       </div>
-                      
+
                       {selectedPlanData.originalPrice && (
                         <div className="flex justify-between items-center mb-2">
                           <span className="text-green-400">Desconto:</span>
                           <span className="text-green-400">
-                            -{formatPrice(selectedPlanData.originalPrice - selectedPlanData.price)}
+                            -
+                            {formatPrice(
+                              selectedPlanData.originalPrice -
+                                selectedPlanData.price,
+                            )}
                           </span>
                         </div>
                       )}
-                      
+
                       <div className="flex justify-between items-center text-lg font-bold border-t border-gray-600 pt-2">
                         <span className="text-white">Total:</span>
                         <span className="text-xnema-orange">
@@ -322,15 +351,17 @@ export default function PaymentPage() {
                     </div>
                     <div>
                       <h3 className="font-semibold text-white">Mercado Pago</h3>
-                      <p className="text-gray-400 text-sm">Pagamento seguro e protegido</p>
+                      <p className="text-gray-400 text-sm">
+                        Pagamento seguro e protegido
+                      </p>
                     </div>
                   </div>
-                  
+
                   <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
                     <p className="text-blue-400 text-sm">
-                      🔒 Você será redirecionado para o ambiente seguro do Mercado Pago 
-                      para finalizar seu pagamento. Após a confirmação, seu acesso será 
-                      liberado automaticamente.
+                      🔒 Você será redirecionado para o ambiente seguro do
+                      Mercado Pago para finalizar seu pagamento. Após a
+                      confirmação, seu acesso será liberado automaticamente.
                     </p>
                   </div>
                 </CardContent>
@@ -338,7 +369,9 @@ export default function PaymentPage() {
 
               {/* Botão de Pagamento */}
               <Button
-                onClick={() => selectedPlanData && handlePayment(selectedPlanData.id)}
+                onClick={() =>
+                  selectedPlanData && handlePayment(selectedPlanData.id)
+                }
                 disabled={loading || !selectedPlanData}
                 className="w-full bg-xnema-orange hover:bg-xnema-orange/90 text-black font-semibold py-6 text-lg"
               >
@@ -357,8 +390,8 @@ export default function PaymentPage() {
               </Button>
 
               <p className="text-center text-xs text-gray-400 mt-4">
-                Pagamento processado com segurança pelo Mercado Pago. 
-                Cancele quando quiser, sem taxas adicionais.
+                Pagamento processado com segurança pelo Mercado Pago. Cancele
+                quando quiser, sem taxas adicionais.
               </p>
             </div>
           </div>
@@ -367,20 +400,21 @@ export default function PaymentPage() {
           <div className="mt-16 grid md:grid-cols-3 gap-6">
             {[
               {
-                icon: '🔒',
-                title: 'Pagamento Seguro',
-                description: 'Seus dados protegidos com criptografia de ponta'
+                icon: "🔒",
+                title: "Pagamento Seguro",
+                description: "Seus dados protegidos com criptografia de ponta",
               },
               {
-                icon: '⚡',
-                title: 'Acesso Imediato',
-                description: 'Liberação automática após confirmação do pagamento'
+                icon: "⚡",
+                title: "Acesso Imediato",
+                description:
+                  "Liberação automática após confirmação do pagamento",
               },
               {
-                icon: '🎯',
-                title: 'Sem Compromisso',
-                description: 'Cancele a qualquer momento, sem multas'
-              }
+                icon: "🎯",
+                title: "Sem Compromisso",
+                description: "Cancele a qualquer momento, sem multas",
+              },
             ].map((item, index) => (
               <div key={index} className="text-center">
                 <div className="text-4xl mb-3">{item.icon}</div>

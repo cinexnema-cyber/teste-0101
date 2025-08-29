@@ -9,11 +9,14 @@ Sistema completo de upload, processamento e aprovação de vídeos para criadore
 ### ✅ 1. Backend - API e Infraestrutura
 
 #### Dependências Instaladas
+
 - `@mux/mux-node` - SDK oficial do Mux
 - `multer` - Middleware para upload de arquivos
 
 #### Modelos de Dados Criados
+
 - **Video** (`server/models/Video.ts`)
+
   - Metadados completos do vídeo
   - Integração com Mux (Asset ID, Playback ID)
   - Sistema de aprovação
@@ -30,6 +33,7 @@ Sistema completo de upload, processamento e aprovação de vídeos para criadore
 #### Endpoints da API
 
 **Upload de Vídeos** (`server/routes/video-upload.ts`)
+
 - `POST /api/videos/direct-upload` - Criar URL de upload direto (Mux)
 - `POST /api/videos/upload` - Upload tradicional com multer
 - `GET /api/videos/creator` - Listar vídeos do criador
@@ -38,6 +42,7 @@ Sistema completo de upload, processamento e aprovação de vídeos para criadore
 - `DELETE /api/videos/:videoId` - Deletar vídeo
 
 **Aprovação de Vídeos** (`server/routes/video-admin.ts`)
+
 - `GET /api/admin/videos/pending` - Vídeos pendentes de aprovação
 - `GET /api/admin/videos` - Todos os vídeos (com filtros)
 - `GET /api/admin/videos/:videoId/review` - Detalhes para revisão
@@ -47,6 +52,7 @@ Sistema completo de upload, processamento e aprovação de vídeos para criadore
 - `GET /api/admin/stats` - Estatísticas gerais
 
 **Limites de Criadores** (`server/routes/creator-limits.ts`)
+
 - `GET /api/creators/:creatorId/limits` - Consultar limites
 - `POST /api/creators/:creatorId/check-upload` - Verificar capacidade
 - `GET /api/admin/creators/limits` - Todos os criadores (admin)
@@ -55,9 +61,11 @@ Sistema completo de upload, processamento e aprovação de vídeos para criadore
 - `POST /api/admin/creators/:creatorId/allow` - Liberar upload
 
 **Webhooks** (`server/routes/mux-webhook.ts`)
+
 - `POST /api/webhooks/mux` - Receber atualizações do Mux
 
 #### Configuração Mux (`server/config/mux.ts`)
+
 - Cliente Mux configurado
 - Helpers para operações comuns
 - Política de reprodução privada
@@ -67,6 +75,7 @@ Sistema completo de upload, processamento e aprovação de vídeos para criadore
 ### ✅ 2. Frontend - Interface do Usuário
 
 #### Componente de Upload (`client/components/VideoUpload.tsx`)
+
 - Drag & drop de arquivos
 - Validação de tipo e tamanho (2GB máximo)
 - Formulário completo (título, descrição, categoria, tags)
@@ -75,12 +84,14 @@ Sistema completo de upload, processamento e aprovação de vídeos para criadore
 - Integração com Mux Direct Upload
 
 #### Página de Upload (`client/pages/VideoUploadPage.tsx`)
+
 - Layout completo com diretrizes
 - Benefícios para criadores
 - Processo de aprovação explicado
 - Links úteis e suporte
 
 #### Sistema de Aprovação Admin (`client/components/VideoApproval.tsx`)
+
 - Lista de vídeos pendentes
 - Preview de v��deos
 - Aprovação/rejeição com motivos
@@ -89,11 +100,13 @@ Sistema completo de upload, processamento e aprovação de vídeos para criadore
 - Paginação
 
 #### Página de Aprovação (`client/pages/VideoApprovalPage.tsx`)
+
 - Interface administrativa completa
 - Diretrizes de aprovação
 - Acesso restrito a administradores
 
 #### Gerenciamento de Limites (`client/components/CreatorLimits.tsx`)
+
 - Visualização de uso de armazenamento
 - Alertas de limite
 - Controles administrativos
@@ -102,15 +115,18 @@ Sistema completo de upload, processamento e aprovação de vídeos para criadore
 ### ✅ 3. Integração e Navegação
 
 #### Rotas Adicionadas
+
 - `/video-upload` - Página de upload para criadores
 - `/video-approval` - Página de aprovação para admins
 
 #### Links de Navegação
+
 - Portal do Criador → Botão "Upload Vídeo"
 - Header → Link "Aprovação" (apenas admins)
 - Menu mobile incluído
 
 #### Proteção de Rotas
+
 - Upload: Usuários autenticados
 - Aprovação: Apenas administradores
 - Limites: Criadores próprios ou admins
@@ -118,11 +134,13 @@ Sistema completo de upload, processamento e aprovação de vídeos para criadore
 ## 🔧 Configuração Técnica
 
 ### Credenciais Mux
+
 - **Environment Key**: `q3phve8l5rrei2ttt66viq3j0`
 - **Secret Key**: Configurar via `MUX_TOKEN_SECRET`
 - **Webhook URL**: `https://seu-dominio.com/api/webhooks/mux`
 
 ### Variáveis de Ambiente
+
 ```env
 MUX_TOKEN_ID=q3phve8l5rrei2ttt66viq3j0
 MUX_TOKEN_SECRET=sua_secret_key_aqui
@@ -130,6 +148,7 @@ FRONTEND_URL=http://localhost:8080
 ```
 
 ### Estrutura de Diretorios
+
 ```
 uploads/
 └── videos/          # Arquivos temporários de upload
@@ -138,6 +157,7 @@ uploads/
 ## 📊 Fluxo Completo de Upload
 
 ### 1. Criador Faz Upload
+
 1. Acessa `/video-upload`
 2. Preenche formulário (título, descrição, categoria)
 3. Seleciona arquivo de vídeo
@@ -146,12 +166,14 @@ uploads/
 6. Vídeo fica com status "uploading"
 
 ### 2. Processamento Automático
+
 1. Mux processa o vídeo
 2. Webhook atualiza status para "processing"
 3. Quando pronto, status muda para "pending_approval"
 4. Notificação para equipe de aprovação
 
 ### 3. Aprovação Administrativa
+
 1. Admin acessa `/video-approval`
 2. Visualiza lista de vídeos pendentes
 3. Revisa conteúdo e metadados
@@ -159,6 +181,7 @@ uploads/
 5. Vídeo aprovado fica disponível para assinantes
 
 ### 4. Disponibilização
+
 1. Vídeos aprovados aparecem na plataforma
 2. Acesso via URLs privadas do Mux
 3. Apenas assinantes podem visualizar
@@ -167,17 +190,20 @@ uploads/
 ## 🛡️ Validações e Segurança
 
 ### Validações de Upload
+
 - **Tipos permitidos**: MP4, MOV, AVI, WebM
 - **Tamanho máximo**: 2GB por arquivo
 - **Limite de armazenamento**: 100GB por criador
 - **Limite de vídeos**: 1000 por criador
 
 ### Controles de Acesso
+
 - **Uploads**: Apenas criadores autenticados
 - **Aprovação**: Apenas administradores
 - **Visualização**: Apenas assinantes (via URLs privadas)
 
 ### Período de Carência
+
 - **Duração**: 3 meses para novos criadores
 - **Benefício**: 100% da receita para o criador
 - **Pós-carência**: 70% criador, 30% plataforma
@@ -185,6 +211,7 @@ uploads/
 ## 📈 Monitoramento e Analytics
 
 ### Métricas Rastreadas
+
 - Visualizações por vídeo
 - Receita gerada
 - Taxa de aprovação
@@ -192,6 +219,7 @@ uploads/
 - Atividade de upload
 
 ### Relatórios Administrativos
+
 - Estatísticas gerais da plataforma
 - Performance por criador
 - Vídeos mais assistidos
@@ -200,12 +228,14 @@ uploads/
 ## 🔄 Webhooks e Automação
 
 ### Eventos Mux Suportados
+
 - `video.asset.ready` - Vídeo processado com sucesso
 - `video.asset.errored` - Erro no processamento
 - `video.upload.asset_created` - Upload direto concluído
 - `video.upload.errored` - Erro no upload
 
 ### Automações
+
 - Atualização automática de status
 - Liberação para aprovação
 - Limpeza de arquivos temporários
@@ -214,6 +244,7 @@ uploads/
 ## 🎯 Próximos Passos
 
 ### Melhorias Futuras
+
 1. **Thumbnails personalizadas** - Upload de miniaturas
 2. **Legendas automáticas** - Integração com serviços de transcrição
 3. **Análises avançadas** - Dashboard detalhado por vídeo
@@ -221,6 +252,7 @@ uploads/
 5. **API pública** - Para criadores desenvolverem ferramentas
 
 ### Otimizações
+
 1. **CDN** - Distribuição global de conteúdo
 2. **Compressão** - Otimização automática de vídeos
 3. **Streaming adaptativo** - Qualidade baseada na conexão
@@ -229,11 +261,13 @@ uploads/
 ## 📞 Suporte
 
 ### Para Criadores
+
 - **Upload**: Guia integrado na página de upload
 - **Limites**: Notificações automáticas de uso
 - **Aprovação**: Status transparente e feedback
 
 ### Para Administradores
+
 - **Documentação**: Diretrizes de aprovação
 - **Ferramentas**: Interface completa de gestão
 - **Relatórios**: Dashboards em tempo real
@@ -245,6 +279,7 @@ uploads/
 **🎉 SISTEMA COMPLETO E FUNCIONAL**
 
 Todas as funcionalidades do briefing foram implementadas:
+
 - ✅ Upload de vídeos por criadores
 - ✅ Armazenamento seguro no Mux
 - ✅ Vídeos privados com links seguros

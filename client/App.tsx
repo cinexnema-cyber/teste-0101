@@ -100,7 +100,10 @@ const App = () => (
               <Route path="/login" element={<Login />} />
               <Route path="/login-select" element={<LoginSelect />} />
               <Route path="/login/subscriber" element={<SubscriberLogin />} />
-              <Route path="/register-subscriber" element={<SubscriberRegister />} />
+              <Route
+                path="/register-subscriber"
+                element={<SubscriberRegister />}
+              />
               <Route path="/dashboard" element={<SubscriberDashboard />} />
               <Route path="/catalog" element={<ContentCatalog />} />
               <Route path="/pricing" element={<PricingPage />} />
@@ -314,22 +317,39 @@ const App = () => (
               <Route path="/contact" element={<Contact />} />
               <Route path="/content/:id" element={<ContentInfo />} />
               <Route path="/payment-options" element={<PaymentOptions />} />
-              <Route path="/payment-options-enhanced" element={<PaymentOptionsEnhanced />} />
+              <Route
+                path="/payment-options-enhanced"
+                element={<PaymentOptionsEnhanced />}
+              />
               <Route
                 path="/payments"
                 element={
-                  <ProtectedRoute allowedRoles={["user", "subscriber", "creator", "admin"]}>
+                  <ProtectedRoute
+                    allowedRoles={["user", "subscriber", "creator", "admin"]}
+                  >
                     <PaymentPage />
                   </ProtectedRoute>
                 }
               />
               <Route path="/payment-success" element={<PaymentSuccess />} />
-              <Route path="/payment-success-new" element={<PaymentSuccessNew />} />
+              <Route
+                path="/payment-success-new"
+                element={<PaymentSuccessNew />}
+              />
               <Route path="/payment-error" element={<PaymentError />} />
               <Route path="/payment-pending" element={<PaymentError />} />
-              <Route path="/creator-blocks/purchase-success" element={<BlocksPurchaseSuccess />} />
-              <Route path="/creator-blocks/purchase-error" element={<PaymentError />} />
-              <Route path="/creator-blocks/purchase-pending" element={<PaymentError />} />
+              <Route
+                path="/creator-blocks/purchase-success"
+                element={<BlocksPurchaseSuccess />}
+              />
+              <Route
+                path="/creator-blocks/purchase-error"
+                element={<PaymentError />}
+              />
+              <Route
+                path="/creator-blocks/purchase-pending"
+                element={<PaymentError />}
+              />
               <Route path="/payment-cancelled" element={<PaymentCancelled />} />
               <Route
                 path="/platform-analytics"

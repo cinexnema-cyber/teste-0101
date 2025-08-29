@@ -15,22 +15,22 @@ O sistema de upload de vídeos foi completamente implementado conforme especific
 ```typescript
 interface IVideo {
   // Metadados de Filme/S��rie
-  type: 'filme' | 'serie';
-  season?: number;        // se for série
-  episode?: number;       // se for série
+  type: "filme" | "serie";
+  season?: number; // se for série
+  episode?: number; // se for série
   director?: string;
   cast: string[];
   genre: string[];
   synopsis?: string;
   language?: string;
   releaseDate?: Date;
-  
+
   // Campos técnicos
-  duration: number;       // duração em minutos
+  duration: number; // duração em minutos
   thumbnailUrl?: string;
-  videoUrl?: string;      // Mux playback URL
-  approved: boolean;      // aprovação admin
-  
+  videoUrl?: string; // Mux playback URL
+  approved: boolean; // aprovação admin
+
   // Campos existentes mantidos...
 }
 ```
@@ -41,13 +41,13 @@ interface IVideo {
 
 ```typescript
 interface ICreatorBlocks {
-  blocksFree: number;           // 1 bloco gratuito
-  blocksPurchased: number;      // blocos pagos
-  freeBlockExpiry: Date;        // 3 meses de validade
-  totalBlocks: number;          // free + purchased
-  usedBlocks: number;           // blocos em uso
-  availableBlocks: number;      // blocos disponíveis
-  
+  blocksFree: number; // 1 bloco gratuito
+  blocksPurchased: number; // blocos pagos
+  freeBlockExpiry: Date; // 3 meses de validade
+  totalBlocks: number; // free + purchased
+  usedBlocks: number; // blocos em uso
+  availableBlocks: number; // blocos disponíveis
+
   // Métodos implementados:
   canUploadVideo(sizeGB): boolean;
   getActiveFreeBlocks(): number;
@@ -97,12 +97,14 @@ GET    /api/videos/:id              // Detalhes do vídeo
 ## 🎯 Fluxo Completo do Sistema
 
 ### 📝 1. Cadastro do Criador
+
 ```
 Criador cadastra → 1 bloco gratuito por 3 meses
 CreatorBlocks.createForCreator() → blocksFree: 1, freeBlockExpiry: +90 dias
 ```
 
 ### 🎬 2. Upload de Vídeo
+
 ```
 Criador preenche formulário:
 ├── Tipo: filme ou série
@@ -119,6 +121,7 @@ Sistema valida:
 ```
 
 ### 💳 3. Sistema de Blocos
+
 ```
 Bloco gratuito: 1 bloco por 3 meses
 Blocos pagos: R$ 1.000 por bloco (7.3GB)
@@ -126,6 +129,7 @@ Cálculo automático: sizeGB / 7.3 = blocos necessários
 ```
 
 ### ✅ 4. Aprovação do Admin
+
 ```
 Vídeo enviado → status: 'pending_approval'
 Admin acessa → /api/videos/pending-approval
@@ -134,6 +138,7 @@ Admin rejeita → blocos devolvidos ao criador
 ```
 
 ### 🎥 5. Disponibilização
+
 ```
 Vídeo aprovado → disponível para assinantes premium
 Visualizações contabilizadas
@@ -145,6 +150,7 @@ Revenue tracking ativo
 ## 🔧 Funcionalidades Implementadas
 
 ### ✅ **Upload de Filmes:**
+
 - Título, diretor, elenco, gênero
 - Sinopse, idioma, data de lançamento
 - Duração em minutos
@@ -152,24 +158,28 @@ Revenue tracking ativo
 - URLs de thumbnail e vídeo
 
 ### ✅ **Upload de Séries:**
+
 - Todos os campos de filme +
 - Temporada (obrigatório)
 - Episódio (obrigatório)
 - Validação específica para séries
 
 ### ✅ **Sistema de Blocos:**
+
 - 1 bloco gratuito por 3 meses
 - Cálculo automático baseado em tamanho
 - Compra via Mercado Pago
 - Controle de uso e disponibilidade
 
 ### ✅ **Aprovação Admin:**
+
 - Lista de vídeos pendentes
 - Aprovação/rejeição com motivos
 - Devolução de blocos se rejeitado
 - Liberação automática para assinantes
 
 ### ✅ **Portal do Criador:**
+
 - Status de blocos em tempo real
 - Indicador de período gratuito
 - Opções de compra (1, 5, 10 blocos)
@@ -180,27 +190,24 @@ Revenue tracking ativo
 ## 🎨 Interface do Usuário
 
 ### 📋 **Formulário de Upload:**
+
 ```tsx
 <VideoUploadForm>
-  ├── Seleção de tipo (Filme/Série)
-  ├── Campos básicos (título, duração, diretor)
-  ├── Campos de série (temporada/episódio) - condicionais
-  ├── Metadados (elenco, gênero, sinopse)
-  ├── URLs (thumbnail, vídeo)
-  ├── Calculadora de blocos automática
-  ├── Aviso se blocos insuficientes
-  └── Botão de compra integrado
+  ├── Seleção de tipo (Filme/Série) ├── Campos básicos (título, duração,
+  diretor) ├── Campos de série (temporada/episódio) - condicionais ├── Metadados
+  (elenco, gênero, sinopse) ├── URLs (thumbnail, vídeo) ├── Calculadora de
+  blocos automática ├── Aviso se blocos insuficientes └── Botão de compra
+  integrado
 </VideoUploadForm>
 ```
 
 ### 📊 **Portal de Blocos:**
+
 ```tsx
 <CreatorPortal>
-  ├── Cards de status (disponíveis, usados, comprados)
-  ├── Indicador de bloco gratuito ativo
-  ├── Barras de progresso de uso
-  ├── Opções de compra (1, 5, 10 blocos)
-  └── Integração com Mercado Pago
+  ├── Cards de status (disponíveis, usados, comprados) ├── Indicador de bloco
+  gratuito ativo ├── Barras de progresso de uso ├── Opções de compra (1, 5, 10
+  blocos) └── Integração com Mercado Pago
 </CreatorPortal>
 ```
 
@@ -209,6 +216,7 @@ Revenue tracking ativo
 ## 🚀 Benefícios da Implementação
 
 ### ✅ **Para Criadores:**
+
 - Formulário intuitivo com todos os campos necessários
 - Cálculo automático de custos
 - Período gratuito de 3 meses
@@ -216,18 +224,21 @@ Revenue tracking ativo
 - Compra fácil via Mercado Pago
 
 ### ✅ **Para Admins:**
+
 - Aprovação centralizada de conteúdo
 - Visualização completa dos metadados
 - Controle de qualidade
 - Devolução automática de blocos
 
 ### ✅ **Para Assinantes:**
+
 - Metadados ricos para descoberta
 - Organização por filme/série
 - Informações completas de elenco e direção
 - Navegação por temporadas/episódios
 
 ### ✅ **Para Plataforma:**
+
 - Monetização via sistema de blocos
 - Controle de armazenamento
 - Metadados estruturados para SEO
@@ -238,12 +249,14 @@ Revenue tracking ativo
 ## 🎯 Endpoints Principais
 
 ### 📤 **Upload e Criação:**
+
 ```bash
 POST /api/videos/create
 # Body: { title, type, season?, episode?, duration, director, cast, genre, synopsis, sizeGB... }
 ```
 
 ### 🏗️ **Gestão de Blocos:**
+
 ```bash
 GET  /api/creator/access                    # Status dos blocos
 POST /api/creator-blocks/:id/purchase       # Comprar blocos
@@ -251,6 +264,7 @@ POST /api/creator-blocks/:id/add-video      # Reservar blocos
 ```
 
 ### 🔍 **Aprovação Admin:**
+
 ```bash
 GET  /api/videos/pending-approval           # Lista pendentes
 POST /api/videos/:id/approve                # Aprovar
@@ -262,12 +276,14 @@ POST /api/videos/:id/reject                 # Rejeitar
 ## 📁 Arquivos Implementados/Atualizados
 
 ### 🔧 **Backend:**
+
 - ✅ `server/models/Video.ts` - Modelo atualizado com metadados
 - ✅ `server/models/CreatorBlocks.ts` - Sistema de blocos gratuitos
 - ✅ `server/routes/videos.ts` - Endpoints completos (NOVO)
 - ✅ `server/index.ts` - Rotas adicionadas
 
 ### 🎨 **Frontend:**
+
 - ✅ `client/components/VideoUploadForm.tsx` - Formulário completo (NOVO)
 - ✅ `client/components/CreatorPortal.tsx` - Portal de blocos (NOVO)
 - ✅ `client/pages/VideoUploadPage.tsx` - Página atualizada
@@ -279,7 +295,7 @@ POST /api/videos/:id/reject                 # Rejeitar
 ### ✅ **COMPLETAMENTE IMPLEMENTADO:**
 
 1. ✅ **Backend**: Modelo de vídeo com filme/série
-2. ✅ **Backend**: Sistema de blocos gratuitos + pagos  
+2. ✅ **Backend**: Sistema de blocos gratuitos + pagos
 3. ✅ **Backend**: Endpoints de upload e aprovação
 4. ✅ **Frontend**: Formulário com todos os metadados
 5. ✅ **Frontend**: Portal de gerenciamento de blocos
@@ -288,6 +304,7 @@ POST /api/videos/:id/reject                 # Rejeitar
 8. ✅ **Admin**: Aprovação/rejeição de vídeos
 
 ### 🎯 **Resultado:**
+
 - Sistema completo de upload com metadados de filme/série
 - Integração total com sistema de blocos
 - Fluxo do criador: Upload → Calculadora → Pagamento → Aprovação → Disponibilização

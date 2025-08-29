@@ -11,7 +11,7 @@ import {
   approveCreator,
   rejectCreator,
   getCreatorAnalytics,
-  generateAffiliateLink
+  generateAffiliateLink,
 } from "./routes/creator-registration";
 import { authenticateToken, requireSubscriber } from "./middleware/auth";
 import paymentsRouter from "./routes/payments";
@@ -27,7 +27,7 @@ import {
   createPayment,
   handleWebhook,
   getPaymentStatus,
-  getUserPayments
+  getUserPayments,
 } from "./routes/mercado-pago";
 import {
   getCreatorBlocks,
@@ -38,7 +38,7 @@ import {
   getPurchaseHistory,
   addVideoToBlocks,
   removeVideoFromBlocks,
-  getAllCreatorsBlocks
+  getAllCreatorsBlocks,
 } from "./routes/creator-blocks";
 import {
   uploadContent,
@@ -47,7 +47,10 @@ import {
   getPendingContent,
   recordView,
 } from "./routes/content";
-import { handleCreatorAnalytics, handleVideoAnalytics } from "./routes/analytics-creator";
+import {
+  handleCreatorAnalytics,
+  handleVideoAnalytics,
+} from "./routes/analytics-creator";
 import {
   createDirectUpload,
   uploadVideo,
@@ -55,7 +58,7 @@ import {
   getVideoById,
   updateVideo,
   deleteVideo,
-  videoUpload
+  videoUpload,
 } from "./routes/video-upload";
 import {
   getPendingVideos,
@@ -64,7 +67,7 @@ import {
   rejectVideo,
   deleteVideoAdmin,
   getVideoForReview,
-  getAdminStats
+  getAdminStats,
 } from "./routes/video-admin";
 import {
   getCreatorLimits,
@@ -73,7 +76,7 @@ import {
   allowCreatorUpload,
   getAllCreatorsLimits,
   checkUploadCapacity,
-  updateAllGracePeriods
+  updateAllGracePeriods,
 } from "./routes/creator-limits";
 import handleMuxWebhook, { verifyMuxWebhook } from "./routes/mux-webhook";
 // MongoDB initialization removed - using Supabase only
@@ -108,14 +111,14 @@ export function createServer() {
         success: true,
         message: "Banco de dados conectado",
         usersCount,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
     } catch (error) {
       console.error("❌ Erro ao verificar banco:", error);
       res.status(500).json({
         success: false,
         message: "Erro de conexão com banco de dados",
-        error: error.message
+        error: error.message,
       });
     }
   });
@@ -132,75 +135,77 @@ export function createServer() {
       const testUsers = [];
 
       // 1. Criar Assinante de teste
-      const subscriberExists = await User.findOne({ email: 'assinante@teste.com' });
+      const subscriberExists = await User.findOne({
+        email: "assinante@teste.com",
+      });
       if (!subscriberExists) {
         const subscriberUser = new User({
-          email: 'assinante@teste.com',
-          password: '123456',
-          nome: 'Assinante Teste',
-          role: 'subscriber',
+          email: "assinante@teste.com",
+          password: "123456",
+          nome: "Assinante Teste",
+          role: "subscriber",
           isPremium: true,
-          subscriptionStatus: 'active',
+          subscriptionStatus: "active",
           assinante: true,
-          subscriptionPlan: 'monthly',
+          subscriptionPlan: "monthly",
           subscriptionStart: new Date(),
-          watchHistory: []
+          watchHistory: [],
         });
         await subscriberUser.save();
-        testUsers.push({ email: 'assinante@teste.com', role: 'subscriber' });
-        console.log('✅ Usuário Assinante criado');
+        testUsers.push({ email: "assinante@teste.com", role: "subscriber" });
+        console.log("✅ Usuário Assinante criado");
       } else {
-        console.log('ℹ️ Usuário Assinante já existe');
+        console.log("ℹ️ Usuário Assinante já existe");
       }
 
       // 2. Criar Criador de teste
-      const creatorExists = await User.findOne({ email: 'criador@teste.com' });
+      const creatorExists = await User.findOne({ email: "criador@teste.com" });
       if (!creatorExists) {
         const creatorUser = new User({
-          email: 'criador@teste.com',
-          password: '123456',
-          nome: 'Criador Teste',
-          role: 'creator',
+          email: "criador@teste.com",
+          password: "123456",
+          nome: "Criador Teste",
+          role: "creator",
           isPremium: false,
-          subscriptionStatus: 'pending',
+          subscriptionStatus: "pending",
           assinante: false,
           creatorProfile: {
-            bio: 'Criador de conteúdo de teste',
-            portfolio: 'https://portfolio-teste.com',
-            status: 'approved',
+            bio: "Criador de conteúdo de teste",
+            portfolio: "https://portfolio-teste.com",
+            status: "approved",
             totalVideos: 0,
             approvedVideos: 0,
             rejectedVideos: 0,
             totalViews: 0,
             monthlyEarnings: 0,
             affiliateEarnings: 0,
-            referralCount: 0
-          }
+            referralCount: 0,
+          },
         });
         await creatorUser.save();
-        testUsers.push({ email: 'criador@teste.com', role: 'creator' });
-        console.log('✅ Usuário Criador criado');
+        testUsers.push({ email: "criador@teste.com", role: "creator" });
+        console.log("✅ Usuário Criador criado");
       } else {
-        console.log('ℹ️ Usuário Criador já existe');
+        console.log("ℹ️ Usuário Criador já existe");
       }
 
       // 3. Criar Admin de teste
-      const adminExists = await User.findOne({ email: 'admin@teste.com' });
+      const adminExists = await User.findOne({ email: "admin@teste.com" });
       if (!adminExists) {
         const adminUser = new User({
-          email: 'admin@teste.com',
-          password: '123456',
-          nome: 'Admin Teste',
-          role: 'admin',
+          email: "admin@teste.com",
+          password: "123456",
+          nome: "Admin Teste",
+          role: "admin",
           isPremium: true,
-          subscriptionStatus: 'active',
-          assinante: true
+          subscriptionStatus: "active",
+          assinante: true,
         });
         await adminUser.save();
-        testUsers.push({ email: 'admin@teste.com', role: 'admin' });
-        console.log('✅ Usuário Admin criado');
+        testUsers.push({ email: "admin@teste.com", role: "admin" });
+        console.log("✅ Usuário Admin criado");
       } else {
-        console.log('ℹ️ Usuário Admin já existe');
+        console.log("ℹ️ Usuário Admin já existe");
       }
 
       const finalUsersCount = await User.countDocuments();
@@ -211,10 +216,14 @@ export function createServer() {
         usersCreated: testUsers,
         totalUsers: finalUsersCount,
         credentials: [
-          { email: 'assinante@teste.com', password: '123456', role: 'subscriber' },
-          { email: 'criador@teste.com', password: '123456', role: 'creator' },
-          { email: 'admin@teste.com', password: '123456', role: 'admin' }
-        ]
+          {
+            email: "assinante@teste.com",
+            password: "123456",
+            role: "subscriber",
+          },
+          { email: "criador@teste.com", password: "123456", role: "creator" },
+          { email: "admin@teste.com", password: "123456", role: "admin" },
+        ],
       });
     } catch (error) {
       console.error("❌ Erro ao criar usuários de teste:", error);
@@ -294,7 +303,7 @@ export function createServer() {
     creatorLogin,
     createEmergencyUser,
     listAllUsers,
-    initializeSystemUsers
+    initializeSystemUsers,
   } = require("./routes/login-system");
 
   // Universal login (works for any role)
@@ -305,7 +314,7 @@ export function createServer() {
     registerSubscriberSupabase,
     loginSubscriberSupabase,
     activateSubscriptionSupabase,
-    getCurrentUserSupabase
+    getCurrentUserSupabase,
   } = require("./routes/auth-supabase");
 
   // Subscriber authentication routes
@@ -320,12 +329,16 @@ export function createServer() {
     getSessionStatus,
     handleStripeWebhook,
     getPlans,
-    cancelSubscription
+    cancelSubscription,
   } = require("./routes/payment-stripe");
 
   app.post("/api/payment/create-checkout-session", createCheckoutSession);
   app.get("/api/payment/session-status/:sessionId", getSessionStatus);
-  app.post("/api/payment/stripe-webhook", express.raw({type: 'application/json'}), handleStripeWebhook);
+  app.post(
+    "/api/payment/stripe-webhook",
+    express.raw({ type: "application/json" }),
+    handleStripeWebhook,
+  );
   app.get("/api/payment/plans", getPlans);
   app.post("/api/payment/cancel-subscription", cancelSubscription);
 
@@ -336,7 +349,7 @@ export function createServer() {
     recordWatch,
     getWatchHistory,
     getGenres,
-    getFeaturedContent
+    getFeaturedContent,
   } = require("./routes/content-catalog");
 
   app.get("/api/content/catalog", authenticateToken, getCatalog);
@@ -351,13 +364,25 @@ export function createServer() {
     getPersonalizedRecommendations,
     getSimilarContent,
     getTrendingContent,
-    rateContent
+    rateContent,
   } = require("./routes/recommendations");
 
-  app.get("/api/recommendations/for-you", authenticateToken, getPersonalizedRecommendations);
+  app.get(
+    "/api/recommendations/for-you",
+    authenticateToken,
+    getPersonalizedRecommendations,
+  );
   app.get("/api/recommendations/similar/:contentId", getSimilarContent);
-  app.get("/api/recommendations/trending", authenticateToken, getTrendingContent);
-  app.post("/api/recommendations/rate/:contentId", authenticateToken, rateContent);
+  app.get(
+    "/api/recommendations/trending",
+    authenticateToken,
+    getTrendingContent,
+  );
+  app.post(
+    "/api/recommendations/rate/:contentId",
+    authenticateToken,
+    rateContent,
+  );
 
   // Creator login (keep existing)
   app.post("/api/auth/login-creator", creatorLogin);
@@ -367,7 +392,11 @@ export function createServer() {
   app.get("/api/admin/list-users", listAllUsers);
 
   // Admin login routes for Iarima
-  const { adminLogin, createAdminUsers, checkAdminStatus } = require("./routes/admin-login");
+  const {
+    adminLogin,
+    createAdminUsers,
+    checkAdminStatus,
+  } = require("./routes/admin-login");
   app.post("/api/admin/login", adminLogin);
   app.post("/api/admin/create-admins", createAdminUsers);
   app.get("/api/admin/status", checkAdminStatus);
@@ -380,10 +409,18 @@ export function createServer() {
   // Creator registration routes
   app.post("/api/creators/register", registerCreator);
   app.get("/api/creators/pending", authenticateToken, getPendingCreators);
-  app.post("/api/creators/:creatorId/approve", authenticateToken, approveCreator);
+  app.post(
+    "/api/creators/:creatorId/approve",
+    authenticateToken,
+    approveCreator,
+  );
   app.post("/api/creators/:creatorId/reject", authenticateToken, rejectCreator);
   app.get("/api/creators/analytics", authenticateToken, getCreatorAnalytics);
-  app.post("/api/creators/affiliate-link", authenticateToken, generateAffiliateLink);
+  app.post(
+    "/api/creators/affiliate-link",
+    authenticateToken,
+    generateAffiliateLink,
+  );
 
   // Endpoints específicos para Builder.io
   app.post("/api/auth/cadastrar", async (req, res) => {
@@ -615,7 +652,11 @@ export function createServer() {
   app.get("/api/payments/user/:userId", authenticateToken, getUserPayments);
 
   // Webhook retry routes
-  const { processRetries, getWebhookLogs, retrySpecificWebhook } = require("./routes/webhook-retry");
+  const {
+    processRetries,
+    getWebhookLogs,
+    retrySpecificWebhook,
+  } = require("./routes/webhook-retry");
   app.post("/api/webhooks/process-retries", processRetries);
   app.get("/api/webhooks/logs", getWebhookLogs);
   app.post("/api/webhooks/retry/:webhookId", retrySpecificWebhook);
@@ -628,7 +669,7 @@ export function createServer() {
     getPendingVideos,
     approveVideo,
     rejectVideo,
-    getVideoDetails
+    getVideoDetails,
   } = require("./routes/videos");
   app.post("/api/videos/create", authenticateToken, createVideo);
   app.get("/api/creator/access", authenticateToken, getCreatorAccess);
@@ -639,14 +680,21 @@ export function createServer() {
   app.get("/api/videos/:videoId", getVideoDetails);
 
   // Protected routes examples using authRole middleware
-  const { authRole, authSubscriber, authCreator, authAdmin, requirePremium, requireApprovedCreator } = require("./middleware/authRole");
+  const {
+    authRole,
+    authSubscriber,
+    authCreator,
+    authAdmin,
+    requirePremium,
+    requireApprovedCreator,
+  } = require("./middleware/authRole");
 
   // Creator dashboard - only for creators
   app.get("/api/creator/dashboard", authCreator, async (req, res) => {
     res.json({
       success: true,
       message: "Bem-vindo, criador!",
-      user: req.user
+      user: req.user,
     });
   });
 
@@ -656,7 +704,7 @@ export function createServer() {
       success: true,
       message: "Bem-vindo, assinante!",
       user: req.user,
-      isPremium: req.user.isPremium
+      isPremium: req.user.isPremium,
     });
   });
 
@@ -665,7 +713,7 @@ export function createServer() {
     res.json({
       success: true,
       message: "Conteúdo premium desbloqueado!",
-      content: "Este é um conteúdo exclusivo para assinantes premium"
+      content: "Este é um conteúdo exclusivo para assinantes premium",
     });
   });
 
@@ -674,28 +722,60 @@ export function createServer() {
     res.json({
       success: true,
       message: "Painel administrativo",
-      user: req.user
+      user: req.user,
     });
   });
 
   // Approved creator features - only for approved creators
-  app.get("/api/creator/advanced-features", requireApprovedCreator, async (req, res) => {
-    res.json({
-      success: true,
-      message: "Funcionalidades avançadas desbloqueadas!",
-      features: ["analytics_advanced", "monetization_tools", "priority_support"]
-    });
-  });
+  app.get(
+    "/api/creator/advanced-features",
+    requireApprovedCreator,
+    async (req, res) => {
+      res.json({
+        success: true,
+        message: "Funcionalidades avançadas desbloqueadas!",
+        features: [
+          "analytics_advanced",
+          "monetization_tools",
+          "priority_support",
+        ],
+      });
+    },
+  );
 
   // Creator blocks routes
-  app.get("/api/creator-blocks/:creatorId", authenticateToken, getCreatorBlocks);
+  app.get(
+    "/api/creator-blocks/:creatorId",
+    authenticateToken,
+    getCreatorBlocks,
+  );
   app.post("/api/creator-blocks/calculate", calculateBlocks);
-  app.post("/api/creator-blocks/:creatorId/check-upload", authenticateToken, checkUploadCapacity);
-  app.post("/api/creator-blocks/:creatorId/purchase", authenticateToken, purchaseBlocks);
+  app.post(
+    "/api/creator-blocks/:creatorId/check-upload",
+    authenticateToken,
+    checkUploadCapacity,
+  );
+  app.post(
+    "/api/creator-blocks/:creatorId/purchase",
+    authenticateToken,
+    purchaseBlocks,
+  );
   app.post("/api/creator-blocks/webhook", handleBlocksWebhook);
-  app.get("/api/creator-blocks/:creatorId/purchases", authenticateToken, getPurchaseHistory);
-  app.post("/api/creator-blocks/:creatorId/add-video", authenticateToken, addVideoToBlocks);
-  app.post("/api/creator-blocks/:creatorId/remove-video", authenticateToken, removeVideoFromBlocks);
+  app.get(
+    "/api/creator-blocks/:creatorId/purchases",
+    authenticateToken,
+    getPurchaseHistory,
+  );
+  app.post(
+    "/api/creator-blocks/:creatorId/add-video",
+    authenticateToken,
+    addVideoToBlocks,
+  );
+  app.post(
+    "/api/creator-blocks/:creatorId/remove-video",
+    authenticateToken,
+    removeVideoFromBlocks,
+  );
   app.get("/api/admin/creator-blocks", authenticateToken, getAllCreatorsBlocks);
 
   // Pre-payment user registration (with limited access)
@@ -849,7 +929,12 @@ export function createServer() {
 
   // Video upload routes for creators
   app.post("/api/videos/direct-upload", authenticateToken, createDirectUpload);
-  app.post("/api/videos/upload", authenticateToken, videoUpload.single('video'), uploadVideo);
+  app.post(
+    "/api/videos/upload",
+    authenticateToken,
+    videoUpload.single("video"),
+    uploadVideo,
+  );
   app.get("/api/videos/creator", authenticateToken, getCreatorVideos);
   app.get("/api/videos/:videoId", authenticateToken, getVideoById);
   app.put("/api/videos/:videoId", authenticateToken, updateVideo);
@@ -858,20 +943,56 @@ export function createServer() {
   // Video admin routes
   app.get("/api/admin/videos/pending", authenticateToken, getPendingVideos);
   app.get("/api/admin/videos", authenticateToken, getAllVideos);
-  app.get("/api/admin/videos/:videoId/review", authenticateToken, getVideoForReview);
-  app.post("/api/admin/videos/:videoId/approve", authenticateToken, approveVideo);
+  app.get(
+    "/api/admin/videos/:videoId/review",
+    authenticateToken,
+    getVideoForReview,
+  );
+  app.post(
+    "/api/admin/videos/:videoId/approve",
+    authenticateToken,
+    approveVideo,
+  );
   app.post("/api/admin/videos/:videoId/reject", authenticateToken, rejectVideo);
   app.delete("/api/admin/videos/:videoId", authenticateToken, deleteVideoAdmin);
   app.get("/api/admin/stats", authenticateToken, getAdminStats);
 
   // Creator limits routes
-  app.get("/api/creators/:creatorId/limits", authenticateToken, getCreatorLimits);
-  app.post("/api/creators/:creatorId/check-upload", authenticateToken, checkUploadCapacity);
-  app.get("/api/admin/creators/limits", authenticateToken, getAllCreatorsLimits);
-  app.put("/api/admin/creators/:creatorId/limits", authenticateToken, updateCreatorLimits);
-  app.post("/api/admin/creators/:creatorId/restrict", authenticateToken, restrictCreatorUpload);
-  app.post("/api/admin/creators/:creatorId/allow", authenticateToken, allowCreatorUpload);
-  app.post("/api/admin/creators/update-grace-periods", authenticateToken, updateAllGracePeriods);
+  app.get(
+    "/api/creators/:creatorId/limits",
+    authenticateToken,
+    getCreatorLimits,
+  );
+  app.post(
+    "/api/creators/:creatorId/check-upload",
+    authenticateToken,
+    checkUploadCapacity,
+  );
+  app.get(
+    "/api/admin/creators/limits",
+    authenticateToken,
+    getAllCreatorsLimits,
+  );
+  app.put(
+    "/api/admin/creators/:creatorId/limits",
+    authenticateToken,
+    updateCreatorLimits,
+  );
+  app.post(
+    "/api/admin/creators/:creatorId/restrict",
+    authenticateToken,
+    restrictCreatorUpload,
+  );
+  app.post(
+    "/api/admin/creators/:creatorId/allow",
+    authenticateToken,
+    allowCreatorUpload,
+  );
+  app.post(
+    "/api/admin/creators/update-grace-periods",
+    authenticateToken,
+    updateAllGracePeriods,
+  );
 
   // Mux webhook endpoint (no authentication required for webhooks)
   app.post("/api/webhooks/mux", verifyMuxWebhook, handleMuxWebhook);
@@ -884,15 +1005,15 @@ export function createServer() {
         return res.status(403).json({ message: "Acesso negado" });
       }
 
-      const { createClient } = require('@supabase/supabase-js');
+      const { createClient } = require("@supabase/supabase-js");
       const supabaseUrl = process.env.SUPABASE_URL!;
       const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
       const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
       const { data: users, error } = await supabase
-        .from('users')
-        .select('id, email, name, role, is_premium, created_at')
-        .order('created_at', { ascending: false });
+        .from("users")
+        .select("id, email, name, role, is_premium, created_at")
+        .order("created_at", { ascending: false });
 
       if (error) {
         throw error;
@@ -904,7 +1025,9 @@ export function createServer() {
         subscribers: users?.filter((u) => u.role === "subscriber").length || 0,
         creators: users?.filter((u) => u.role === "creator").length || 0,
         admins: users?.filter((u) => u.role === "admin").length || 0,
-        activeSubscribers: users?.filter((u) => u.role === "subscriber" && u.is_premium).length || 0,
+        activeSubscribers:
+          users?.filter((u) => u.role === "subscriber" && u.is_premium)
+            .length || 0,
       };
 
       console.log("📊 Usuários cadastrados:", stats);
@@ -924,19 +1047,19 @@ export function createServer() {
   // Debug route to show database status - using Supabase
   app.get("/api/debug/db-status", async (req, res) => {
     try {
-      const { createClient } = require('@supabase/supabase-js');
+      const { createClient } = require("@supabase/supabase-js");
       const supabaseUrl = process.env.SUPABASE_URL!;
       const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
       const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
       const { count: userCount, error: countError } = await supabase
-        .from('users')
-        .select('*', { count: 'exact', head: true });
+        .from("users")
+        .select("*", { count: "exact", head: true });
 
       const { data: recentUsers, error: usersError } = await supabase
-        .from('users')
-        .select('email, role, created_at')
-        .order('created_at', { ascending: false })
+        .from("users")
+        .select("email, role, created_at")
+        .order("created_at", { ascending: false })
         .limit(5);
 
       if (countError || usersError) {
@@ -999,8 +1122,8 @@ export function createServer() {
 
   // Analytics routes (simplified version)
   try {
-    const analyticsRouter = require('./routes/analytics-simple').default;
-    app.use('/api/analytics', analyticsRouter);
+    const analyticsRouter = require("./routes/analytics-simple").default;
+    app.use("/api/analytics", analyticsRouter);
     console.log("✅ Analytics routes (simplified) loaded");
   } catch (error) {
     console.warn("⚠️ Analytics routes not available:", error.message);
@@ -1008,8 +1131,8 @@ export function createServer() {
 
   // Contact routes
   try {
-    const contactRouter = require('./routes/contact').default;
-    app.use('/api/contact', contactRouter);
+    const contactRouter = require("./routes/contact").default;
+    app.use("/api/contact", contactRouter);
     console.log("✅ Contact routes loaded");
   } catch (error) {
     console.warn("⚠️ Contact routes not available:", error.message);

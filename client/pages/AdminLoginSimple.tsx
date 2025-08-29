@@ -1,60 +1,64 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
-import { 
-  Crown, 
-  Shield, 
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import {
+  Crown,
+  Shield,
   CheckCircle,
-  AlertCircle, 
+  AlertCircle,
   Loader2,
   Settings,
   Users,
-  Database
-} from 'lucide-react';
+  Database,
+} from "lucide-react";
 
 export default function AdminLoginSimple() {
   const navigate = useNavigate();
-  
+
   const [isLoading, setIsLoading] = useState(false);
-  const [success, setSuccess] = useState('');
-  const [error, setError] = useState('');
+  const [success, setSuccess] = useState("");
+  const [error, setError] = useState("");
 
   const adminLogin = async () => {
     setIsLoading(true);
-    setError('');
-    
+    setError("");
+
     try {
-      console.log('👑 Fazendo login como admin...');
-      
-      const response = await fetch('/api/admin/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
+      console.log("👑 Fazendo login como admin...");
+
+      const response = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
       });
 
       const data = await response.json();
-      
+
       if (data.success && data.token) {
         // Store auth data
-        localStorage.setItem('xnema_token', data.token);
-        localStorage.setItem('xnema_user', JSON.stringify(data.user));
-        
+        localStorage.setItem("xnema_token", data.token);
+        localStorage.setItem("xnema_user", JSON.stringify(data.user));
+
         setSuccess(`Login realizado como ${data.user.name}!`);
-        
+
         // Redirect to admin dashboard
         setTimeout(() => {
-          navigate('/admin-dashboard');
+          navigate("/admin-dashboard");
         }, 1500);
-
       } else {
-        setError(data.message || 'Erro no login de admin');
+        setError(data.message || "Erro no login de admin");
       }
-
     } catch (error) {
-      console.error('❌ Erro no login:', error);
-      setError('Erro de conexão. Tente novamente.');
+      console.error("❌ Erro no login:", error);
+      setError("Erro de conexão. Tente novamente.");
     } finally {
       setIsLoading(false);
     }
@@ -62,25 +66,24 @@ export default function AdminLoginSimple() {
 
   const createAdmins = async () => {
     setIsLoading(true);
-    setError('');
-    
+    setError("");
+
     try {
-      const response = await fetch('/api/admin/create-admins', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
+      const response = await fetch("/api/admin/create-admins", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
       });
 
       const data = await response.json();
-      
+
       if (data.success) {
         setSuccess(`Admins configurados! Total: ${data.totalAdmins}`);
       } else {
-        setError('Erro ao criar admins');
+        setError("Erro ao criar admins");
       }
-
     } catch (error) {
-      console.error('❌ Erro:', error);
-      setError('Erro de conexão');
+      console.error("❌ Erro:", error);
+      setError("Erro de conexão");
     } finally {
       setIsLoading(false);
     }
@@ -88,21 +91,20 @@ export default function AdminLoginSimple() {
 
   const checkStatus = async () => {
     setIsLoading(true);
-    setError('');
-    
+    setError("");
+
     try {
-      const response = await fetch('/api/admin/status');
+      const response = await fetch("/api/admin/status");
       const data = await response.json();
-      
+
       if (data.success) {
         setSuccess(`Status: ${data.totalAdmins} admins encontrados`);
       } else {
-        setError('Erro ao verificar status');
+        setError("Erro ao verificar status");
       }
-
     } catch (error) {
-      console.error('❌ Erro:', error);
-      setError('Erro de conexão');
+      console.error("❌ Erro:", error);
+      setError("Erro de conexão");
     } finally {
       setIsLoading(false);
     }
@@ -117,9 +119,11 @@ export default function AdminLoginSimple() {
             <div className="w-16 h-16 bg-gradient-to-r from-red-500 to-red-600 rounded-full flex items-center justify-center shadow-lg">
               <Crown className="w-8 h-8 text-white" />
             </div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-red-400 to-red-600 bg-clip-text text-transparent">XNEMA</h1>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-red-400 to-red-600 bg-clip-text text-transparent">
+              XNEMA
+            </h1>
           </div>
-          
+
           <div className="space-y-2">
             <Badge className="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-1.5 text-sm">
               <Shield className="w-4 h-4 mr-2" />
@@ -139,7 +143,7 @@ export default function AdminLoginSimple() {
               Iarima Temiski - Acesso Total
             </CardDescription>
           </CardHeader>
-          
+
           <CardContent className="p-6 space-y-4">
             {/* Quick Admin Login */}
             <Button
@@ -171,7 +175,7 @@ export default function AdminLoginSimple() {
                 <Database className="w-4 h-4 mr-2" />
                 Status
               </Button>
-              
+
               <Button
                 onClick={createAdmins}
                 disabled={isLoading}
@@ -204,10 +208,16 @@ export default function AdminLoginSimple() {
 
             {/* Credentials Info */}
             <div className="mt-6 p-4 bg-slate-700/50 rounded-lg">
-              <p className="text-xs text-slate-400 mb-2 font-medium">Credenciais do Admin:</p>
+              <p className="text-xs text-slate-400 mb-2 font-medium">
+                Credenciais do Admin:
+              </p>
               <div className="text-xs space-y-1 text-slate-300">
-                <p><strong>Email:</strong> iarima@xnema.com</p>
-                <p><strong>Senha:</strong> iarima123</p>
+                <p>
+                  <strong>Email:</strong> iarima@xnema.com
+                </p>
+                <p>
+                  <strong>Senha:</strong> iarima123
+                </p>
                 <p className="text-slate-400 mt-2">
                   * Login automático criará o usuário se necessário
                 </p>
@@ -228,16 +238,16 @@ export default function AdminLoginSimple() {
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <Button 
-                  variant="ghost" 
-                  onClick={() => navigate('/login/subscriber')}
+                <Button
+                  variant="ghost"
+                  onClick={() => navigate("/login/subscriber")}
                   className="text-sm text-slate-400 hover:text-slate-200"
                 >
                   Área Assinante
                 </Button>
-                <Button 
-                  variant="ghost" 
-                  onClick={() => navigate('/login/creator')}
+                <Button
+                  variant="ghost"
+                  onClick={() => navigate("/login/creator")}
                   className="text-sm text-slate-400 hover:text-slate-200"
                 >
                   Área Criador
@@ -249,9 +259,9 @@ export default function AdminLoginSimple() {
 
         {/* Back to Selection */}
         <div className="text-center">
-          <Button 
-            variant="ghost" 
-            onClick={() => navigate('/login-select')}
+          <Button
+            variant="ghost"
+            onClick={() => navigate("/login-select")}
             className="text-sm text-slate-400 hover:text-slate-200"
           >
             ← Voltar para Seleção

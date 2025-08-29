@@ -154,7 +154,7 @@ export default function Login() {
             onSubmit={handleLogin}
             className="space-y-4"
             onKeyDown={(e) => {
-              if (e.key === 'Enter' && e.target instanceof HTMLInputElement) {
+              if (e.key === "Enter" && e.target instanceof HTMLInputElement) {
                 e.preventDefault();
                 handleLogin(e as any);
               }
@@ -193,11 +193,14 @@ export default function Login() {
                 onChange={handleInputChange}
                 placeholder="seu@email.com"
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
+                  if (e.key === "Enter") {
                     e.preventDefault();
-                    const form = e.currentTarget.closest('form');
+                    const form = e.currentTarget.closest("form");
                     if (form) {
-                      const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+                      const submitEvent = new Event("submit", {
+                        bubbles: true,
+                        cancelable: true,
+                      });
                       form.dispatchEvent(submitEvent);
                     }
                   }
@@ -218,11 +221,14 @@ export default function Login() {
                   placeholder="Digite sua senha"
                   className="pr-10"
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
+                    if (e.key === "Enter") {
                       e.preventDefault();
-                      const form = e.currentTarget.closest('form');
+                      const form = e.currentTarget.closest("form");
                       if (form) {
-                        const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+                        const submitEvent = new Event("submit", {
+                          bubbles: true,
+                          cancelable: true,
+                        });
                         form.dispatchEvent(submitEvent);
                       }
                     }

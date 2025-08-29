@@ -15,16 +15,20 @@ const JWT_SECRET = process.env.JWT_SECRET || "xnema-secret-key-2024";
  * Uso: authRole(['creator']) ou authRole(['subscriber', 'premium'])
  */
 export function authRole(roles: string[] | string) {
-  return async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  return async (
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction,
+  ) => {
     try {
       // Extract token from Authorization header
       const authHeader = req.headers.authorization;
-      const token = authHeader?.split(' ')[1];
+      const token = authHeader?.split(" ")[1];
 
       if (!token) {
-        return res.status(401).json({ 
+        return res.status(401).json({
           success: false,
-          message: 'Token de acesso requerido' 
+          message: "Token de acesso requerido",
         });
       }
 
@@ -34,9 +38,9 @@ export function authRole(roles: string[] | string) {
       // Verify user still exists and get latest data
       const user = await User.findById(decoded.userId);
       if (!user) {
-        return res.status(401).json({ 
+        return res.status(401).json({
           success: false,
-          message: 'Usuário não encontrado' 
+          message: "Usuário não encontrado",
         });
       }
 
@@ -45,34 +49,40 @@ export function authRole(roles: string[] | string) {
 
       // Check if user's role is in allowed roles
       if (!allowedRoles.includes(user.role)) {
-        console.log(`❌ Acesso negado: ${user.email} (${user.role}) tentou acessar rota que requer: ${allowedRoles.join(', ')}`);
-        return res.status(403).json({ 
+        console.log(
+          `❌ Acesso negado: ${user.email} (${user.role}) tentou acessar rota que requer: ${allowedRoles.join(", ")}`,
+        );
+        return res.status(403).json({
           success: false,
-          message: 'Acesso negado para esta função' 
+          message: "Acesso negado para esta função",
         });
       }
 
       // Special checks for specific roles
-      if (user.role === 'creator') {
-        const creatorStatus = user.creatorProfile?.status || 'pending';
-        
+      if (user.role === "creator") {
+        const creatorStatus = user.creatorProfile?.status || "pending";
+
         // Allow login but may restrict some features if not approved
-        if (creatorStatus === 'rejected') {
-          return res.status(403).json({ 
+        if (creatorStatus === "rejected") {
+          return res.status(403).json({
             success: false,
-            message: 'Conta de criador foi rejeitada' 
+            message: "Conta de criador foi rejeitada",
           });
         }
 
         // Log if creator is still pending (for monitoring)
-        if (creatorStatus === 'pending') {
-          console.log(`⏳ Criador com status pendente acessando: ${req.originalUrl}`);
+        if (creatorStatus === "pending") {
+          console.log(
+            `⏳ Criador com status pendente acessando: ${req.originalUrl}`,
+          );
         }
       }
 
-      if (user.role === 'subscriber' || user.role === 'premium') {
+      if (user.role === "subscriber" || user.role === "premium") {
         // Additional checks for subscriber status could go here
-        console.log(`👤 Assinante acessando: ${req.originalUrl} - Premium: ${user.isPremium}`);
+        console.log(
+          `👤 Assinante acessando: ${req.originalUrl} - Premium: ${user.isPremium}`,
+        );
       }
 
       // Add user info to request
@@ -80,14 +90,15 @@ export function authRole(roles: string[] | string) {
       req.userId = user._id.toString();
       req.userRole = user.role;
 
-      console.log(`✅ Acesso autorizado: ${user.email} (${user.role}) → ${req.originalUrl}`);
+      console.log(
+        `✅ Acesso autorizado: ${user.email} (${user.role}) → ${req.originalUrl}`,
+      );
       next();
-
     } catch (error) {
       console.error("❌ Erro na autenticação:", error);
-      return res.status(403).json({ 
+      return res.status(403).json({
         success: false,
-        message: 'Token inválido' 
+        message: "Token inválido",
       });
     }
   };
@@ -96,29 +107,37 @@ export function authRole(roles: string[] | string) {
 /**
  * Middleware específicos para cada role
  */
-export const authSubscriber = authRole(['subscriber', 'premium']);
-export const authCreator = authRole(['creator']);
-export const authAdmin = authRole(['admin']);
-export const authSubscriberOrCreator = authRole(['subscriber', 'premium', 'creator']);
-export const authPremiumOnly = authRole(['premium']); // Apenas assinantes premium
+export const authSubscriber = authRole(["subscriber", "premium"]);
+export const authCreator = authRole(["creator"]);
+export const authAdmin = authRole(["admin"]);
+export const authSubscriberOrCreator = authRole([
+  "subscriber",
+  "premium",
+  "creator",
+]);
+export const authPremiumOnly = authRole(["premium"]); // Apenas assinantes premium
 
 /**
  * Middleware para verificar se o usuário é premium (para conteúdo restrito)
  */
-export function requirePremium(req: AuthenticatedRequest, res: Response, next: NextFunction) {
-  return authRole(['premium'])(req, res, (error?: any) => {
+export function requirePremium(
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction,
+) {
+  return authRole(["premium"])(req, res, (error?: any) => {
     if (error) return next(error);
-    
+
     // Additional premium checks
     const user = req.user;
-    if (!user.isPremium || user.subscriptionStatus !== 'active') {
+    if (!user.isPremium || user.subscriptionStatus !== "active") {
       return res.status(403).json({
         success: false,
-        message: 'Acesso restrito a assinantes premium ativos',
-        requiresUpgrade: true
+        message: "Acesso restrito a assinantes premium ativos",
+        requiresUpgrade: true,
       });
     }
-    
+
     next();
   });
 }
@@ -126,22 +145,26 @@ export function requirePremium(req: AuthenticatedRequest, res: Response, next: N
 /**
  * Middleware para verificar se o criador está aprovado
  */
-export function requireApprovedCreator(req: AuthenticatedRequest, res: Response, next: NextFunction) {
-  return authRole(['creator'])(req, res, (error?: any) => {
+export function requireApprovedCreator(
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction,
+) {
+  return authRole(["creator"])(req, res, (error?: any) => {
     if (error) return next(error);
-    
+
     const user = req.user;
-    const creatorStatus = user.creatorProfile?.status || 'pending';
-    
-    if (creatorStatus !== 'approved') {
+    const creatorStatus = user.creatorProfile?.status || "pending";
+
+    if (creatorStatus !== "approved") {
       return res.status(403).json({
         success: false,
-        message: 'Acesso restrito a criadores aprovados',
+        message: "Acesso restrito a criadores aprovados",
         creatorStatus,
-        requiresApproval: true
+        requiresApproval: true,
       });
     }
-    
+
     next();
   });
 }
@@ -154,36 +177,40 @@ export function flexibleAuth(options: {
   requirePremium?: boolean;
   requireApprovedCreator?: boolean;
 }) {
-  return async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  return async (
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction,
+  ) => {
     return authRole(options.allowRoles)(req, res, (error?: any) => {
       if (error) return next(error);
-      
+
       const user = req.user;
-      
+
       // Check premium requirement
-      if (options.requirePremium && user.role === 'subscriber') {
-        if (!user.isPremium || user.subscriptionStatus !== 'active') {
+      if (options.requirePremium && user.role === "subscriber") {
+        if (!user.isPremium || user.subscriptionStatus !== "active") {
           return res.status(403).json({
             success: false,
-            message: 'Conteúdo exclusivo para assinantes premium',
-            requiresUpgrade: true
+            message: "Conteúdo exclusivo para assinantes premium",
+            requiresUpgrade: true,
           });
         }
       }
-      
+
       // Check creator approval requirement
-      if (options.requireApprovedCreator && user.role === 'creator') {
-        const creatorStatus = user.creatorProfile?.status || 'pending';
-        if (creatorStatus !== 'approved') {
+      if (options.requireApprovedCreator && user.role === "creator") {
+        const creatorStatus = user.creatorProfile?.status || "pending";
+        if (creatorStatus !== "approved") {
           return res.status(403).json({
             success: false,
-            message: 'Funcionalidade restrita a criadores aprovados',
+            message: "Funcionalidade restrita a criadores aprovados",
             creatorStatus,
-            requiresApproval: true
+            requiresApproval: true,
           });
         }
       }
-      
+
       next();
     });
   };

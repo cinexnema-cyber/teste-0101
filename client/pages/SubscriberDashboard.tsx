@@ -1,12 +1,18 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { useAuth } from '@/contexts/AuthContextReal';
-import { 
-  User, 
-  Crown, 
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { useAuth } from "@/contexts/AuthContextReal";
+import {
+  User,
+  Crown,
   Play,
   Star,
   Settings,
@@ -15,21 +21,21 @@ import {
   Download,
   Eye,
   Clock,
-  Film
-} from 'lucide-react';
+  Film,
+} from "lucide-react";
 
 export default function SubscriberDashboard() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
   if (!user) {
-    navigate('/login/subscriber');
+    navigate("/login/subscriber");
     return null;
   }
 
   const handleLogout = () => {
     logout();
-    navigate('/login-select');
+    navigate("/login-select");
   };
 
   return (
@@ -44,7 +50,7 @@ export default function SubscriberDashboard() {
               </div>
               <h1 className="text-2xl font-bold">XNEMA</h1>
             </div>
-            
+
             <div className="flex items-center gap-4">
               <div className="text-right">
                 <p className="text-sm font-medium">Olá, {user.name}</p>
@@ -57,7 +63,7 @@ export default function SubscriberDashboard() {
                   <Badge variant="outline">Gratuito</Badge>
                 )}
               </div>
-              
+
               <Button variant="ghost" onClick={handleLogout}>
                 <LogOut className="w-4 h-4" />
               </Button>
@@ -97,13 +103,15 @@ export default function SubscriberDashboard() {
                 <div>
                   <p className="text-sm text-muted-foreground">Status</p>
                   <p className="font-medium">
-                    {user.isPremium ? 'Assinante Premium' : 'Conta Gratuita'}
+                    {user.isPremium ? "Assinante Premium" : "Conta Gratuita"}
                   </p>
                 </div>
                 {user.subscriptionPlan && (
                   <div>
                     <p className="text-sm text-muted-foreground">Plano</p>
-                    <p className="font-medium capitalize">{user.subscriptionPlan}</p>
+                    <p className="font-medium capitalize">
+                      {user.subscriptionPlan}
+                    </p>
                   </div>
                 )}
                 <Button variant="outline" size="sm" className="w-full">
@@ -149,8 +157,8 @@ export default function SubscriberDashboard() {
                         Desbloqueie todo o catálogo
                       </p>
                     </div>
-                    <Button 
-                      onClick={() => navigate('/pricing')}
+                    <Button
+                      onClick={() => navigate("/pricing")}
                       className="w-full bg-blue-500 hover:bg-blue-600"
                     >
                       <Crown className="w-4 h-4 mr-2" />
@@ -171,15 +179,21 @@ export default function SubscriberDashboard() {
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Filmes assistidos</span>
+                  <span className="text-sm text-muted-foreground">
+                    Filmes assistidos
+                  </span>
                   <span className="font-bold">0</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Séries acompanhadas</span>
+                  <span className="text-sm text-muted-foreground">
+                    Séries acompanhadas
+                  </span>
                   <span className="font-bold">0</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Tempo total</span>
+                  <span className="text-sm text-muted-foreground">
+                    Tempo total
+                  </span>
                   <span className="font-bold">0h</span>
                 </div>
                 <Button variant="outline" size="sm" className="w-full">
@@ -203,14 +217,14 @@ export default function SubscriberDashboard() {
               <CardContent className="space-y-3">
                 <div className="grid grid-cols-2 gap-3">
                   <Button
-                    onClick={() => navigate('/catalog')}
+                    onClick={() => navigate("/catalog")}
                     className="flex items-center gap-2"
                   >
                     <Play className="w-4 h-4" />
                     Catálogo
                   </Button>
                   <Button
-                    onClick={() => navigate('/catalog?type=movie')}
+                    onClick={() => navigate("/catalog?type=movie")}
                     variant="outline"
                     className="flex items-center gap-2"
                   >
@@ -221,7 +235,7 @@ export default function SubscriberDashboard() {
 
                 <div className="grid grid-cols-2 gap-3">
                   <Button
-                    onClick={() => navigate('/catalog?type=series')}
+                    onClick={() => navigate("/catalog?type=series")}
                     variant="outline"
                     className="flex items-center gap-2"
                   >
@@ -229,7 +243,7 @@ export default function SubscriberDashboard() {
                     Séries
                   </Button>
                   <Button
-                    onClick={() => navigate('/catalog?type=documentary')}
+                    onClick={() => navigate("/catalog?type=documentary")}
                     variant="outline"
                     className="flex items-center gap-2"
                   >
@@ -237,7 +251,7 @@ export default function SubscriberDashboard() {
                     Documentários
                   </Button>
                 </div>
-                
+
                 {user.isPremium && (
                   <div className="p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
                     <div className="flex items-center gap-2 mb-2">
@@ -260,9 +274,7 @@ export default function SubscriberDashboard() {
             <Card>
               <CardHeader>
                 <CardTitle>Continue Assistindo</CardTitle>
-                <CardDescription>
-                  Retome de onde parou
-                </CardDescription>
+                <CardDescription>Retome de onde parou</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="text-center py-8 text-muted-foreground">

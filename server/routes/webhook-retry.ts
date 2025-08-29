@@ -14,14 +14,13 @@ export const processRetries = async (req: Request, res: Response) => {
 
     res.json({
       success: true,
-      message: "Retries processados com sucesso"
+      message: "Retries processados com sucesso",
     });
-
   } catch (error) {
     console.error("❌ Erro ao processar retries:", error);
     res.status(500).json({
       success: false,
-      message: "Erro interno do servidor"
+      message: "Erro interno do servidor",
     });
   }
 };
@@ -46,22 +45,21 @@ export const getWebhookLogs = async (req: Request, res: Response) => {
       {
         $group: {
           _id: "$status",
-          count: { $sum: 1 }
-        }
-      }
+          count: { $sum: 1 },
+        },
+      },
     ]);
 
     res.json({
       logs,
       summary,
-      total: logs.length
+      total: logs.length,
     });
-
   } catch (error) {
     console.error("❌ Erro ao buscar logs:", error);
     res.status(500).json({
       success: false,
-      message: "Erro interno do servidor"
+      message: "Erro interno do servidor",
     });
   }
 };
@@ -78,25 +76,28 @@ export const retrySpecificWebhook = async (req: Request, res: Response) => {
     if (!webhookLog) {
       return res.status(404).json({
         success: false,
-        message: "Webhook não encontrado"
+        message: "Webhook não encontrado",
       });
     }
 
     console.log(`🔄 Reprocessando webhook específico: ${webhookId}`);
 
-    const result = await WebhookRetryService.processPaymentWebhook(webhookLog.payload);
+    const result = await WebhookRetryService.processPaymentWebhook(
+      webhookLog.payload,
+    );
 
     res.json({
       success: result.success,
-      message: result.success ? "Webhook reprocessado com sucesso" : "Falha no reprocessamento",
-      error: result.error
+      message: result.success
+        ? "Webhook reprocessado com sucesso"
+        : "Falha no reprocessamento",
+      error: result.error,
     });
-
   } catch (error) {
     console.error("❌ Erro ao reprocessar webhook:", error);
     res.status(500).json({
       success: false,
-      message: "Erro interno do servidor"
+      message: "Erro interno do servidor",
     });
   }
 };

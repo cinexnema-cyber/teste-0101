@@ -1,52 +1,58 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContextReal';
-import { Layout } from '@/components/layout/Layout';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { 
-  CheckCircle, 
-  HardDrive, 
-  Zap, 
-  ArrowRight, 
+import React, { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContextReal";
+import { Layout } from "@/components/layout/Layout";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  CheckCircle,
+  HardDrive,
+  Zap,
+  ArrowRight,
   Upload,
   Loader2,
   AlertCircle,
-  Calculator 
-} from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+  Calculator,
+} from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function BlocksPurchaseSuccess() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState<string>("");
   const [purchaseConfirmed, setPurchaseConfirmed] = useState(false);
   const [blocksInfo, setBlocksInfo] = useState<any>(null);
 
   // Parâmetros que podem vir do Mercado Pago
-  const collection_id = searchParams.get('collection_id');
-  const collection_status = searchParams.get('collection_status');
-  const external_reference = searchParams.get('external_reference');
+  const collection_id = searchParams.get("collection_id");
+  const collection_status = searchParams.get("collection_status");
+  const external_reference = searchParams.get("external_reference");
 
   useEffect(() => {
     const confirmPurchase = async () => {
       if (!user) {
-        navigate('/login');
+        navigate("/login");
         return;
       }
 
       try {
         // Aguardar processamento do webhook
-        await new Promise(resolve => setTimeout(resolve, 3000));
+        await new Promise((resolve) => setTimeout(resolve, 3000));
 
         // Buscar informações atualizadas dos blocos
         const response = await fetch(`/api/creator-blocks/${user.id}`, {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('xnema_token')}`
-          }
+            Authorization: `Bearer ${localStorage.getItem("xnema_token")}`,
+          },
         });
 
         if (response.ok) {
@@ -55,14 +61,16 @@ export default function BlocksPurchaseSuccess() {
         }
 
         // Verificar se a compra foi confirmada
-        if (collection_status === 'approved') {
+        if (collection_status === "approved") {
           setPurchaseConfirmed(true);
         }
 
         setLoading(false);
       } catch (err: any) {
-        console.error('Erro ao confirmar compra:', err);
-        setError('Erro ao confirmar compra. Por favor, verifique seus blocos no painel.');
+        console.error("Erro ao confirmar compra:", err);
+        setError(
+          "Erro ao confirmar compra. Por favor, verifique seus blocos no painel.",
+        );
         setLoading(false);
       }
     };
@@ -71,11 +79,11 @@ export default function BlocksPurchaseSuccess() {
   }, [user, collection_status, navigate]);
 
   const handleContinueUpload = () => {
-    navigate('/video-upload');
+    navigate("/video-upload");
   };
 
   const handleViewBlocks = () => {
-    navigate('/creator-dashboard');
+    navigate("/creator-dashboard");
   };
 
   if (loading) {
@@ -113,7 +121,7 @@ export default function BlocksPurchaseSuccess() {
                   Houve um problema ao confirmar sua compra de blocos
                 </CardDescription>
               </CardHeader>
-              
+
               <CardContent className="space-y-6">
                 <Alert className="border-red-500 bg-red-500/10">
                   <AlertCircle className="h-4 w-4" />
@@ -124,10 +132,11 @@ export default function BlocksPurchaseSuccess() {
 
                 <div className="text-center">
                   <p className="text-gray-400 mb-6">
-                    Se você efetuou o pagamento, os blocos serão adicionados em breve. 
-                    Verifique seu painel de blocos ou entre em contato conosco.
+                    Se você efetuou o pagamento, os blocos serão adicionados em
+                    breve. Verifique seu painel de blocos ou entre em contato
+                    conosco.
                   </p>
-                  
+
                   <div className="space-y-3">
                     <Button
                       onClick={handleViewBlocks}
@@ -136,9 +145,9 @@ export default function BlocksPurchaseSuccess() {
                     >
                       Ver Painel de Blocos
                     </Button>
-                    
+
                     <Button
-                      onClick={() => navigate('/contact')}
+                      onClick={() => navigate("/contact")}
                       className="w-full bg-xnema-orange hover:bg-xnema-orange/90 text-black"
                     >
                       Entrar em Contato
@@ -164,7 +173,7 @@ export default function BlocksPurchaseSuccess() {
                 ✅ Compra Confirmada
               </Badge>
               <CardTitle className="text-3xl text-white mb-2">
-                Blocos Adicionados{' '}
+                Blocos Adicionados{" "}
                 <span className="text-transparent bg-gradient-to-r from-xnema-orange to-xnema-purple bg-clip-text">
                   com Sucesso!
                 </span>
@@ -173,7 +182,7 @@ export default function BlocksPurchaseSuccess() {
                 Seus blocos de armazenamento foram adicionados à sua conta
               </CardDescription>
             </CardHeader>
-            
+
             <CardContent className="space-y-8">
               {/* Informações dos Blocos */}
               {blocksInfo && (
@@ -182,7 +191,7 @@ export default function BlocksPurchaseSuccess() {
                     <HardDrive className="w-5 h-5 text-green-500" />
                     Status Atual dos Blocos
                   </h3>
-                  
+
                   <div className="grid md:grid-cols-3 gap-4 text-sm">
                     <div className="text-center">
                       <p className="text-2xl font-bold text-green-400">
@@ -212,18 +221,22 @@ export default function BlocksPurchaseSuccess() {
                   <Calculator className="w-5 h-5 text-xnema-orange" />
                   Detalhes da Compra
                 </h3>
-                
+
                 <div className="space-y-3 text-sm">
                   {collection_id && (
                     <div className="flex justify-between">
                       <span className="text-gray-400">ID da Transação:</span>
-                      <span className="text-white font-mono text-xs">{collection_id}</span>
+                      <span className="text-white font-mono text-xs">
+                        {collection_id}
+                      </span>
                     </div>
                   )}
                   {external_reference && (
                     <div className="flex justify-between">
                       <span className="text-gray-400">Referência:</span>
-                      <span className="text-white font-mono text-xs">{external_reference}</span>
+                      <span className="text-white font-mono text-xs">
+                        {external_reference}
+                      </span>
                     </div>
                   )}
                   <div className="flex justify-between">
@@ -236,14 +249,14 @@ export default function BlocksPurchaseSuccess() {
               {/* Como Usar */}
               <div className="space-y-4">
                 <h3 className="font-semibold text-white">Agora você pode:</h3>
-                
+
                 <div className="grid gap-3">
                   {[
-                    'Fazer upload de vídeos sem limitações',
-                    'O sistema calculará automaticamente os blocos necessários',
-                    'Seus vídeos serão processados em qualidade 4K',
-                    'Após aprovação, começar a ganhar 70% da receita',
-                    'Comprar mais blocos quando necessário'
+                    "Fazer upload de vídeos sem limitações",
+                    "O sistema calculará automaticamente os blocos necessários",
+                    "Seus vídeos serão processados em qualidade 4K",
+                    "Após aprovação, começar a ganhar 70% da receita",
+                    "Comprar mais blocos quando necessário",
                   ].map((item, index) => (
                     <div key={index} className="flex items-start gap-3">
                       <div className="w-2 h-2 bg-green-500 rounded-full mt-2" />
@@ -263,7 +276,7 @@ export default function BlocksPurchaseSuccess() {
                   Começar Upload de Vídeo
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
-                
+
                 <div className="grid grid-cols-2 gap-3">
                   <Button
                     variant="outline"
@@ -273,10 +286,10 @@ export default function BlocksPurchaseSuccess() {
                     <HardDrive className="w-4 h-4" />
                     Ver Blocos
                   </Button>
-                  
+
                   <Button
                     variant="outline"
-                    onClick={() => navigate('/creator-dashboard')}
+                    onClick={() => navigate("/creator-dashboard")}
                     className="flex items-center justify-center gap-2"
                   >
                     <Zap className="w-4 h-4" />
@@ -287,20 +300,33 @@ export default function BlocksPurchaseSuccess() {
 
               {/* Informações Importantes */}
               <div className="bg-xnema-orange/10 border border-xnema-orange/20 rounded-lg p-4">
-                <h4 className="font-semibold text-xnema-orange mb-2">📧 Confirmação por Email</h4>
+                <h4 className="font-semibold text-xnema-orange mb-2">
+                  📧 Confirmação por Email
+                </h4>
                 <p className="text-gray-400 text-sm">
-                  Enviamos uma confirmação da compra para seu email. Seus blocos já estão 
-                  disponíveis para uso e não expiram. Use-os quando quiser!
+                  Enviamos uma confirmação da compra para seu email. Seus blocos
+                  já estão disponíveis para uso e não expiram. Use-os quando
+                  quiser!
                 </p>
               </div>
 
               {/* Sistema de Blocos Explicado */}
               <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
-                <h4 className="font-semibold text-blue-400 mb-2">💡 Como Funciona o Sistema</h4>
+                <h4 className="font-semibold text-blue-400 mb-2">
+                  💡 Como Funciona o Sistema
+                </h4>
                 <div className="text-gray-400 text-sm space-y-1">
-                  <p>• <strong>1 bloco = 7,3 GB</strong> de armazenamento por R$ 1.000</p>
-                  <p>• Blocos são calculados automaticamente baseado no seu vídeo</p>
-                  <p>• Vídeos 4K de 90+ minutos podem precisar de 2 blocos ou mais</p>
+                  <p>
+                    • <strong>1 bloco = 7,3 GB</strong> de armazenamento por R$
+                    1.000
+                  </p>
+                  <p>
+                    • Blocos são calculados automaticamente baseado no seu vídeo
+                  </p>
+                  <p>
+                    • Vídeos 4K de 90+ minutos podem precisar de 2 blocos ou
+                    mais
+                  </p>
                   <p>• Pagamento único por bloco, sem mensalidades</p>
                 </div>
               </div>

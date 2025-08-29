@@ -1,18 +1,24 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContextReal';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
-import { 
-  User, 
-  Lock, 
-  Mail, 
-  Crown, 
-  AlertCircle, 
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContextReal";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import {
+  User,
+  Lock,
+  Mail,
+  Crown,
+  AlertCircle,
   Loader2,
   Shield,
   CheckCircle,
@@ -20,40 +26,40 @@ import {
   Star,
   Eye,
   Download,
-  Smartphone
-} from 'lucide-react';
+  Smartphone,
+} from "lucide-react";
 
 export default function SubscriberLogin() {
   const navigate = useNavigate();
   const { login, user } = useAuth();
-  
+
   const [formData, setFormData] = useState({
-    email: '',
-    password: ''
+    email: "",
+    password: "",
   });
-  
+
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    if (error) setError('');
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    if (error) setError("");
   };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!formData.email.trim() || !formData.password.trim()) {
-      setError('Email e senha são obrigatórios');
+      setError("Email e senha são obrigatórios");
       return;
     }
 
     setIsLoading(true);
-    setError('');
+    setError("");
 
     try {
-      console.log('🔐 Tentando login...');
+      console.log("🔐 Tentando login...");
 
       const success = await login(formData.email.trim(), formData.password);
 
@@ -62,22 +68,20 @@ export default function SubscriberLogin() {
 
         // Redirecionar baseado no status da assinatura
         setTimeout(() => {
-          if (user.role === 'admin') {
-            navigate('/admin-dashboard');
+          if (user.role === "admin") {
+            navigate("/admin-dashboard");
           } else if (user.isPremium || user.assinante) {
-            navigate('/dashboard');
+            navigate("/dashboard");
           } else {
-            navigate('/pricing'); // Usuário não tem assinatura ativa
+            navigate("/pricing"); // Usuário não tem assinatura ativa
           }
         }, 1500);
-
       } else {
-        setError('Email ou senha incorretos');
+        setError("Email ou senha incorretos");
       }
-
     } catch (error) {
-      console.error('❌ Erro no login:', error);
-      setError('Erro de conexão. Verifique sua internet e tente novamente.');
+      console.error("❌ Erro no login:", error);
+      setError("Erro de conexão. Verifique sua internet e tente novamente.");
     } finally {
       setIsLoading(false);
     }
@@ -92,15 +96,19 @@ export default function SubscriberLogin() {
             <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg">
               <Play className="w-8 h-8 text-white" />
             </div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">XNEMA</h1>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              XNEMA
+            </h1>
           </div>
-          
+
           <div className="space-y-2">
             <Badge className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-1.5 text-sm">
               <Crown className="w-4 h-4 mr-2" />
               Área do Assinante
             </Badge>
-            <p className="text-sm text-muted-foreground">Entre e aproveite conteúdo premium sem limites</p>
+            <p className="text-sm text-muted-foreground">
+              Entre e aproveite conteúdo premium sem limites
+            </p>
           </div>
         </div>
 
@@ -114,7 +122,7 @@ export default function SubscriberLogin() {
               Acesse sua conta para continuar assistindo
             </CardDescription>
           </CardHeader>
-          
+
           <CardContent className="p-6">
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
@@ -126,7 +134,7 @@ export default function SubscriberLogin() {
                     type="email"
                     placeholder="seu@email.com"
                     value={formData.email}
-                    onChange={(e) => handleInputChange('email', e.target.value)}
+                    onChange={(e) => handleInputChange("email", e.target.value)}
                     className="pl-10"
                     disabled={isLoading}
                     required
@@ -143,7 +151,9 @@ export default function SubscriberLogin() {
                     type="password"
                     placeholder="••••••••"
                     value={formData.password}
-                    onChange={(e) => handleInputChange('password', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("password", e.target.value)
+                    }
                     className="pl-10"
                     disabled={isLoading}
                     required
@@ -191,8 +201,8 @@ export default function SubscriberLogin() {
             {/* Links */}
             <div className="mt-6 space-y-4">
               <div className="text-center">
-                <Link 
-                  to="/forgot-password" 
+                <Link
+                  to="/forgot-password"
                   className="text-sm text-blue-600 hover:text-blue-800 underline font-medium"
                 >
                   Esqueceu sua senha?
@@ -211,16 +221,16 @@ export default function SubscriberLogin() {
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <Button 
-                  variant="outline" 
-                  onClick={() => navigate('/register-subscriber')}
+                <Button
+                  variant="outline"
+                  onClick={() => navigate("/register-subscriber")}
                   className="text-sm border-blue-500 text-blue-600 hover:bg-blue-500 hover:text-white"
                 >
                   Criar Conta
                 </Button>
-                <Button 
-                  variant="outline" 
-                  onClick={() => navigate('/login/creator')}
+                <Button
+                  variant="outline"
+                  onClick={() => navigate("/login/creator")}
                   className="text-sm border-orange-500 text-orange-600 hover:bg-orange-500 hover:text-white"
                 >
                   Área do Criador
@@ -260,15 +270,15 @@ export default function SubscriberLogin() {
                   <span>Múltiplos dispositivos</span>
                 </div>
               </div>
-              
+
               <div className="text-center">
                 <p className="text-xs text-blue-700 dark:text-blue-300 mb-2">
                   Ainda não é assinante?
                 </p>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="sm"
-                  onClick={() => navigate('/pricing')}
+                  onClick={() => navigate("/pricing")}
                   className="border-blue-500 text-blue-600 hover:bg-blue-500 hover:text-white font-medium"
                 >
                   Ver Planos Premium
@@ -281,9 +291,9 @@ export default function SubscriberLogin() {
 
         {/* Back to Selection */}
         <div className="text-center">
-          <Button 
-            variant="ghost" 
-            onClick={() => navigate('/login-select')}
+          <Button
+            variant="ghost"
+            onClick={() => navigate("/login-select")}
             className="text-sm"
           >
             ← Voltar para Seleção

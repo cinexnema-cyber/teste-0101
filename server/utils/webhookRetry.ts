@@ -9,9 +9,11 @@ export class WebhookRetryService {
   /**
    * Processar webhook de pagamento com retry
    */
-  static async processPaymentWebhook(webhookData: any): Promise<{ success: boolean; error?: string }> {
+  static async processPaymentWebhook(
+    webhookData: any,
+  ): Promise<{ success: boolean; error?: string }> {
     const webhookId = `mp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    
+
     try {
       // Criar log do webhook
       const webhookLog = new WebhookLog({
@@ -24,21 +26,26 @@ export class WebhookRetryService {
       await webhookLog.save();
 
       // Processar o webhook
-      const result = await this.executePaymentProcessing(webhookData, webhookLog);
-      
+      const result = await this.executePaymentProcessing(
+        webhookData,
+        webhookLog,
+      );
+
       if (result.success) {
         webhookLog.status = "processed";
         webhookLog.processed_at = new Date();
         await webhookLog.save();
-        
+
         console.log(`✅ Webhook processado com sucesso: ${webhookId}`);
         return { success: true };
       } else {
         // Configurar retry se falhou
-        await this.scheduleRetry(webhookLog, result.error || "Erro desconhecido");
+        await this.scheduleRetry(
+          webhookLog,
+          result.error || "Erro desconhecido",
+        );
         return { success: false, error: result.error };
       }
-
     } catch (error: any) {
       console.error(`❌ Erro crítico no webhook ${webhookId}:`, error);
       return { success: false, error: error.message };
@@ -49,8 +56,8 @@ export class WebhookRetryService {
    * Executar o processamento do pagamento
    */
   private static async executePaymentProcessing(
-    webhookData: any, 
-    webhookLog: any
+    webhookData: any,
+    webhookLog: any,
   ): Promise<{ success: boolean; error?: string }> {
     try {
       const { action, data, external_reference } = webhookData;
@@ -60,12 +67,15 @@ export class WebhookRetryService {
       }
 
       // Buscar assinatura
-      const subscription = await Subscription.findOne({ 
-        transaction_id: external_reference 
-      }).populate('id_usuario');
+      const subscription = await Subscription.findOne({
+        transaction_id: external_reference,
+      }).populate("id_usuario");
 
       if (!subscription) {
-        return { success: false, error: `Assinatura não encontrada: ${external_reference}` };
+        return {
+          success: false,
+          error: `Assinatura não encontrada: ${external_reference}`,
+        };
       }
 
       // Simular consulta ao Mercado Pago (em produção, fazer chamada real à API)
@@ -84,7 +94,6 @@ export class WebhookRetryService {
       }
 
       return { success: false, error: `Status desconhecido: ${paymentStatus}` };
-
     } catch (error: any) {
       return { success: false, error: error.message };
     }
@@ -93,7 +102,9 @@ export class WebhookRetryService {
   /**
    * Aprovar assinatura e ativar premium
    */
-  private static async approveSubscription(subscription: any): Promise<{ success: boolean; error?: string }> {
+  private static async approveSubscription(
+    subscription: any,
+  ): Promise<{ success: boolean; error?: string }> {
     try {
       // Atualizar assinatura
       subscription.status_pagamento = "aprovado";
@@ -112,8 +123,12 @@ export class WebhookRetryService {
         user.assinante = true;
         await user.save();
 
-        console.log(`🎉 PREMIUM ATIVADO: ${user.email} - Plano: ${subscription.plano}`);
-        console.log(`📊 Status Final: role=${user.role}, isPremium=${user.isPremium}`);
+        console.log(
+          `🎉 PREMIUM ATIVADO: ${user.email} - Plano: ${subscription.plano}`,
+        );
+        console.log(
+          `📊 Status Final: role=${user.role}, isPremium=${user.isPremium}`,
+        );
       }
 
       return { success: true };
@@ -125,7 +140,9 @@ export class WebhookRetryService {
   /**
    * Rejeitar pagamento
    */
-  private static async rejectSubscription(subscription: any): Promise<{ success: boolean; error?: string }> {
+  private static async rejectSubscription(
+    subscription: any,
+  ): Promise<{ success: boolean; error?: string }> {
     try {
       subscription.status_pagamento = "rejeitado";
       subscription.ativo = false;
@@ -151,7 +168,9 @@ export class WebhookRetryService {
   /**
    * Manter pagamento como pendente
    */
-  private static async pendingSubscription(subscription: any): Promise<{ success: boolean; error?: string }> {
+  private static async pendingSubscription(
+    subscription: any,
+  ): Promise<{ success: boolean; error?: string }> {
     try {
       const user = subscription.id_usuario;
       if (user) {
@@ -173,24 +192,32 @@ export class WebhookRetryService {
   /**
    * Agendar retry para webhook falhado
    */
-  private static async scheduleRetry(webhookLog: any, errorMessage: string): Promise<void> {
+  private static async scheduleRetry(
+    webhookLog: any,
+    errorMessage: string,
+  ): Promise<void> {
     webhookLog.status = "retry";
     webhookLog.error_message = errorMessage;
     webhookLog.retry_count += 1;
 
     // Calcular próximo retry (exponential backoff: 1min, 5min, 15min)
     const delays = [1, 5, 15]; // minutos
-    const delayMinutes = delays[Math.min(webhookLog.retry_count - 1, delays.length - 1)];
+    const delayMinutes =
+      delays[Math.min(webhookLog.retry_count - 1, delays.length - 1)];
     webhookLog.next_retry_at = new Date(Date.now() + delayMinutes * 60 * 1000);
 
     if (webhookLog.retry_count >= webhookLog.max_retries) {
       webhookLog.status = "failed";
       webhookLog.next_retry_at = null;
-      console.error(`🚨 WEBHOOK FALHOU DEFINITIVAMENTE após ${webhookLog.retry_count} tentativas`);
+      console.error(
+        `🚨 WEBHOOK FALHOU DEFINITIVAMENTE após ${webhookLog.retry_count} tentativas`,
+      );
     }
 
     await webhookLog.save();
-    console.log(`🔄 RETRY agendado para ${webhookLog.next_retry_at} (tentativa ${webhookLog.retry_count})`);
+    console.log(
+      `🔄 RETRY agendado para ${webhookLog.next_retry_at} (tentativa ${webhookLog.retry_count})`,
+    );
   }
 
   /**
@@ -200,7 +227,7 @@ export class WebhookRetryService {
     const now = new Date();
     const webhooksToRetry = await WebhookLog.find({
       status: "retry",
-      next_retry_at: { $lte: now }
+      next_retry_at: { $lte: now },
     });
 
     for (const webhook of webhooksToRetry) {

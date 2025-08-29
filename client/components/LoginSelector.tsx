@@ -1,15 +1,14 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { 
-  User, 
-  Video, 
-  Shield,
-  Crown,
-  Palette,
-  ArrowRight
-} from 'lucide-react';
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { User, Video, Shield, Crown, Palette, ArrowRight } from "lucide-react";
 
 interface LoginSelectorProps {
   title?: string;
@@ -17,10 +16,10 @@ interface LoginSelectorProps {
   showGeneralLogin?: boolean;
 }
 
-export function LoginSelector({ 
+export function LoginSelector({
   title = "Escolha seu Tipo de Acesso",
   description = "Selecione como você deseja acessar a plataforma XNEMA",
-  showGeneralLogin = true
+  showGeneralLogin = true,
 }: LoginSelectorProps) {
   const navigate = useNavigate();
 
@@ -35,7 +34,10 @@ export function LoginSelector({
       {/* Login Options */}
       <div className="grid md:grid-cols-2 gap-6">
         {/* Subscriber Login */}
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer group" onClick={() => navigate('/login/subscriber')}>
+        <Card
+          className="hover:shadow-lg transition-shadow cursor-pointer group"
+          onClick={() => navigate("/login/subscriber")}
+        >
           <CardHeader>
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-blue-500/20 rounded-full flex items-center justify-center group-hover:bg-blue-500/30 transition-colors">
@@ -59,11 +61,11 @@ export function LoginSelector({
               <li>• Download para assistir offline</li>
               <li>• Múltiplos dispositivos</li>
             </ul>
-            <Button 
+            <Button
               className="w-full bg-blue-500 hover:bg-blue-600 text-white"
               onClick={(e) => {
                 e.stopPropagation();
-                navigate('/login/subscriber');
+                navigate("/login/subscriber");
               }}
             >
               Entrar como Assinante
@@ -73,7 +75,10 @@ export function LoginSelector({
         </Card>
 
         {/* Creator Login */}
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer group" onClick={() => navigate('/login/creator')}>
+        <Card
+          className="hover:shadow-lg transition-shadow cursor-pointer group"
+          onClick={() => navigate("/login/creator")}
+        >
           <CardHeader>
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-gradient-to-r from-xnema-orange to-xnema-purple rounded-full flex items-center justify-center group-hover:opacity-90 transition-opacity">
@@ -97,11 +102,11 @@ export function LoginSelector({
               <li>• Upload em qualidade 4K</li>
               <li>• Analytics detalhados</li>
             </ul>
-            <Button 
+            <Button
               className="w-full bg-gradient-to-r from-xnema-orange to-xnema-purple hover:from-xnema-orange/90 hover:to-xnema-purple/90 text-black font-medium"
               onClick={(e) => {
                 e.stopPropagation();
-                navigate('/login/creator');
+                navigate("/login/creator");
               }}
             >
               Entrar como Criador
@@ -126,18 +131,18 @@ export function LoginSelector({
           </div>
 
           <div className="flex justify-center gap-4">
-            <Button 
-              variant="outline" 
-              onClick={() => navigate('/login')}
+            <Button
+              variant="outline"
+              onClick={() => navigate("/login")}
               className="flex items-center gap-2"
             >
               <Shield className="w-4 h-4" />
               Login Geral
             </Button>
-            
-            <Button 
-              variant="outline" 
-              onClick={() => navigate('/register')}
+
+            <Button
+              variant="outline"
+              onClick={() => navigate("/register")}
               className="flex items-center gap-2"
             >
               <User className="w-4 h-4" />
@@ -150,9 +155,9 @@ export function LoginSelector({
       {/* Help Text */}
       <div className="text-center text-sm text-muted-foreground">
         <p>
-          Não tem uma conta?{' '}
-          <button 
-            onClick={() => navigate('/register')}
+          Não tem uma conta?{" "}
+          <button
+            onClick={() => navigate("/register")}
             className="underline hover:text-foreground"
           >
             Cadastre-se gratuitamente

@@ -14,7 +14,7 @@ export const getConnectionStatus = () => {
     isConnected: true,
     readyState: 1,
     host: "supabase",
-    name: "supabase"
+    name: "supabase",
   };
 };
 

@@ -1,38 +1,50 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-  Calculator, 
-  HardDrive, 
-  CreditCard, 
+import React, { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  Calculator,
+  HardDrive,
+  CreditCard,
   AlertTriangle,
   Info,
   CheckCircle,
-  Zap
-} from 'lucide-react';
+  Zap,
+} from "lucide-react";
 
 // Tabela de referência baseada na especificação
 const VIDEO_SIZE_TABLE = {
-  '720p': {
-    name: 'HD (720p)',
+  "720p": {
+    name: "HD (720p)",
     sizePerMinute: 0.73 / 40, // GB por minuto
-    quality: 'HD'
+    quality: "HD",
   },
-  '1080p': {
-    name: 'Full HD (1080p)', 
+  "1080p": {
+    name: "Full HD (1080p)",
     sizePerMinute: 1.46 / 40, // GB por minuto
-    quality: 'Full HD'
+    quality: "Full HD",
   },
-  '4k': {
-    name: '4K Ultra HD',
-    sizePerMinute: 4.39 / 40, // GB por minuto  
-    quality: 'Ultra HD'
-  }
+  "4k": {
+    name: "4K Ultra HD",
+    sizePerMinute: 4.39 / 40, // GB por minuto
+    quality: "Ultra HD",
+  },
 };
 
 const BLOCK_SIZE_GB = 7.3;
@@ -60,12 +72,14 @@ interface VideoBlockCalculatorProps {
 export const VideoBlockCalculator: React.FC<VideoBlockCalculatorProps> = ({
   onCalculationChange,
   maxBlocksAvailable = 10,
-  className = ''
+  className = "",
 }) => {
   const [duration, setDuration] = useState<number>(40);
-  const [resolution, setResolution] = useState<string>('1080p');
+  const [resolution, setResolution] = useState<string>("1080p");
   const [videoCount, setVideoCount] = useState<number>(1);
-  const [calculation, setCalculation] = useState<CalculationResult | null>(null);
+  const [calculation, setCalculation] = useState<CalculationResult | null>(
+    null,
+  );
 
   // Calcular automaticamente quando inputs mudam
   useEffect(() => {
@@ -78,7 +92,8 @@ export const VideoBlockCalculator: React.FC<VideoBlockCalculatorProps> = ({
       return;
     }
 
-    const resolutionData = VIDEO_SIZE_TABLE[resolution as keyof typeof VIDEO_SIZE_TABLE];
+    const resolutionData =
+      VIDEO_SIZE_TABLE[resolution as keyof typeof VIDEO_SIZE_TABLE];
     if (!resolutionData) {
       setCalculation(null);
       return;
@@ -86,16 +101,16 @@ export const VideoBlockCalculator: React.FC<VideoBlockCalculatorProps> = ({
 
     // Calcular tamanho por vídeo
     const sizePerVideo = duration * resolutionData.sizePerMinute;
-    
+
     // Calcular total
     const totalSizeGB = sizePerVideo * videoCount;
-    
+
     // Calcular blocos necessários (sempre arredondar para cima)
     const blocksNeeded = Math.ceil(totalSizeGB / BLOCK_SIZE_GB);
-    
+
     // Calcular preço total
     const totalPrice = blocksNeeded * BLOCK_PRICE;
-    
+
     // Verificar se pode pagar (baseado no limite disponível)
     const canAfford = blocksNeeded <= maxBlocksAvailable;
 
@@ -108,12 +123,12 @@ export const VideoBlockCalculator: React.FC<VideoBlockCalculatorProps> = ({
         resolution: resolutionData.name,
         duration,
         videoCount,
-        sizePerVideo: Math.round(sizePerVideo * 100) / 100
-      }
+        sizePerVideo: Math.round(sizePerVideo * 100) / 100,
+      },
     };
 
     setCalculation(result);
-    
+
     // Notificar componente pai
     if (onCalculationChange) {
       onCalculationChange(result);
@@ -121,37 +136,37 @@ export const VideoBlockCalculator: React.FC<VideoBlockCalculatorProps> = ({
   };
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
     }).format(price);
   };
 
   const getExampleVideos = () => {
     if (!calculation) return [];
-    
+
     return [
       {
-        resolution: '720p',
+        resolution: "720p",
         duration: 40,
         size: 0.73,
         blocks: 1,
-        price: 1000
+        price: 1000,
       },
       {
-        resolution: '1080p', 
+        resolution: "1080p",
         duration: 90,
-        size: 3.30,
+        size: 3.3,
         blocks: 1,
-        price: 1000
+        price: 1000,
       },
       {
-        resolution: '4K',
+        resolution: "4K",
         duration: 90,
-        size: 9.90,
+        size: 9.9,
         blocks: 2,
-        price: 2000
-      }
+        price: 2000,
+      },
     ];
   };
 
@@ -168,7 +183,7 @@ export const VideoBlockCalculator: React.FC<VideoBlockCalculatorProps> = ({
             Calcule o custo de armazenamento para seus vídeos
           </CardDescription>
         </CardHeader>
-        
+
         <CardContent className="space-y-6">
           {/* Inputs */}
           <div className="grid md:grid-cols-3 gap-4">
@@ -179,12 +194,12 @@ export const VideoBlockCalculator: React.FC<VideoBlockCalculatorProps> = ({
                 type="number"
                 min="1"
                 max="300"
-                value={duration || ''}
+                value={duration || ""}
                 onChange={(e) => setDuration(Number(e.target.value))}
                 placeholder="40"
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="resolution">Resolução</Label>
               <Select value={resolution} onValueChange={setResolution}>
@@ -198,7 +213,7 @@ export const VideoBlockCalculator: React.FC<VideoBlockCalculatorProps> = ({
                 </SelectContent>
               </Select>
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="videoCount">Quantidade de Vídeos</Label>
               <Input
@@ -206,7 +221,7 @@ export const VideoBlockCalculator: React.FC<VideoBlockCalculatorProps> = ({
                 type="number"
                 min="1"
                 max="100"
-                value={videoCount || ''}
+                value={videoCount || ""}
                 onChange={(e) => setVideoCount(Number(e.target.value))}
                 placeholder="1"
               />
@@ -220,15 +235,19 @@ export const VideoBlockCalculator: React.FC<VideoBlockCalculatorProps> = ({
                 <div className="bg-muted/50 rounded-lg p-4 text-center">
                   <HardDrive className="w-6 h-6 text-blue-500 mx-auto mb-2" />
                   <p className="text-sm text-muted-foreground">Espaço Total</p>
-                  <p className="font-bold text-lg">{calculation.totalSizeGB} GB</p>
+                  <p className="font-bold text-lg">
+                    {calculation.totalSizeGB} GB
+                  </p>
                 </div>
-                
+
                 <div className="bg-muted/50 rounded-lg p-4 text-center">
                   <Zap className="w-6 h-6 text-xnema-orange mx-auto mb-2" />
                   <p className="text-sm text-muted-foreground">Blocos</p>
-                  <p className="font-bold text-lg">{calculation.blocksNeeded}</p>
+                  <p className="font-bold text-lg">
+                    {calculation.blocksNeeded}
+                  </p>
                 </div>
-                
+
                 <div className="bg-muted/50 rounded-lg p-4 text-center">
                   <CreditCard className="w-6 h-6 text-green-500 mx-auto mb-2" />
                   <p className="text-sm text-muted-foreground">Valor Total</p>
@@ -236,7 +255,7 @@ export const VideoBlockCalculator: React.FC<VideoBlockCalculatorProps> = ({
                     {formatPrice(calculation.totalPrice)}
                   </p>
                 </div>
-                
+
                 <div className="bg-muted/50 rounded-lg p-4 text-center">
                   {calculation.canAfford ? (
                     <CheckCircle className="w-6 h-6 text-green-500 mx-auto mb-2" />
@@ -244,8 +263,12 @@ export const VideoBlockCalculator: React.FC<VideoBlockCalculatorProps> = ({
                     <AlertTriangle className="w-6 h-6 text-red-500 mx-auto mb-2" />
                   )}
                   <p className="text-sm text-muted-foreground">Status</p>
-                  <Badge className={calculation.canAfford ? 'bg-green-500' : 'bg-red-500'}>
-                    {calculation.canAfford ? 'Disponível' : 'Excede Limite'}
+                  <Badge
+                    className={
+                      calculation.canAfford ? "bg-green-500" : "bg-red-500"
+                    }
+                  >
+                    {calculation.canAfford ? "Disponível" : "Excede Limite"}
                   </Badge>
                 </div>
               </div>
@@ -255,11 +278,26 @@ export const VideoBlockCalculator: React.FC<VideoBlockCalculatorProps> = ({
                 <Info className="h-4 w-4 text-blue-600" />
                 <AlertDescription className="text-blue-800 dark:text-blue-200">
                   <div className="space-y-1 text-sm">
-                    <p><strong>Detalhes do Cálculo:</strong></p>
-                    <p>• {calculation.details.videoCount} vídeo(s) em {calculation.details.resolution}</p>
-                    <p>• {calculation.details.duration} minutos cada = {calculation.details.sizePerVideo} GB por vídeo</p>
-                    <p>• Total: {calculation.totalSizeGB} GB ÷ {BLOCK_SIZE_GB} GB/bloco = {calculation.blocksNeeded} bloco(s)</p>
-                    <p>• Preço: {calculation.blocksNeeded} × {formatPrice(BLOCK_PRICE)} = {formatPrice(calculation.totalPrice)}</p>
+                    <p>
+                      <strong>Detalhes do Cálculo:</strong>
+                    </p>
+                    <p>
+                      • {calculation.details.videoCount} vídeo(s) em{" "}
+                      {calculation.details.resolution}
+                    </p>
+                    <p>
+                      • {calculation.details.duration} minutos cada ={" "}
+                      {calculation.details.sizePerVideo} GB por vídeo
+                    </p>
+                    <p>
+                      • Total: {calculation.totalSizeGB} GB ÷ {BLOCK_SIZE_GB}{" "}
+                      GB/bloco = {calculation.blocksNeeded} bloco(s)
+                    </p>
+                    <p>
+                      • Preço: {calculation.blocksNeeded} ×{" "}
+                      {formatPrice(BLOCK_PRICE)} ={" "}
+                      {formatPrice(calculation.totalPrice)}
+                    </p>
                   </div>
                 </AlertDescription>
               </Alert>
@@ -268,9 +306,10 @@ export const VideoBlockCalculator: React.FC<VideoBlockCalculatorProps> = ({
                 <Alert className="border-red-500 bg-red-50 dark:border-red-800 dark:bg-red-950">
                   <AlertTriangle className="h-4 w-4 text-red-500" />
                   <AlertDescription className="text-red-800 dark:text-red-200">
-                    <strong>Limite Excedido:</strong> Você precisaria de {calculation.blocksNeeded} blocos, 
-                    mas o limite atual é {maxBlocksAvailable} blocos. 
-                    Considere reduzir a duração, resolução ou quantidade de vídeos.
+                    <strong>Limite Excedido:</strong> Você precisaria de{" "}
+                    {calculation.blocksNeeded} blocos, mas o limite atual é{" "}
+                    {maxBlocksAvailable} blocos. Considere reduzir a duração,
+                    resolução ou quantidade de vídeos.
                   </AlertDescription>
                 </Alert>
               )}
@@ -290,7 +329,7 @@ export const VideoBlockCalculator: React.FC<VideoBlockCalculatorProps> = ({
             Exemplos de tamanhos e custos por resolução e duração
           </CardDescription>
         </CardHeader>
-        
+
         <CardContent>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -370,11 +409,11 @@ export const VideoBlockCalculator: React.FC<VideoBlockCalculatorProps> = ({
               </tbody>
             </table>
           </div>
-          
+
           <div className="mt-4 p-3 bg-muted/50 rounded-lg">
             <p className="text-sm text-muted-foreground">
-              <strong>Regra:</strong> 1 bloco = 7,3 GB = R$1.000 • 
-              Blocos são sempre arredondados para cima
+              <strong>Regra:</strong> 1 bloco = 7,3 GB = R$1.000 • Blocos são
+              sempre arredondados para cima
             </p>
           </div>
         </CardContent>

@@ -4,11 +4,14 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 // Importar cliente Supabase do lado servidor
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from "@supabase/supabase-js";
 
 // Configuração do Supabase
-const supabaseUrl = process.env.SUPABASE_URL || 'https://gardjxolnrykvxxtatdq.supabase.co';
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdhcmRqeG9sbnJ5a3Z4eHRhdGRxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NTM3NjcyNywiZXhwIjoyMDcwOTUyNzI3fQ.L5P2vYFnqSU1n6aTKRsWg2M7kxO1tF6y0l4K3S_HpQA';
+const supabaseUrl =
+  process.env.SUPABASE_URL || "https://gardjxolnrykvxxtatdq.supabase.co";
+const supabaseServiceKey =
+  process.env.SUPABASE_SERVICE_ROLE_KEY ||
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdhcmRqeG9sbnJ5a3Z4eHRhdGRxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NTM3NjcyNywiZXhwIjoyMDcwOTUyNzI3fQ.L5P2vYFnqSU1n6aTKRsWg2M7kxO1tF6y0l4K3S_HpQA";
 
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
@@ -20,40 +23,39 @@ const registerSchema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().min(6).required(),
   phone: Joi.string().optional(),
-  plan: Joi.string().valid('monthly', 'yearly', 'lifetime').default('monthly')
+  plan: Joi.string().valid("monthly", "yearly", "lifetime").default("monthly"),
 });
 
 const loginSchema = Joi.object({
   email: Joi.string().email().required(),
-  password: Joi.string().min(1).required()
+  password: Joi.string().min(1).required(),
 });
 
 // Função para gerar token JWT
 const generateToken = (userId: string, email: string, role: string) => {
-  return jwt.sign(
-    { userId, email, role },
-    JWT_SECRET,
-    { expiresIn: '7d' }
-  );
+  return jwt.sign({ userId, email, role }, JWT_SECRET, { expiresIn: "7d" });
 };
 
 /**
  * Cadastro de novo assinante no Supabase
  * POST /api/auth/register-subscriber
  */
-export const registerSubscriberSupabase = async (req: Request, res: Response) => {
+export const registerSubscriberSupabase = async (
+  req: Request,
+  res: Response,
+) => {
   try {
     console.log("📝 Tentativa de cadastro no Supabase:", {
       email: req.body.email,
       name: req.body.name,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
 
     const { error, value } = registerSchema.validate(req.body);
     if (error) {
       return res.status(400).json({
         success: false,
-        message: error.details[0].message
+        message: error.details[0].message,
       });
     }
 
@@ -61,16 +63,16 @@ export const registerSubscriberSupabase = async (req: Request, res: Response) =>
 
     // Verificar se email já existe
     const { data: existingUser, error: checkError } = await supabase
-      .from('users')
-      .select('id')
-      .eq('email', email.toLowerCase().trim())
+      .from("users")
+      .select("id")
+      .eq("email", email.toLowerCase().trim())
       .single();
 
     if (existingUser) {
       console.log("❌ Email já existe:", email);
       return res.status(409).json({
         success: false,
-        message: 'Este email já está cadastrado'
+        message: "Este email já está cadastrado",
       });
     }
 
@@ -79,19 +81,21 @@ export const registerSubscriberSupabase = async (req: Request, res: Response) =>
 
     // Criar novo usuário no Supabase
     const { data: newUser, error: insertError } = await supabase
-      .from('users')
-      .insert([{
-        name: name.trim(),
-        email: email.toLowerCase().trim(),
-        password_hash: passwordHash,
-        phone: phone || '',
-        role: 'subscriber',
-        subscription_status: 'pending',
-        subscription_plan: plan,
-        is_premium: false,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      }])
+      .from("users")
+      .insert([
+        {
+          name: name.trim(),
+          email: email.toLowerCase().trim(),
+          password_hash: passwordHash,
+          phone: phone || "",
+          role: "subscriber",
+          subscription_status: "pending",
+          subscription_plan: plan,
+          is_premium: false,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+      ])
       .select()
       .single();
 
@@ -99,14 +103,14 @@ export const registerSubscriberSupabase = async (req: Request, res: Response) =>
       console.error("❌ Erro ao inserir usuário:", insertError);
       return res.status(500).json({
         success: false,
-        message: 'Erro ao criar conta. Tente novamente.'
+        message: "Erro ao criar conta. Tente novamente.",
       });
     }
 
     console.log("✅ Usuário cadastrado no Supabase:", {
       id: newUser.id,
       email: newUser.email,
-      name: newUser.name
+      name: newUser.name,
     });
 
     // Gerar token para login automático
@@ -114,7 +118,7 @@ export const registerSubscriberSupabase = async (req: Request, res: Response) =>
 
     res.status(201).json({
       success: true,
-      message: 'Cadastro realizado com sucesso!',
+      message: "Cadastro realizado com sucesso!",
       token,
       user: {
         id: newUser.id,
@@ -125,15 +129,14 @@ export const registerSubscriberSupabase = async (req: Request, res: Response) =>
         subscriptionStatus: newUser.subscription_status,
         subscriptionPlan: newUser.subscription_plan,
         assinante: newUser.is_premium,
-        phone: newUser.phone
-      }
+        phone: newUser.phone,
+      },
     });
-
   } catch (error) {
     console.error("❌ Erro no cadastro:", error);
     res.status(500).json({
       success: false,
-      message: "Erro interno do servidor"
+      message: "Erro interno do servidor",
     });
   }
 };
@@ -146,14 +149,14 @@ export const loginSubscriberSupabase = async (req: Request, res: Response) => {
   try {
     console.log("🔐 Tentativa de login no Supabase:", {
       email: req.body.email,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
 
     const { error, value } = loginSchema.validate(req.body);
     if (error) {
       return res.status(400).json({
         success: false,
-        message: error.details[0].message
+        message: error.details[0].message,
       });
     }
 
@@ -161,16 +164,16 @@ export const loginSubscriberSupabase = async (req: Request, res: Response) => {
 
     // Buscar usuário no Supabase
     const { data: user, error: fetchError } = await supabase
-      .from('users')
-      .select('*')
-      .eq('email', email.toLowerCase().trim())
+      .from("users")
+      .select("*")
+      .eq("email", email.toLowerCase().trim())
       .single();
 
     if (fetchError || !user) {
       console.log("❌ Usuário não encontrado:", email);
       return res.status(401).json({
         success: false,
-        message: 'Email ou senha incorretos'
+        message: "Email ou senha incorretos",
       });
     }
 
@@ -180,7 +183,7 @@ export const loginSubscriberSupabase = async (req: Request, res: Response) => {
       console.log("❌ Senha incorreta para:", email);
       return res.status(401).json({
         success: false,
-        message: 'Email ou senha incorretos'
+        message: "Email ou senha incorretos",
       });
     }
 
@@ -190,13 +193,13 @@ export const loginSubscriberSupabase = async (req: Request, res: Response) => {
       isPremium = false;
       // Atualizar status no banco
       await supabase
-        .from('users')
+        .from("users")
         .update({
           is_premium: false,
-          subscription_status: 'expired',
-          updated_at: new Date().toISOString()
+          subscription_status: "expired",
+          updated_at: new Date().toISOString(),
         })
-        .eq('id', user.id);
+        .eq("id", user.id);
     }
 
     // Gerar token
@@ -206,12 +209,12 @@ export const loginSubscriberSupabase = async (req: Request, res: Response) => {
       id: user.id,
       email: user.email,
       role: user.role,
-      isPremium
+      isPremium,
     });
 
     res.json({
       success: true,
-      message: 'Login realizado com sucesso!',
+      message: "Login realizado com sucesso!",
       token,
       user: {
         id: user.id,
@@ -219,18 +222,17 @@ export const loginSubscriberSupabase = async (req: Request, res: Response) => {
         name: user.name,
         role: user.role,
         isPremium,
-        subscriptionStatus: isPremium ? user.subscription_status : 'expired',
+        subscriptionStatus: isPremium ? user.subscription_status : "expired",
         subscriptionPlan: user.subscription_plan,
         assinante: isPremium,
-        phone: user.phone
-      }
+        phone: user.phone,
+      },
     });
-
   } catch (error) {
     console.error("❌ Erro no login:", error);
     res.status(500).json({
       success: false,
-      message: "Erro interno do servidor"
+      message: "Erro interno do servidor",
     });
   }
 };
@@ -239,27 +241,30 @@ export const loginSubscriberSupabase = async (req: Request, res: Response) => {
  * Ativar assinatura após pagamento
  * POST /api/auth/activate-subscription
  */
-export const activateSubscriptionSupabase = async (req: Request, res: Response) => {
+export const activateSubscriptionSupabase = async (
+  req: Request,
+  res: Response,
+) => {
   try {
-    const { userId, plan = 'monthly', paymentId } = req.body;
+    const { userId, plan = "monthly", paymentId } = req.body;
 
     if (!userId) {
       return res.status(400).json({
         success: false,
-        message: 'ID do usuário é obrigatório'
+        message: "ID do usuário é obrigatório",
       });
     }
 
     // Calcular data de término da assinatura
     const subscriptionEnd = new Date();
     switch (plan) {
-      case 'monthly':
+      case "monthly":
         subscriptionEnd.setMonth(subscriptionEnd.getMonth() + 1);
         break;
-      case 'yearly':
+      case "yearly":
         subscriptionEnd.setFullYear(subscriptionEnd.getFullYear() + 1);
         break;
-      case 'lifetime':
+      case "lifetime":
         subscriptionEnd.setFullYear(subscriptionEnd.getFullYear() + 100);
         break;
       default:
@@ -268,16 +273,16 @@ export const activateSubscriptionSupabase = async (req: Request, res: Response) 
 
     // Atualizar usuário no Supabase
     const { data: updatedUser, error: updateError } = await supabase
-      .from('users')
+      .from("users")
       .update({
         is_premium: true,
-        subscription_status: 'active',
+        subscription_status: "active",
         subscription_plan: plan,
         subscription_start: new Date().toISOString(),
         subscription_end: subscriptionEnd.toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
-      .eq('id', userId)
+      .eq("id", userId)
       .select()
       .single();
 
@@ -285,35 +290,35 @@ export const activateSubscriptionSupabase = async (req: Request, res: Response) 
       console.error("❌ Erro ao ativar assinatura:", updateError);
       return res.status(500).json({
         success: false,
-        message: 'Erro ao ativar assinatura'
+        message: "Erro ao ativar assinatura",
       });
     }
 
     // Registrar pagamento se fornecido
     if (paymentId) {
-      await supabase
-        .from('payments')
-        .insert([{
+      await supabase.from("payments").insert([
+        {
           user_id: userId,
-          amount: plan === 'monthly' ? 19.90 : plan === 'yearly' ? 199.90 : 499.90,
-          currency: 'BRL',
+          amount: plan === "monthly" ? 19.9 : plan === "yearly" ? 199.9 : 499.9,
+          currency: "BRL",
           plan: plan,
-          status: 'completed',
-          payment_method: 'credit_card',
+          status: "completed",
+          payment_method: "credit_card",
           transaction_id: paymentId,
-          created_at: new Date().toISOString()
-        }]);
+          created_at: new Date().toISOString(),
+        },
+      ]);
     }
 
     console.log("✅ Assinatura ativada no Supabase:", {
       userId,
       plan,
-      subscriptionEnd
+      subscriptionEnd,
     });
 
     res.json({
       success: true,
-      message: 'Assinatura ativada com sucesso!',
+      message: "Assinatura ativada com sucesso!",
       user: {
         id: updatedUser.id,
         email: updatedUser.email,
@@ -322,15 +327,14 @@ export const activateSubscriptionSupabase = async (req: Request, res: Response) 
         isPremium: updatedUser.is_premium,
         subscriptionStatus: updatedUser.subscription_status,
         subscriptionPlan: updatedUser.subscription_plan,
-        assinante: updatedUser.is_premium
-      }
+        assinante: updatedUser.is_premium,
+      },
     });
-
   } catch (error) {
     console.error("❌ Erro ao ativar assinatura:", error);
     res.status(500).json({
       success: false,
-      message: "Erro interno do servidor"
+      message: "Erro interno do servidor",
     });
   }
 };
@@ -345,20 +349,20 @@ export const getCurrentUserSupabase = async (req: any, res: Response) => {
     if (!userId) {
       return res.status(401).json({
         success: false,
-        message: 'Token inválido'
+        message: "Token inválido",
       });
     }
 
     const { data: user, error } = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', userId)
+      .from("users")
+      .select("*")
+      .eq("id", userId)
       .single();
 
     if (error || !user) {
       return res.status(404).json({
         success: false,
-        message: 'Usuário não encontrado'
+        message: "Usuário não encontrado",
       });
     }
 
@@ -376,18 +380,17 @@ export const getCurrentUserSupabase = async (req: any, res: Response) => {
         name: user.name,
         role: user.role,
         isPremium,
-        subscriptionStatus: isPremium ? user.subscription_status : 'expired',
+        subscriptionStatus: isPremium ? user.subscription_status : "expired",
         subscriptionPlan: user.subscription_plan,
         assinante: isPremium,
-        phone: user.phone
-      }
+        phone: user.phone,
+      },
     });
-
   } catch (error) {
     console.error("❌ Erro ao buscar usuário:", error);
     res.status(500).json({
       success: false,
-      message: "Erro interno do servidor"
+      message: "Erro interno do servidor",
     });
   }
 };

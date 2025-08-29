@@ -20,7 +20,10 @@ const registerSchema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().min(6).required(),
   name: Joi.string().min(2).required(),
-  role: Joi.string().valid("subscriber", "creator").optional().default("subscriber"), // Default to subscriber
+  role: Joi.string()
+    .valid("subscriber", "creator")
+    .optional()
+    .default("subscriber"), // Default to subscriber
   bio: Joi.string().optional(),
   portfolio: Joi.string().uri().optional(),
   paymentMethod: Joi.string().optional(),
@@ -31,7 +34,7 @@ export const login = async (req: Request, res: Response) => {
     console.log("🔐 Tentativa de login:", {
       email: req.body.email,
       role: req.body.role,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
 
     const { error, value } = loginSchema.validate(req.body);
@@ -67,7 +70,11 @@ export const login = async (req: Request, res: Response) => {
 
     // Check role if specified
     if (role && user.role !== role) {
-      console.log("❌ Role mismatch:", { userRole: user.role, requestedRole: role, email });
+      console.log("❌ Role mismatch:", {
+        userRole: user.role,
+        requestedRole: role,
+        email,
+      });
       return res.status(403).json({
         success: false,
         message: `Usuário não tem permissão para acessar como ${role}`,
@@ -78,7 +85,7 @@ export const login = async (req: Request, res: Response) => {
     console.log("📊 Status do usuário:", {
       role: user.role,
       isPremium: user.isPremium,
-      subscriptionStatus: user.subscriptionStatus
+      subscriptionStatus: user.subscriptionStatus,
     });
 
     // Special check for admin login
@@ -100,7 +107,8 @@ export const login = async (req: Request, res: Response) => {
       if (status === "rejected") {
         return res.status(403).json({
           success: false,
-          message: "Sua conta de criador foi rejeitada. Entre em contato conosco.",
+          message:
+            "Sua conta de criador foi rejeitada. Entre em contato conosco.",
         } as LoginResponse);
       }
     }
@@ -112,7 +120,7 @@ export const login = async (req: Request, res: Response) => {
       id: user._id,
       email: user.email,
       role: user.role,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
 
     res.json({
@@ -134,7 +142,7 @@ export const register = async (req: Request, res: Response) => {
     console.log("📝 Tentativa de registro:", {
       email: req.body.email,
       role: req.body.role,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
 
     const { error, value } = registerSchema.validate(req.body);
@@ -172,7 +180,12 @@ export const register = async (req: Request, res: Response) => {
     };
 
     if (role === "subscriber" || !role) {
-      console.log("👤 Criando usuário assinante:", { email, name, role: "subscriber", isPremium: false });
+      console.log("👤 Criando usuário assinante:", {
+        email,
+        name,
+        role: "subscriber",
+        isPremium: false,
+      });
     } else if (role === "creator") {
       userData.role = "creator";
       userData.creatorProfile = {
@@ -188,7 +201,11 @@ export const register = async (req: Request, res: Response) => {
         referralCount: 0,
       };
 
-      console.log("🎨 Criando usuário criador:", { email, name, bio: userData.creatorProfile.bio });
+      console.log("🎨 Criando usuário criador:", {
+        email,
+        name,
+        bio: userData.creatorProfile.bio,
+      });
     }
 
     const user = new User(userData);
@@ -200,7 +217,7 @@ export const register = async (req: Request, res: Response) => {
       role: savedUser.role,
       isPremium: savedUser.isPremium,
       subscriptionStatus: savedUser.subscriptionStatus,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
 
     res.status(201).json({

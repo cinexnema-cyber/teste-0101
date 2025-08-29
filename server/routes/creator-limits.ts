@@ -12,17 +12,17 @@ export const getCreatorLimits: RequestHandler = async (req, res) => {
     const requesterRole = (req as any).user?.role;
 
     // Check if user can access this creator's limits
-    if (requesterId !== creatorId && requesterRole !== 'admin') {
+    if (requesterId !== creatorId && requesterRole !== "admin") {
       return res.status(403).json({
         success: false,
-        message: "Acesso negado. Você só pode ver seus próprios limites."
+        message: "Acesso negado. Você só pode ver seus próprios limites.",
       });
     }
 
     // Get or create creator limits
     const creatorLimit = await CreatorLimit.getOrCreateForCreator(
-      creatorId, 
-      (req as any).user?.name || 'Creator'
+      creatorId,
+      (req as any).user?.name || "Creator",
     );
 
     // Update grace period
@@ -42,16 +42,15 @@ export const getCreatorLimits: RequestHandler = async (req, res) => {
         totalViews: creatorLimit.totalViews,
         currentCommissionRate: creatorLimit.currentCommissionRate,
         remainingStorageGB: creatorLimit.remainingStorageGB,
-        restrictions: creatorLimit.restrictions
-      }
+        restrictions: creatorLimit.restrictions,
+      },
     });
-
   } catch (error) {
-    console.error('Get creator limits error:', error);
+    console.error("Get creator limits error:", error);
     res.status(500).json({
       success: false,
       message: "Erro ao buscar limites do criador",
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 };
@@ -65,24 +64,24 @@ export const updateCreatorLimits: RequestHandler = async (req, res) => {
     const { storageLimit, videoCountLimit } = req.body;
     const requesterRole = (req as any).user?.role;
 
-    if (requesterRole !== 'admin') {
+    if (requesterRole !== "admin") {
       return res.status(403).json({
         success: false,
-        message: "Acesso negado. Apenas administradores podem alterar limites."
+        message: "Acesso negado. Apenas administradores podem alterar limites.",
       });
     }
 
     if (!storageLimit || !videoCountLimit) {
       return res.status(400).json({
         success: false,
-        message: "Limite de armazenamento e limite de vídeos são obrigatórios"
+        message: "Limite de armazenamento e limite de vídeos são obrigatórios",
       });
     }
 
     if (storageLimit < 0 || videoCountLimit < 0) {
       return res.status(400).json({
         success: false,
-        message: "Limites devem ser valores positivos"
+        message: "Limites devem ser valores positivos",
       });
     }
 
@@ -91,7 +90,7 @@ export const updateCreatorLimits: RequestHandler = async (req, res) => {
     if (!creatorLimit) {
       return res.status(404).json({
         success: false,
-        message: "Criador não encontrado"
+        message: "Criador não encontrado",
       });
     }
 
@@ -115,17 +114,16 @@ export const updateCreatorLimits: RequestHandler = async (req, res) => {
         totalViews: creatorLimit.totalViews,
         currentCommissionRate: creatorLimit.currentCommissionRate,
         remainingStorageGB: creatorLimit.remainingStorageGB,
-        restrictions: creatorLimit.restrictions
+        restrictions: creatorLimit.restrictions,
       },
-      message: "Limites atualizados com sucesso"
+      message: "Limites atualizados com sucesso",
     });
-
   } catch (error) {
-    console.error('Update creator limits error:', error);
+    console.error("Update creator limits error:", error);
     res.status(500).json({
       success: false,
       message: "Erro ao atualizar limites do criador",
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 };
@@ -139,17 +137,18 @@ export const restrictCreatorUpload: RequestHandler = async (req, res) => {
     const { reason } = req.body;
     const requesterRole = (req as any).user?.role;
 
-    if (requesterRole !== 'admin') {
+    if (requesterRole !== "admin") {
       return res.status(403).json({
         success: false,
-        message: "Acesso negado. Apenas administradores podem restringir uploads."
+        message:
+          "Acesso negado. Apenas administradores podem restringir uploads.",
       });
     }
 
     if (!reason || reason.trim().length === 0) {
       return res.status(400).json({
         success: false,
-        message: "Motivo da restrição é obrigatório"
+        message: "Motivo da restrição é obrigatório",
       });
     }
 
@@ -158,7 +157,7 @@ export const restrictCreatorUpload: RequestHandler = async (req, res) => {
     if (!creatorLimit) {
       return res.status(404).json({
         success: false,
-        message: "Criador não encontrado"
+        message: "Criador não encontrado",
       });
     }
 
@@ -167,15 +166,14 @@ export const restrictCreatorUpload: RequestHandler = async (req, res) => {
     res.json({
       success: true,
       message: "Upload restringido com sucesso",
-      restrictions: creatorLimit.restrictions
+      restrictions: creatorLimit.restrictions,
     });
-
   } catch (error) {
-    console.error('Restrict creator upload error:', error);
+    console.error("Restrict creator upload error:", error);
     res.status(500).json({
       success: false,
       message: "Erro ao restringir upload do criador",
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 };
@@ -188,10 +186,10 @@ export const allowCreatorUpload: RequestHandler = async (req, res) => {
     const { creatorId } = req.params;
     const requesterRole = (req as any).user?.role;
 
-    if (requesterRole !== 'admin') {
+    if (requesterRole !== "admin") {
       return res.status(403).json({
         success: false,
-        message: "Acesso negado. Apenas administradores podem liberar uploads."
+        message: "Acesso negado. Apenas administradores podem liberar uploads.",
       });
     }
 
@@ -200,7 +198,7 @@ export const allowCreatorUpload: RequestHandler = async (req, res) => {
     if (!creatorLimit) {
       return res.status(404).json({
         success: false,
-        message: "Criador não encontrado"
+        message: "Criador não encontrado",
       });
     }
 
@@ -209,15 +207,14 @@ export const allowCreatorUpload: RequestHandler = async (req, res) => {
     res.json({
       success: true,
       message: "Upload liberado com sucesso",
-      restrictions: creatorLimit.restrictions
+      restrictions: creatorLimit.restrictions,
     });
-
   } catch (error) {
-    console.error('Allow creator upload error:', error);
+    console.error("Allow creator upload error:", error);
     res.status(500).json({
       success: false,
       message: "Erro ao liberar upload do criador",
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 };
@@ -229,19 +226,25 @@ export const getAllCreatorsLimits: RequestHandler = async (req, res) => {
   try {
     const requesterRole = (req as any).user?.role;
 
-    if (requesterRole !== 'admin') {
+    if (requesterRole !== "admin") {
       return res.status(403).json({
         success: false,
-        message: "Acesso negado. Apenas administradores podem ver todos os criadores."
+        message:
+          "Acesso negado. Apenas administradores podem ver todos os criadores.",
       });
     }
 
-    const { page = 1, limit = 20, sortBy = 'storageUsed', sortOrder = 'desc' } = req.query;
+    const {
+      page = 1,
+      limit = 20,
+      sortBy = "storageUsed",
+      sortOrder = "desc",
+    } = req.query;
     const skip = (Number(page) - 1) * Number(limit);
 
     // Build sort object
     const sort: any = {};
-    sort[String(sortBy)] = sortOrder === 'desc' ? -1 : 1;
+    sort[String(sortBy)] = sortOrder === "desc" ? -1 : 1;
 
     const creators = await CreatorLimit.find()
       .sort(sort)
@@ -258,10 +261,10 @@ export const getAllCreatorsLimits: RequestHandler = async (req, res) => {
           { $match: { creatorId: creator.creatorId } },
           {
             $group: {
-              _id: '$status',
-              count: { $sum: 1 }
-            }
-          }
+              _id: "$status",
+              count: { $sum: 1 },
+            },
+          },
         ]);
 
         const videosByStatus = videoStats.reduce((acc, stat) => {
@@ -285,9 +288,9 @@ export const getAllCreatorsLimits: RequestHandler = async (req, res) => {
           restrictions: creator.restrictions,
           lastUploadAt: creator.lastUploadAt,
           createdAt: creator.createdAt,
-          videosByStatus
+          videosByStatus,
         };
-      })
+      }),
     );
 
     // Get platform statistics
@@ -296,18 +299,20 @@ export const getAllCreatorsLimits: RequestHandler = async (req, res) => {
         $group: {
           _id: null,
           totalCreators: { $sum: 1 },
-          totalStorageUsed: { $sum: '$storageUsed' },
-          totalVideoCount: { $sum: '$videoCount' },
-          totalRevenue: { $sum: '$totalRevenue' },
-          totalViews: { $sum: '$totalViews' },
+          totalStorageUsed: { $sum: "$storageUsed" },
+          totalVideoCount: { $sum: "$videoCount" },
+          totalRevenue: { $sum: "$totalRevenue" },
+          totalViews: { $sum: "$totalViews" },
           gracePeriodCreators: {
-            $sum: { $cond: ['$isGracePeriod', 1, 0] }
+            $sum: { $cond: ["$isGracePeriod", 1, 0] },
           },
           restrictedCreators: {
-            $sum: { $cond: [{ $eq: ['$restrictions.canUpload', false] }, 1, 0] }
-          }
-        }
-      }
+            $sum: {
+              $cond: [{ $eq: ["$restrictions.canUpload", false] }, 1, 0],
+            },
+          },
+        },
+      },
     ]);
 
     res.json({
@@ -317,7 +322,7 @@ export const getAllCreatorsLimits: RequestHandler = async (req, res) => {
         page: Number(page),
         limit: Number(limit),
         total: totalCreators,
-        pages: totalPages
+        pages: totalPages,
       },
       platformStats: platformStats[0] || {
         totalCreators: 0,
@@ -326,16 +331,15 @@ export const getAllCreatorsLimits: RequestHandler = async (req, res) => {
         totalRevenue: 0,
         totalViews: 0,
         gracePeriodCreators: 0,
-        restrictedCreators: 0
-      }
+        restrictedCreators: 0,
+      },
     });
-
   } catch (error) {
-    console.error('Get all creators limits error:', error);
+    console.error("Get all creators limits error:", error);
     res.status(500).json({
       success: false,
       message: "Erro ao buscar limites dos criadores",
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 };
@@ -351,23 +355,23 @@ export const checkUploadCapacity: RequestHandler = async (req, res) => {
     const requesterRole = (req as any).user?.role;
 
     // Check if user can check this creator's capacity
-    if (requesterId !== creatorId && requesterRole !== 'admin') {
+    if (requesterId !== creatorId && requesterRole !== "admin") {
       return res.status(403).json({
         success: false,
-        message: "Acesso negado."
+        message: "Acesso negado.",
       });
     }
 
     if (!fileSize || fileSize <= 0) {
       return res.status(400).json({
         success: false,
-        message: "Tamanho do arquivo é obrigatório"
+        message: "Tamanho do arquivo é obrigatório",
       });
     }
 
     const creatorLimit = await CreatorLimit.getOrCreateForCreator(
-      creatorId, 
-      'Creator'
+      creatorId,
+      "Creator",
     );
 
     const uploadCheck = creatorLimit.canUploadVideo(Number(fileSize));
@@ -382,16 +386,15 @@ export const checkUploadCapacity: RequestHandler = async (req, res) => {
         storageUsedPercentage: creatorLimit.getStorageUsedPercentage(),
         videoCount: creatorLimit.videoCount,
         videoCountLimit: creatorLimit.videoCountLimit,
-        remainingStorageGB: creatorLimit.remainingStorageGB
-      }
+        remainingStorageGB: creatorLimit.remainingStorageGB,
+      },
     });
-
   } catch (error) {
-    console.error('Check upload capacity error:', error);
+    console.error("Check upload capacity error:", error);
     res.status(500).json({
       success: false,
       message: "Erro ao verificar capacidade de upload",
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 };
@@ -403,10 +406,11 @@ export const updateAllGracePeriods: RequestHandler = async (req, res) => {
   try {
     const requesterRole = (req as any).user?.role;
 
-    if (requesterRole !== 'admin') {
+    if (requesterRole !== "admin") {
       return res.status(403).json({
         success: false,
-        message: "Acesso negado. Apenas administradores podem executar esta função."
+        message:
+          "Acesso negado. Apenas administradores podem executar esta função.",
       });
     }
 
@@ -414,15 +418,14 @@ export const updateAllGracePeriods: RequestHandler = async (req, res) => {
 
     res.json({
       success: true,
-      message: "Períodos de carência atualizados com sucesso"
+      message: "Períodos de carência atualizados com sucesso",
     });
-
   } catch (error) {
-    console.error('Update all grace periods error:', error);
+    console.error("Update all grace periods error:", error);
     res.status(500).json({
       success: false,
       message: "Erro ao atualizar períodos de carência",
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 };

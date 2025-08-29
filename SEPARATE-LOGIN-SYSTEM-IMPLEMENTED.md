@@ -19,7 +19,7 @@ POST /api/auth/login-subscriber
 - Valida status premium e assinatura
 - Redireciona para dashboard apropriado
 
-// Login de criador  
+// Login de criador
 POST /api/auth/login-creator
 - Busca usu��rios com role: 'creator'
 - Verifica status de aprovação (pending/approved/rejected)
@@ -38,27 +38,29 @@ POST /api/auth/login-admin
 
 ```typescript
 // Middleware principal
-authRole(['creator']) // Só criadores
-authRole(['subscriber', 'premium']) // Assinantes
-authRole(['admin']) // Só admins
+authRole(["creator"]); // Só criadores
+authRole(["subscriber", "premium"]); // Assinantes
+authRole(["admin"]); // Só admins
 
 // Middlewares específicos
-authSubscriber // Assinantes/Premium
-authCreator // Criadores
-authAdmin // Admins
-requirePremium // Só premium ativos
-requireApprovedCreator // Só criadores aprovados
+authSubscriber; // Assinantes/Premium
+authCreator; // Criadores
+authAdmin; // Admins
+requirePremium; // Só premium ativos
+requireApprovedCreator; // Só criadores aprovados
 ```
 
 ### 3️⃣ **Frontend - Páginas de Login Separadas**
 
 ✅ **`client/pages/SubscriberLogin.tsx` - Login de Assinante:**
+
 - Interface otimizada para assinantes
 - Preview de benefícios premium
 - Validação específica de campos
 - Redirecionamento para dashboard ou preços
 
 ✅ **`client/pages/CreatorLogin.tsx` - Login de Criador:**
+
 - Interface focada em criadores
 - Informações de monetização
 - Links para portal do criador
@@ -67,11 +69,13 @@ requireApprovedCreator // Só criadores aprovados
 ### 4️⃣ **Frontend - Componentes Auxiliares**
 
 ✅ **`client/components/RoleBasedDashboard.tsx` - Router inteligente:**
+
 - Redireciona automaticamente para dashboard correto
 - Baseado no role do usuário logado
 - Loading states e error handling
 
 ✅ **`client/components/LoginSelector.tsx` - Seletor de login:**
+
 - Interface para escolher tipo de acesso
 - Cards visuais para cada role
 - Links diretos para cada login
@@ -81,10 +85,11 @@ requireApprovedCreator // Só criadores aprovados
 ## 🚀 Fluxo Completo por Role
 
 ### 👤 **Fluxo do Assinante:**
+
 ```
 1. Acessa /login/subscriber
 2. Insere email/senha
-3. Backend valida role: ['subscriber', 'premium'] 
+3. Backend valida role: ['subscriber', 'premium']
 4. Se válido: gera token + dados do usuário
 5. Frontend armazena token
 6. Redireciona baseado em isPremium:
@@ -93,6 +98,7 @@ requireApprovedCreator // Só criadores aprovados
 ```
 
 ### 🎨 **Fluxo do Criador:**
+
 ```
 1. Acessa /login/creator
 2. Insere email/senha
@@ -105,6 +111,7 @@ requireApprovedCreator // Só criadores aprovados
 ```
 
 ### 👑 **Fluxo do Admin:**
+
 ```
 1. Acessa /login/admin
 2. Insere email/senha
@@ -122,24 +129,24 @@ requireApprovedCreator // Só criadores aprovados
 
 ```typescript
 // Exemplos de rotas protegidas
-GET /api/creator/dashboard        // authCreator
-GET /api/subscriber/dashboard     // authSubscriber  
-GET /api/content/premium          // requirePremium
-GET /api/admin/panel             // authAdmin
-GET /api/creator/advanced-features // requireApprovedCreator
+GET / api / creator / dashboard; // authCreator
+GET / api / subscriber / dashboard; // authSubscriber
+GET / api / content / premium; // requirePremium
+GET / api / admin / panel; // authAdmin
+GET / api / creator / advanced - features; // requireApprovedCreator
 ```
 
 ### 🛡️ **Middleware de Proteção:**
 
 ```typescript
 // Uso básico
-app.get('/api/creator/dashboard', authRole(['creator']), handler);
+app.get("/api/creator/dashboard", authRole(["creator"]), handler);
 
 // Uso avançado
-app.get('/api/premium-content', authRole(['subscriber', 'premium']), handler);
+app.get("/api/premium-content", authRole(["subscriber", "premium"]), handler);
 
 // Com verificações extras
-app.get('/api/creator/monetization', requireApprovedCreator, handler);
+app.get("/api/creator/monetization", requireApprovedCreator, handler);
 ```
 
 ---
@@ -147,9 +154,10 @@ app.get('/api/creator/monetization', requireApprovedCreator, handler);
 ## 🎨 Interface do Usuário
 
 ### 🔗 **Rotas Frontend:**
+
 ```
 /login/subscriber  → SubscriberLogin (Página específica)
-/login/creator     → CreatorLogin (Página específica)  
+/login/creator     → CreatorLogin (Página específica)
 /login             → Login (Página geral - mantida)
 /dashboard         → RoleBasedDashboard (Router automático)
 ```
@@ -157,18 +165,21 @@ app.get('/api/creator/monetization', requireApprovedCreator, handler);
 ### 🎨 **Componentes Visuais:**
 
 **SubscriberLogin:**
+
 - ✅ Design focado em streaming/entretenimento
 - ✅ Preview de benefícios premium
 - ✅ Links para esqueci senha e cadastro
 - ✅ Redirecionamento inteligente
 
 **CreatorLogin:**
+
 - ✅ Design focado em criação/monetização
 - ✅ Informações de revenue sharing
 - ✅ Links para portal do criador
 - ✅ Status de aprovação
 
 **LoginSelector:**
+
 - ✅ Cards visuais para cada tipo de usuário
 - ✅ Descrição de benefícios
 - ✅ CTAs específicos para cada role
@@ -178,23 +189,27 @@ app.get('/api/creator/monetization', requireApprovedCreator, handler);
 ## 📈 Benefícios da Implementação
 
 ### ✅ **Para Assinantes:**
+
 - Login otimizado com foco em conteúdo
 - Redirecionamento baseado em status premium
 - Interface clara sobre benefícios
 - Validação específica de assinatura
 
 ### ✅ **Para Criadores:**
+
 - Login focado em monetização
 - Portal específico pós-login
 - Informações de revenue sharing
 - Status de aprovação visível
 
 ### ✅ **Para Admins:**
+
 - Login seguro com validação extra
 - Acesso total ao sistema
 - Interface administrativa
 
 ### ✅ **Para Plataforma:**
+
 - Separação clara de responsabilidades
 - Segurança aprimorada por role
 - UX otimizada para cada tipo de usuário
@@ -220,7 +235,7 @@ app.get('/api/creator/monetization', requireApprovedCreator, handler);
 ```typescript
 // Logs implementados:
 ✅ Tentativas de login por role
-✅ Acessos a rotas protegidas  
+✅ Acessos a rotas protegidas
 ✅ Falhas de autenticação
 ✅ Status de usuários (premium, aprovação)
 ✅ Redirecionamentos por role
@@ -231,11 +246,13 @@ app.get('/api/creator/monetization', requireApprovedCreator, handler);
 ## 📁 Arquivos Implementados/Atualizados
 
 ### 🔧 **Backend:**
+
 - ✅ `server/routes/auth-separate.ts` - Rotas de login separadas (NOVO)
 - ✅ `server/middleware/authRole.ts` - Middleware flexível (NOVO)
 - ✅ `server/index.ts` - Rotas e exemplos protegidos
 
 ### 🎨 **Frontend:**
+
 - ✅ `client/pages/SubscriberLogin.tsx` - Login de assinante (NOVO)
 - ✅ `client/pages/CreatorLogin.tsx` - Login de criador (NOVO)
 - ✅ `client/components/RoleBasedDashboard.tsx` - Router inteligente (NOVO)
@@ -260,8 +277,9 @@ app.get('/api/creator/monetization', requireApprovedCreator, handler);
 10. ✅ **Routing**: Sistema completo de redirecionamento
 
 ### 🎯 **Resultado:**
+
 - Login totalmente separado por roles
-- Dashboards específicos por tipo de usuário  
+- Dashboards específicos por tipo de usuário
 - Middleware flexível para proteção de rotas
 - Interface otimizada para cada persona
 - Sistema seguro e escalável
@@ -269,6 +287,7 @@ app.get('/api/creator/monetization', requireApprovedCreator, handler);
 **O sistema está pronto para produção! 🚀**
 
 ### 📋 **Próximos Passos Sugeridos:**
+
 1. Implementar recuperação de senha específica por role
 2. Adicionar autenticação de dois fatores
 3. Criar relatórios de acesso por role

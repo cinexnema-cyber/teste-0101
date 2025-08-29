@@ -1,24 +1,36 @@
-import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
-import { 
-  Film, 
-  Tv, 
-  Upload, 
-  CheckCircle, 
+import React, { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import {
+  Film,
+  Tv,
+  Upload,
+  CheckCircle,
   AlertCircle,
   Clock,
   HardDrive,
   Calculator,
-  CreditCard
-} from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
+  CreditCard,
+} from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface VideoUploadFormProps {
   creatorData?: {
@@ -33,7 +45,7 @@ interface VideoUploadFormProps {
 
 interface FormData {
   title: string;
-  type: 'filme' | 'serie';
+  type: "filme" | "serie";
   season: number;
   episode: number;
   duration: number;
@@ -52,54 +64,58 @@ interface FormData {
 }
 
 const CATEGORIES = [
-  { value: 'acao', label: 'Ação' },
-  { value: 'aventura', label: 'Aventura' },
-  { value: 'comedia', label: 'Comédia' },
-  { value: 'drama', label: 'Drama' },
-  { value: 'documentario', label: 'Documentário' },
-  { value: 'ficcao_cientifica', label: 'Ficção Científica' },
-  { value: 'fantasia', label: 'Fantasia' },
-  { value: 'romance', label: 'Romance' },
-  { value: 'suspense', label: 'Suspense' },
-  { value: 'terror', label: 'Terror' },
-  { value: 'animacao', label: 'Animação' },
-  { value: 'musical', label: 'Musical' },
-  { value: 'geral', label: 'Geral' }
+  { value: "acao", label: "Ação" },
+  { value: "aventura", label: "Aventura" },
+  { value: "comedia", label: "Comédia" },
+  { value: "drama", label: "Drama" },
+  { value: "documentario", label: "Documentário" },
+  { value: "ficcao_cientifica", label: "Ficção Científica" },
+  { value: "fantasia", label: "Fantasia" },
+  { value: "romance", label: "Romance" },
+  { value: "suspense", label: "Suspense" },
+  { value: "terror", label: "Terror" },
+  { value: "animacao", label: "Animação" },
+  { value: "musical", label: "Musical" },
+  { value: "geral", label: "Geral" },
 ];
 
 const LANGUAGES = [
-  { value: 'Português', label: 'Português' },
-  { value: 'Inglês', label: 'Inglês' },
-  { value: 'Espanhol', label: 'Espanhol' },
-  { value: 'Francês', label: 'Francês' },
-  { value: 'Italiano', label: 'Italiano' },
-  { value: 'Alemão', label: 'Alemão' },
-  { value: 'Japonês', label: 'Japonês' },
-  { value: 'Coreano', label: 'Coreano' },
-  { value: 'Mandarim', label: 'Mandarim' },
-  { value: 'Outro', label: 'Outro' }
+  { value: "Português", label: "Português" },
+  { value: "Inglês", label: "Inglês" },
+  { value: "Espanhol", label: "Espanhol" },
+  { value: "Francês", label: "Francês" },
+  { value: "Italiano", label: "Italiano" },
+  { value: "Alemão", label: "Alemão" },
+  { value: "Japonês", label: "Japonês" },
+  { value: "Coreano", label: "Coreano" },
+  { value: "Mandarim", label: "Mandarim" },
+  { value: "Outro", label: "Outro" },
 ];
 
-export function VideoUploadForm({ creatorData, onUploadComplete, onUploadError }: VideoUploadFormProps) {
+export function VideoUploadForm({
+  creatorData,
+  onUploadComplete,
+  onUploadError,
+}: VideoUploadFormProps) {
   const { user } = useAuth();
   const [formData, setFormData] = useState<FormData>({
-    title: '',
-    type: 'filme',
+    title: "",
+    type: "filme",
     season: 1,
     episode: 1,
     duration: 0,
-    releaseDate: '',
-    director: '',
-    cast: '',
-    genre: '',
-    synopsis: '',
-    language: 'Português',
-    thumbnailUrl: '',
-    videoUrl: '',
-    description: '',
-    category: 'geral',
-    tags: '',
-    sizeGB: 0
+    releaseDate: "",
+    director: "",
+    cast: "",
+    genre: "",
+    synopsis: "",
+    language: "Português",
+    thumbnailUrl: "",
+    videoUrl: "",
+    description: "",
+    category: "geral",
+    tags: "",
+    sizeGB: 0,
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -113,7 +129,7 @@ export function VideoUploadForm({ creatorData, onUploadComplete, onUploadError }
     if (formData.sizeGB > 0) {
       const needed = Math.ceil(formData.sizeGB / 7.3);
       setBlocksNeeded(needed);
-      
+
       if (creatorData) {
         setCanAfford(needed <= creatorData.blocksAvailable);
       }
@@ -126,11 +142,11 @@ export function VideoUploadForm({ creatorData, onUploadComplete, onUploadError }
   }, [formData.sizeGB, creatorData]);
 
   const handleInputChange = (field: keyof FormData, value: string | number) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    
+    setFormData((prev) => ({ ...prev, [field]: value }));
+
     // Clear error when user starts typing
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: '' }));
+      setErrors((prev) => ({ ...prev, [field]: "" }));
     }
   };
 
@@ -138,28 +154,28 @@ export function VideoUploadForm({ creatorData, onUploadComplete, onUploadError }
     const newErrors: Record<string, string> = {};
 
     if (!formData.title.trim()) {
-      newErrors.title = 'Título é obrigatório';
+      newErrors.title = "Título é obrigatório";
     }
 
-    if (formData.type === 'serie') {
+    if (formData.type === "serie") {
       if (!formData.season || formData.season < 1) {
-        newErrors.season = 'Temporada é obrigatória para séries';
+        newErrors.season = "Temporada é obrigatória para séries";
       }
       if (!formData.episode || formData.episode < 1) {
-        newErrors.episode = 'Episódio é obrigatório para séries';
+        newErrors.episode = "Episódio é obrigatório para séries";
       }
     }
 
     if (!formData.duration || formData.duration <= 0) {
-      newErrors.duration = 'Duração em minutos é obrigatória';
+      newErrors.duration = "Duração em minutos é obrigatória";
     }
 
     if (!formData.synopsis.trim()) {
-      newErrors.synopsis = 'Sinopse é obrigatória';
+      newErrors.synopsis = "Sinopse é obrigatória";
     }
 
     if (!formData.sizeGB || formData.sizeGB <= 0) {
-      newErrors.sizeGB = 'Tamanho do arquivo é obrigatório';
+      newErrors.sizeGB = "Tamanho do arquivo é obrigatório";
     }
 
     if (!canAfford) {
@@ -172,7 +188,7 @@ export function VideoUploadForm({ creatorData, onUploadComplete, onUploadError }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -180,13 +196,13 @@ export function VideoUploadForm({ creatorData, onUploadComplete, onUploadError }
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('/api/videos/create', {
-        method: 'POST',
+      const response = await fetch("/api/videos/create", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('xnema_token')}`
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("xnema_token")}`,
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(formData),
       });
 
       const data = await response.json();
@@ -195,39 +211,38 @@ export function VideoUploadForm({ creatorData, onUploadComplete, onUploadError }
         if (onUploadComplete) {
           onUploadComplete(data.video);
         }
-        
+
         // Reset form
         setFormData({
-          title: '',
-          type: 'filme',
+          title: "",
+          type: "filme",
           season: 1,
           episode: 1,
           duration: 0,
-          releaseDate: '',
-          director: '',
-          cast: '',
-          genre: '',
-          synopsis: '',
-          language: 'Português',
-          thumbnailUrl: '',
-          videoUrl: '',
-          description: '',
-          category: 'geral',
-          tags: '',
-          sizeGB: 0
+          releaseDate: "",
+          director: "",
+          cast: "",
+          genre: "",
+          synopsis: "",
+          language: "Português",
+          thumbnailUrl: "",
+          videoUrl: "",
+          description: "",
+          category: "geral",
+          tags: "",
+          sizeGB: 0,
         });
         setErrors({});
         setShowBlockCalculator(false);
-        
       } else {
         setErrors({ submit: data.message });
         if (onUploadError) {
           onUploadError(data.message);
         }
       }
-
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Erro no upload';
+      const errorMessage =
+        error instanceof Error ? error.message : "Erro no upload";
       setErrors({ submit: errorMessage });
       if (onUploadError) {
         onUploadError(errorMessage);
@@ -241,28 +256,27 @@ export function VideoUploadForm({ creatorData, onUploadComplete, onUploadError }
     try {
       // Calcular quantos blocos faltam
       const blocksToAdd = blocksNeeded - (creatorData?.blocksAvailable || 0);
-      
+
       const response = await fetch(`/api/creator-blocks/${user?.id}/purchase`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('xnema_token')}`
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("xnema_token")}`,
         },
-        body: JSON.stringify({ blocks: blocksToAdd })
+        body: JSON.stringify({ blocks: blocksToAdd }),
       });
 
       if (!response.ok) {
-        throw new Error('Erro ao iniciar compra');
+        throw new Error("Erro ao iniciar compra");
       }
 
       const result = await response.json();
-      
+
       // Redirect to Mercado Pago
       window.location.href = result.purchase.checkoutUrl;
-
     } catch (error) {
-      console.error('Erro na compra:', error);
-      setErrors({ payment: 'Erro ao processar pagamento' });
+      console.error("Erro na compra:", error);
+      setErrors({ payment: "Erro ao processar pagamento" });
     }
   };
 
@@ -270,15 +284,16 @@ export function VideoUploadForm({ creatorData, onUploadComplete, onUploadError }
     <Card className="w-full max-w-4xl mx-auto">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          {formData.type === 'filme' ? (
+          {formData.type === "filme" ? (
             <Film className="w-6 h-6 text-xnema-orange" />
           ) : (
             <Tv className="w-6 h-6 text-xnema-purple" />
           )}
-          Upload de {formData.type === 'filme' ? 'Filme' : 'Série'}
+          Upload de {formData.type === "filme" ? "Filme" : "Série"}
         </CardTitle>
         <CardDescription>
-          Preencha os dados do seu {formData.type === 'filme' ? 'filme' : 'seriado'} para envio
+          Preencha os dados do seu{" "}
+          {formData.type === "filme" ? "filme" : "seriado"} para envio
         </CardDescription>
       </CardHeader>
 
@@ -287,9 +302,11 @@ export function VideoUploadForm({ creatorData, onUploadComplete, onUploadError }
           {/* Tipo de Conteúdo */}
           <div className="space-y-2">
             <Label htmlFor="type">Tipo de Conteúdo</Label>
-            <Select 
-              value={formData.type} 
-              onValueChange={(value: 'filme' | 'serie') => handleInputChange('type', value)}
+            <Select
+              value={formData.type}
+              onValueChange={(value: "filme" | "serie") =>
+                handleInputChange("type", value)
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="Selecione o tipo" />
@@ -319,8 +336,8 @@ export function VideoUploadForm({ creatorData, onUploadComplete, onUploadError }
                 id="title"
                 placeholder="Digite o título"
                 value={formData.title}
-                onChange={(e) => handleInputChange('title', e.target.value)}
-                className={errors.title ? 'border-red-500' : ''}
+                onChange={(e) => handleInputChange("title", e.target.value)}
+                className={errors.title ? "border-red-500" : ""}
               />
               {errors.title && (
                 <p className="text-sm text-red-500">{errors.title}</p>
@@ -334,9 +351,11 @@ export function VideoUploadForm({ creatorData, onUploadComplete, onUploadError }
                 type="number"
                 placeholder="120"
                 min="1"
-                value={formData.duration || ''}
-                onChange={(e) => handleInputChange('duration', Number(e.target.value))}
-                className={errors.duration ? 'border-red-500' : ''}
+                value={formData.duration || ""}
+                onChange={(e) =>
+                  handleInputChange("duration", Number(e.target.value))
+                }
+                className={errors.duration ? "border-red-500" : ""}
               />
               {errors.duration && (
                 <p className="text-sm text-red-500">{errors.duration}</p>
@@ -345,7 +364,7 @@ export function VideoUploadForm({ creatorData, onUploadComplete, onUploadError }
           </div>
 
           {/* Campos específicos para Séries */}
-          {formData.type === 'serie' && (
+          {formData.type === "serie" && (
             <div className="grid md:grid-cols-2 gap-4 p-4 bg-purple-50 dark:bg-purple-950/20 rounded-lg border">
               <div className="space-y-2">
                 <Label htmlFor="season">Temporada</Label>
@@ -354,9 +373,11 @@ export function VideoUploadForm({ creatorData, onUploadComplete, onUploadError }
                   type="number"
                   placeholder="1"
                   min="1"
-                  value={formData.season || ''}
-                  onChange={(e) => handleInputChange('season', Number(e.target.value))}
-                  className={errors.season ? 'border-red-500' : ''}
+                  value={formData.season || ""}
+                  onChange={(e) =>
+                    handleInputChange("season", Number(e.target.value))
+                  }
+                  className={errors.season ? "border-red-500" : ""}
                 />
                 {errors.season && (
                   <p className="text-sm text-red-500">{errors.season}</p>
@@ -370,9 +391,11 @@ export function VideoUploadForm({ creatorData, onUploadComplete, onUploadError }
                   type="number"
                   placeholder="1"
                   min="1"
-                  value={formData.episode || ''}
-                  onChange={(e) => handleInputChange('episode', Number(e.target.value))}
-                  className={errors.episode ? 'border-red-500' : ''}
+                  value={formData.episode || ""}
+                  onChange={(e) =>
+                    handleInputChange("episode", Number(e.target.value))
+                  }
+                  className={errors.episode ? "border-red-500" : ""}
                 />
                 {errors.episode && (
                   <p className="text-sm text-red-500">{errors.episode}</p>
@@ -389,7 +412,7 @@ export function VideoUploadForm({ creatorData, onUploadComplete, onUploadError }
                 id="director"
                 placeholder="Nome do diretor"
                 value={formData.director}
-                onChange={(e) => handleInputChange('director', e.target.value)}
+                onChange={(e) => handleInputChange("director", e.target.value)}
               />
             </div>
 
@@ -399,7 +422,9 @@ export function VideoUploadForm({ creatorData, onUploadComplete, onUploadError }
                 id="releaseDate"
                 type="date"
                 value={formData.releaseDate}
-                onChange={(e) => handleInputChange('releaseDate', e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("releaseDate", e.target.value)
+                }
               />
             </div>
           </div>
@@ -411,7 +436,7 @@ export function VideoUploadForm({ creatorData, onUploadComplete, onUploadError }
                 id="cast"
                 placeholder="Ator 1, Atriz 2, Ator 3"
                 value={formData.cast}
-                onChange={(e) => handleInputChange('cast', e.target.value)}
+                onChange={(e) => handleInputChange("cast", e.target.value)}
               />
             </div>
 
@@ -421,7 +446,7 @@ export function VideoUploadForm({ creatorData, onUploadComplete, onUploadError }
                 id="genre"
                 placeholder="Drama, Ação, Comédia"
                 value={formData.genre}
-                onChange={(e) => handleInputChange('genre', e.target.value)}
+                onChange={(e) => handleInputChange("genre", e.target.value)}
               />
             </div>
           </div>
@@ -429,9 +454,9 @@ export function VideoUploadForm({ creatorData, onUploadComplete, onUploadError }
           <div className="grid md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="language">Idioma</Label>
-              <Select 
-                value={formData.language} 
-                onValueChange={(value) => handleInputChange('language', value)}
+              <Select
+                value={formData.language}
+                onValueChange={(value) => handleInputChange("language", value)}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -448,9 +473,9 @@ export function VideoUploadForm({ creatorData, onUploadComplete, onUploadError }
 
             <div className="space-y-2">
               <Label htmlFor="category">Categoria</Label>
-              <Select 
-                value={formData.category} 
-                onValueChange={(value) => handleInputChange('category', value)}
+              <Select
+                value={formData.category}
+                onValueChange={(value) => handleInputChange("category", value)}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -474,8 +499,8 @@ export function VideoUploadForm({ creatorData, onUploadComplete, onUploadError }
               placeholder="Descreva a história..."
               rows={4}
               value={formData.synopsis}
-              onChange={(e) => handleInputChange('synopsis', e.target.value)}
-              className={errors.synopsis ? 'border-red-500' : ''}
+              onChange={(e) => handleInputChange("synopsis", e.target.value)}
+              className={errors.synopsis ? "border-red-500" : ""}
             />
             {errors.synopsis && (
               <p className="text-sm text-red-500">{errors.synopsis}</p>
@@ -490,7 +515,9 @@ export function VideoUploadForm({ creatorData, onUploadComplete, onUploadError }
                 id="thumbnailUrl"
                 placeholder="https://exemplo.com/miniatura.jpg"
                 value={formData.thumbnailUrl}
-                onChange={(e) => handleInputChange('thumbnailUrl', e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("thumbnailUrl", e.target.value)
+                }
               />
             </div>
 
@@ -500,7 +527,7 @@ export function VideoUploadForm({ creatorData, onUploadComplete, onUploadError }
                 id="videoUrl"
                 placeholder="https://exemplo.com/video.mp4"
                 value={formData.videoUrl}
-                onChange={(e) => handleInputChange('videoUrl', e.target.value)}
+                onChange={(e) => handleInputChange("videoUrl", e.target.value)}
               />
             </div>
           </div>
@@ -514,9 +541,11 @@ export function VideoUploadForm({ creatorData, onUploadComplete, onUploadError }
               step="0.1"
               min="0.1"
               placeholder="2.5"
-              value={formData.sizeGB || ''}
-              onChange={(e) => handleInputChange('sizeGB', Number(e.target.value))}
-              className={errors.sizeGB ? 'border-red-500' : ''}
+              value={formData.sizeGB || ""}
+              onChange={(e) =>
+                handleInputChange("sizeGB", Number(e.target.value))
+              }
+              className={errors.sizeGB ? "border-red-500" : ""}
             />
             {errors.sizeGB && (
               <p className="text-sm text-red-500">{errors.sizeGB}</p>
@@ -525,8 +554,12 @@ export function VideoUploadForm({ creatorData, onUploadComplete, onUploadError }
 
           {/* Calculadora de Blocos */}
           {showBlockCalculator && (
-            <Alert className={`${canAfford ? 'border-green-500 bg-green-50 dark:bg-green-950' : 'border-red-500 bg-red-50 dark:bg-red-950'}`}>
-              <Calculator className={`h-4 w-4 ${canAfford ? 'text-green-600' : 'text-red-600'}`} />
+            <Alert
+              className={`${canAfford ? "border-green-500 bg-green-50 dark:bg-green-950" : "border-red-500 bg-red-50 dark:bg-red-950"}`}
+            >
+              <Calculator
+                className={`h-4 w-4 ${canAfford ? "text-green-600" : "text-red-600"}`}
+              />
               <AlertDescription>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
@@ -543,11 +576,13 @@ export function VideoUploadForm({ creatorData, onUploadComplete, onUploadError }
                       {creatorData?.blocksAvailable || 0} bloco(s)
                     </Badge>
                   </div>
-                  
+
                   {!canAfford && (
                     <div className="mt-3 pt-3 border-t">
                       <p className="text-sm font-medium text-red-700 dark:text-red-300 mb-2">
-                        Você precisa comprar {blocksNeeded - (creatorData?.blocksAvailable || 0)} bloco(s) adicional(is)
+                        Você precisa comprar{" "}
+                        {blocksNeeded - (creatorData?.blocksAvailable || 0)}{" "}
+                        bloco(s) adicional(is)
                       </p>
                       <Button
                         type="button"
@@ -556,7 +591,11 @@ export function VideoUploadForm({ creatorData, onUploadComplete, onUploadError }
                         size="sm"
                       >
                         <CreditCard className="w-4 h-4 mr-2" />
-                        Comprar Blocos - R$ {((blocksNeeded - (creatorData?.blocksAvailable || 0)) * 1000).toLocaleString('pt-BR')}
+                        Comprar Blocos - R${" "}
+                        {(
+                          (blocksNeeded - (creatorData?.blocksAvailable || 0)) *
+                          1000
+                        ).toLocaleString("pt-BR")}
                       </Button>
                     </div>
                   )}
@@ -591,23 +630,23 @@ export function VideoUploadForm({ creatorData, onUploadComplete, onUploadError }
               variant="outline"
               onClick={() => {
                 setFormData({
-                  title: '',
-                  type: 'filme',
+                  title: "",
+                  type: "filme",
                   season: 1,
                   episode: 1,
                   duration: 0,
-                  releaseDate: '',
-                  director: '',
-                  cast: '',
-                  genre: '',
-                  synopsis: '',
-                  language: 'Português',
-                  thumbnailUrl: '',
-                  videoUrl: '',
-                  description: '',
-                  category: 'geral',
-                  tags: '',
-                  sizeGB: 0
+                  releaseDate: "",
+                  director: "",
+                  cast: "",
+                  genre: "",
+                  synopsis: "",
+                  language: "Português",
+                  thumbnailUrl: "",
+                  videoUrl: "",
+                  description: "",
+                  category: "geral",
+                  tags: "",
+                  sizeGB: 0,
                 });
                 setErrors({});
               }}
@@ -615,7 +654,7 @@ export function VideoUploadForm({ creatorData, onUploadComplete, onUploadError }
             >
               Limpar
             </Button>
-            
+
             <Button
               type="submit"
               disabled={isSubmitting || !canAfford}

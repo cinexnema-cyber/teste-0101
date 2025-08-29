@@ -10,26 +10,26 @@ import jwt from "jsonwebtoken";
 // Configure multer for video uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const uploadDir = path.join(process.cwd(), 'uploads', 'videos');
-    
+    const uploadDir = path.join(process.cwd(), "uploads", "videos");
+
     // Create directory if it doesn't exist
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true });
     }
-    
+
     cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
     // Generate unique filename
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     cb(null, `video-${uniqueSuffix}${path.extname(file.originalname)}`);
-  }
+  },
 });
 
 // File filter for videos only
 const fileFilter = (req: any, file: Express.Multer.File, cb: any) => {
   const validation = MuxHelpers.validateVideoFile(file);
-  
+
   if (validation.valid) {
     cb(null, true);
   } else {
@@ -42,8 +42,8 @@ export const videoUpload = multer({
   storage,
   fileFilter,
   limits: {
-    fileSize: 2 * 1024 * 1024 * 1024 // 2GB limit
-  }
+    fileSize: 2 * 1024 * 1024 * 1024, // 2GB limit
+  },
 });
 
 /**
@@ -57,27 +57,30 @@ export const createDirectUpload: RequestHandler = async (req, res) => {
     if (!userId) {
       return res.status(401).json({
         success: false,
-        message: "Usuário não autenticado"
+        message: "Usuário não autenticado",
       });
     }
 
     if (!title || !description) {
       return res.status(400).json({
         success: false,
-        message: "Título e descrição são obrigatórios"
+        message: "Título e descrição são obrigatórios",
       });
     }
 
     // Check creator limits
-    const creatorLimit = await CreatorLimit.getOrCreateForCreator(userId, req.body.creatorName || 'Creator');
-    
+    const creatorLimit = await CreatorLimit.getOrCreateForCreator(
+      userId,
+      req.body.creatorName || "Creator",
+    );
+
     // For direct upload, we can't check exact file size yet, so we check basic limits
     const canUpload = creatorLimit.canUploadVideo(0); // We'll validate size on completion webhook
-    
+
     if (!canUpload.canUpload) {
       return res.status(403).json({
         success: false,
-        message: canUpload.reason
+        message: canUpload.reason,
       });
     }
 
@@ -85,14 +88,14 @@ export const createDirectUpload: RequestHandler = async (req, res) => {
     const uploadResult = await MuxHelpers.createDirectUpload({
       title,
       description,
-      creatorId: userId
+      creatorId: userId,
     });
 
     if (!uploadResult.success) {
       return res.status(500).json({
         success: false,
         message: "Falha ao criar upload direto",
-        error: uploadResult.error
+        error: uploadResult.error,
       });
     }
 
@@ -100,13 +103,13 @@ export const createDirectUpload: RequestHandler = async (req, res) => {
     const video = new Video({
       title,
       description,
-      muxAssetId: 'pending', // Will be updated via webhook
-      muxPlaybackId: 'pending',
+      muxAssetId: "pending", // Will be updated via webhook
+      muxPlaybackId: "pending",
       creatorId: userId,
-      creatorName: req.body.creatorName || 'Creator',
+      creatorName: req.body.creatorName || "Creator",
       fileSize: 0, // Will be updated via webhook
       originalFilename: title,
-      status: 'uploading'
+      status: "uploading",
     });
 
     await video.save();
@@ -116,15 +119,14 @@ export const createDirectUpload: RequestHandler = async (req, res) => {
       uploadUrl: uploadResult.uploadUrl,
       uploadId: uploadResult.uploadId,
       videoId: video._id,
-      message: "URL de upload criada com sucesso"
+      message: "URL de upload criada com sucesso",
     });
-
   } catch (error) {
-    console.error('Create direct upload error:', error);
+    console.error("Create direct upload error:", error);
     res.status(500).json({
       success: false,
       message: "Erro interno do servidor",
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 };
@@ -134,42 +136,45 @@ export const createDirectUpload: RequestHandler = async (req, res) => {
  */
 export const uploadVideo: RequestHandler = async (req, res) => {
   try {
-    const { title, description, category = 'geral', tags = [] } = req.body;
+    const { title, description, category = "geral", tags = [] } = req.body;
     const userId = (req as any).user?.id;
     const file = req.file;
 
     if (!userId) {
       return res.status(401).json({
         success: false,
-        message: "Usuário não autenticado"
+        message: "Usuário não autenticado",
       });
     }
 
     if (!file) {
       return res.status(400).json({
         success: false,
-        message: "Nenhum arquivo enviado"
+        message: "Nenhum arquivo enviado",
       });
     }
 
     if (!title || !description) {
       return res.status(400).json({
         success: false,
-        message: "Título e descrição são obrigatórios"
+        message: "Título e descrição são obrigatórios",
       });
     }
 
     // Check creator limits
-    const creatorLimit = await CreatorLimit.getOrCreateForCreator(userId, req.body.creatorName || 'Creator');
+    const creatorLimit = await CreatorLimit.getOrCreateForCreator(
+      userId,
+      req.body.creatorName || "Creator",
+    );
     const canUpload = creatorLimit.canUploadVideo(file.size);
-    
+
     if (!canUpload.canUpload) {
       // Remove uploaded file
       fs.unlinkSync(file.path);
-      
+
       return res.status(403).json({
         success: false,
-        message: canUpload.reason
+        message: canUpload.reason,
       });
     }
 
@@ -177,15 +182,15 @@ export const uploadVideo: RequestHandler = async (req, res) => {
     const video = new Video({
       title,
       description,
-      muxAssetId: 'processing',
-      muxPlaybackId: 'processing',
+      muxAssetId: "processing",
+      muxPlaybackId: "processing",
       creatorId: userId,
-      creatorName: req.body.creatorName || 'Creator',
+      creatorName: req.body.creatorName || "Creator",
       fileSize: file.size,
       originalFilename: file.originalname,
       category,
       tags: Array.isArray(tags) ? tags : [tags].filter(Boolean),
-      status: 'processing'
+      status: "processing",
     });
 
     await video.save();
@@ -198,35 +203,35 @@ export const uploadVideo: RequestHandler = async (req, res) => {
     const muxResult = await MuxHelpers.createAsset(fileUrl, {
       title,
       description,
-      creatorId: userId
+      creatorId: userId,
     });
 
     if (muxResult.success && muxResult.asset) {
       // Update video with Mux information
       video.muxAssetId = muxResult.assetId!;
       video.muxPlaybackId = muxResult.playbackId!;
-      video.status = 'pending_approval';
+      video.status = "pending_approval";
       video.processedAt = new Date();
-      
+
       await video.save();
 
       // Clean up local file
       fs.unlinkSync(file.path);
     } else {
       // Update video status to failed
-      video.status = 'failed';
+      video.status = "failed";
       await video.save();
-      
+
       // Revert creator storage
       await creatorLimit.removeVideo(file.size);
-      
+
       // Clean up local file
       fs.unlinkSync(file.path);
 
       return res.status(500).json({
         success: false,
         message: "Falha no processamento do vídeo",
-        error: muxResult.error
+        error: muxResult.error,
       });
     }
 
@@ -236,27 +241,26 @@ export const uploadVideo: RequestHandler = async (req, res) => {
         id: video._id,
         title: video.title,
         status: video.status,
-        thumbnailUrl: video.thumbnailUrl
+        thumbnailUrl: video.thumbnailUrl,
       },
-      message: "Vídeo enviado com sucesso e está aguardando aprovação"
+      message: "Vídeo enviado com sucesso e está aguardando aprovação",
     });
-
   } catch (error) {
-    console.error('Video upload error:', error);
-    
+    console.error("Video upload error:", error);
+
     // Clean up file if exists
     if (req.file) {
       try {
         fs.unlinkSync(req.file.path);
       } catch (cleanupError) {
-        console.error('File cleanup error:', cleanupError);
+        console.error("File cleanup error:", cleanupError);
       }
     }
 
     res.status(500).json({
       success: false,
       message: "Erro no upload do vídeo",
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 };
@@ -272,7 +276,7 @@ export const getCreatorVideos: RequestHandler = async (req, res) => {
     if (!userId) {
       return res.status(401).json({
         success: false,
-        message: "Usuário não autenticado"
+        message: "Usuário não autenticado",
       });
     }
 
@@ -282,7 +286,7 @@ export const getCreatorVideos: RequestHandler = async (req, res) => {
     }
 
     const skip = (Number(page) - 1) * Number(limit);
-    
+
     const videos = await Video.find(query)
       .sort({ createdAt: -1 })
       .skip(skip)
@@ -292,11 +296,14 @@ export const getCreatorVideos: RequestHandler = async (req, res) => {
     const totalPages = Math.ceil(totalVideos / Number(limit));
 
     // Get creator limits
-    const creatorLimit = await CreatorLimit.getOrCreateForCreator(userId, 'Creator');
+    const creatorLimit = await CreatorLimit.getOrCreateForCreator(
+      userId,
+      "Creator",
+    );
 
     res.json({
       success: true,
-      videos: videos.map(video => ({
+      videos: videos.map((video) => ({
         id: video._id,
         title: video.title,
         description: video.description,
@@ -306,13 +313,13 @@ export const getCreatorVideos: RequestHandler = async (req, res) => {
         thumbnailUrl: video.thumbnailUrl,
         duration: video.duration,
         uploadedAt: video.uploadedAt,
-        approvedAt: video.approvedAt
+        approvedAt: video.approvedAt,
       })),
       pagination: {
         page: Number(page),
         limit: Number(limit),
         total: totalVideos,
-        pages: totalPages
+        pages: totalPages,
       },
       creatorStats: {
         storageUsedGB: creatorLimit.getStorageUsedGB(),
@@ -322,16 +329,15 @@ export const getCreatorVideos: RequestHandler = async (req, res) => {
         videoCountLimit: creatorLimit.videoCountLimit,
         graceMonthsLeft: creatorLimit.graceMonthsLeft,
         totalRevenue: creatorLimit.totalRevenue,
-        totalViews: creatorLimit.totalViews
-      }
+        totalViews: creatorLimit.totalViews,
+      },
     });
-
   } catch (error) {
-    console.error('Get creator videos error:', error);
+    console.error("Get creator videos error:", error);
     res.status(500).json({
       success: false,
       message: "Erro ao buscar vídeos",
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 };
@@ -347,19 +353,19 @@ export const getVideoById: RequestHandler = async (req, res) => {
     if (!userId) {
       return res.status(401).json({
         success: false,
-        message: "Usuário não autenticado"
+        message: "Usuário não autenticado",
       });
     }
 
-    const video = await Video.findOne({ 
-      _id: videoId, 
-      creatorId: userId 
+    const video = await Video.findOne({
+      _id: videoId,
+      creatorId: userId,
     });
 
     if (!video) {
       return res.status(404).json({
         success: false,
-        message: "Vídeo não encontrado"
+        message: "Vídeo não encontrado",
       });
     }
 
@@ -379,16 +385,15 @@ export const getVideoById: RequestHandler = async (req, res) => {
         uploadedAt: video.uploadedAt,
         processedAt: video.processedAt,
         approvedAt: video.approvedAt,
-        approvalStatus: video.approvalStatus
-      }
+        approvalStatus: video.approvalStatus,
+      },
     });
-
   } catch (error) {
-    console.error('Get video by ID error:', error);
+    console.error("Get video by ID error:", error);
     res.status(500).json({
       success: false,
       message: "Erro ao buscar vídeo",
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 };
@@ -405,27 +410,27 @@ export const updateVideo: RequestHandler = async (req, res) => {
     if (!userId) {
       return res.status(401).json({
         success: false,
-        message: "Usuário não autenticado"
+        message: "Usuário não autenticado",
       });
     }
 
-    const video = await Video.findOne({ 
-      _id: videoId, 
-      creatorId: userId 
+    const video = await Video.findOne({
+      _id: videoId,
+      creatorId: userId,
     });
 
     if (!video) {
       return res.status(404).json({
         success: false,
-        message: "Vídeo não encontrado"
+        message: "Vídeo não encontrado",
       });
     }
 
     // Only allow updates for certain statuses
-    if (!['pending_approval', 'rejected'].includes(video.status)) {
+    if (!["pending_approval", "rejected"].includes(video.status)) {
       return res.status(400).json({
         success: false,
-        message: "Vídeo não pode ser editado no status atual"
+        message: "Vídeo não pode ser editado no status atual",
       });
     }
 
@@ -445,17 +450,16 @@ export const updateVideo: RequestHandler = async (req, res) => {
         description: video.description,
         status: video.status,
         category: video.category,
-        tags: video.tags
+        tags: video.tags,
       },
-      message: "Vídeo atualizado com sucesso"
+      message: "Vídeo atualizado com sucesso",
     });
-
   } catch (error) {
-    console.error('Update video error:', error);
+    console.error("Update video error:", error);
     res.status(500).json({
       success: false,
       message: "Erro ao atualizar vídeo",
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 };
@@ -471,32 +475,36 @@ export const deleteVideo: RequestHandler = async (req, res) => {
     if (!userId) {
       return res.status(401).json({
         success: false,
-        message: "Usuário não autenticado"
+        message: "Usuário não autenticado",
       });
     }
 
-    const video = await Video.findOne({ 
-      _id: videoId, 
-      creatorId: userId 
+    const video = await Video.findOne({
+      _id: videoId,
+      creatorId: userId,
     });
 
     if (!video) {
       return res.status(404).json({
         success: false,
-        message: "Vídeo não encontrado"
+        message: "Vídeo não encontrado",
       });
     }
 
     // Only allow deletion of rejected or failed videos
-    if (!['rejected', 'failed'].includes(video.status)) {
+    if (!["rejected", "failed"].includes(video.status)) {
       return res.status(400).json({
         success: false,
-        message: "Apenas vídeos rejeitados ou com falha podem ser deletados"
+        message: "Apenas vídeos rejeitados ou com falha podem ser deletados",
       });
     }
 
     // Delete from Mux if asset exists
-    if (video.muxAssetId && video.muxAssetId !== 'pending' && video.muxAssetId !== 'processing') {
+    if (
+      video.muxAssetId &&
+      video.muxAssetId !== "pending" &&
+      video.muxAssetId !== "processing"
+    ) {
       await MuxHelpers.deleteAsset(video.muxAssetId);
     }
 
@@ -511,15 +519,14 @@ export const deleteVideo: RequestHandler = async (req, res) => {
 
     res.json({
       success: true,
-      message: "Vídeo deletado com sucesso"
+      message: "Vídeo deletado com sucesso",
     });
-
   } catch (error) {
-    console.error('Delete video error:', error);
+    console.error("Delete video error:", error);
     res.status(500).json({
       success: false,
       message: "Erro ao deletar vídeo",
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 };

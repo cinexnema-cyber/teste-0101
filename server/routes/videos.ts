@@ -8,7 +8,7 @@ import { AuthenticatedRequest } from "../middleware/auth";
 // Validation schemas
 const createVideoSchema = Joi.object({
   title: Joi.string().required().max(200),
-  type: Joi.string().valid('filme', 'serie').required(),
+  type: Joi.string().valid("filme", "serie").required(),
   season: Joi.number().min(1).optional().allow(null),
   episode: Joi.number().min(1).optional().allow(null),
   duration: Joi.number().min(1).required(), // em minutos
@@ -17,13 +17,13 @@ const createVideoSchema = Joi.object({
   cast: Joi.string().optional(), // será convertido para array
   genre: Joi.string().optional(), // será convertido para array
   synopsis: Joi.string().max(1000).optional(),
-  language: Joi.string().default('Português'),
+  language: Joi.string().default("Português"),
   thumbnailUrl: Joi.string().uri().optional(),
   videoUrl: Joi.string().uri().optional(),
   description: Joi.string().max(2000).optional(),
   category: Joi.string().optional(),
   tags: Joi.string().optional(),
-  sizeGB: Joi.number().min(0).required()
+  sizeGB: Joi.number().min(0).required(),
 });
 
 /**
@@ -36,7 +36,7 @@ export const createVideo = async (req: AuthenticatedRequest, res: Response) => {
       userId: req.userId,
       title: req.body.title,
       type: req.body.type,
-      sizeGB: req.body.sizeGB
+      sizeGB: req.body.sizeGB,
     });
 
     const { error, value } = createVideoSchema.validate(req.body);
@@ -48,24 +48,41 @@ export const createVideo = async (req: AuthenticatedRequest, res: Response) => {
     }
 
     const {
-      title, type, season, episode, duration, releaseDate,
-      director, cast, genre, synopsis, language, thumbnailUrl, videoUrl,
-      description, category, tags, sizeGB
+      title,
+      type,
+      season,
+      episode,
+      duration,
+      releaseDate,
+      director,
+      cast,
+      genre,
+      synopsis,
+      language,
+      thumbnailUrl,
+      videoUrl,
+      description,
+      category,
+      tags,
+      sizeGB,
     } = value;
 
     // Verificar se usuário existe e é criador
     const user = await User.findById(req.userId);
-    if (!user || user.role !== 'creator') {
+    if (!user || user.role !== "creator") {
       return res.status(403).json({
         success: false,
-        message: 'Apenas criadores podem fazer upload de vídeos'
+        message: "Apenas criadores podem fazer upload de vídeos",
       });
     }
 
     // Buscar ou criar registro de blocos do criador
     let creatorBlocks = await CreatorBlocks.findOne({ creatorId: req.userId });
     if (!creatorBlocks) {
-      creatorBlocks = await CreatorBlocks.createForCreator(req.userId, user.nome);
+      creatorBlocks = await CreatorBlocks.createForCreator(
+        req.userId,
+        user.nome,
+      );
     }
 
     // Verificar disponibilidade de blocos
@@ -75,34 +92,49 @@ export const createVideo = async (req: AuthenticatedRequest, res: Response) => {
         success: false,
         message: uploadCheck.reason,
         blocksNeeded: uploadCheck.blocksNeeded,
-        blocksAvailable: creatorBlocks.getTotalAvailableBlocks()
+        blocksAvailable: creatorBlocks.getTotalAvailableBlocks(),
       });
     }
 
     // Validar campos específicos para séries
-    if (type === 'serie') {
+    if (type === "serie") {
       if (!season || !episode) {
         return res.status(400).json({
           success: false,
-          message: 'Temporada e episódio são obrigatórios para séries'
+          message: "Temporada e episódio são obrigatórios para séries",
         });
       }
     }
 
     // Processar arrays (cast e genre)
-    const castArray = cast ? cast.split(',').map((item: string) => item.trim()).filter(Boolean) : [];
-    const genreArray = genre ? genre.split(',').map((item: string) => item.trim()).filter(Boolean) : [];
-    const tagsArray = tags ? tags.split(',').map((item: string) => item.trim()).filter(Boolean) : [];
+    const castArray = cast
+      ? cast
+          .split(",")
+          .map((item: string) => item.trim())
+          .filter(Boolean)
+      : [];
+    const genreArray = genre
+      ? genre
+          .split(",")
+          .map((item: string) => item.trim())
+          .filter(Boolean)
+      : [];
+    const tagsArray = tags
+      ? tags
+          .split(",")
+          .map((item: string) => item.trim())
+          .filter(Boolean)
+      : [];
 
     // Criar vídeo
     const newVideo = new Video({
       creatorId: req.userId,
       creatorName: user.nome,
       title: title.trim(),
-      description: description || synopsis || '',
+      description: description || synopsis || "",
       type,
-      season: type === 'serie' ? season : null,
-      episode: type === 'serie' ? episode : null,
+      season: type === "serie" ? season : null,
+      episode: type === "serie" ? episode : null,
       duration,
       releaseDate,
       director: director?.trim(),
@@ -112,27 +144,27 @@ export const createVideo = async (req: AuthenticatedRequest, res: Response) => {
       language,
       thumbnailUrl,
       videoUrl,
-      
+
       // Technical fields (serão preenchidos pelo Mux)
       muxAssetId: `temp_${Date.now()}`, // Temporário
       muxPlaybackId: `temp_${Date.now()}`, // Temporário
       fileSize: Math.round(sizeGB * 1024 * 1024 * 1024), // Converter GB para bytes
       originalFilename: `${title}.mp4`,
-      
+
       // Status
-      status: 'pending_approval',
+      status: "pending_approval",
       approved: false,
-      
+
       // Metadata
       tags: tagsArray,
-      category: category || 'geral',
+      category: category || "geral",
       isPrivate: true, // Sempre privado até aprovação
-      
+
       // Analytics
       viewCount: 0,
       revenue: 0,
-      
-      uploadedAt: new Date()
+
+      uploadedAt: new Date(),
     });
 
     const savedVideo = await newVideo.save();
@@ -144,12 +176,12 @@ export const createVideo = async (req: AuthenticatedRequest, res: Response) => {
       videoId: savedVideo._id,
       title: savedVideo.title,
       type: savedVideo.type,
-      blocksUsed: Math.ceil(sizeGB / 7.3)
+      blocksUsed: Math.ceil(sizeGB / 7.3),
     });
 
     res.json({
       success: true,
-      message: 'Vídeo enviado com sucesso! Aguardando aprovação.',
+      message: "Vídeo enviado com sucesso! Aguardando aprovação.",
       video: {
         id: savedVideo._id,
         title: savedVideo.title,
@@ -157,21 +189,21 @@ export const createVideo = async (req: AuthenticatedRequest, res: Response) => {
         season: savedVideo.season,
         episode: savedVideo.episode,
         status: savedVideo.status,
-        blocksUsed: Math.ceil(sizeGB / 7.3)
+        blocksUsed: Math.ceil(sizeGB / 7.3),
       },
       blocksInfo: {
         used: creatorBlocks.usedBlocks + Math.ceil(sizeGB / 7.3),
-        available: creatorBlocks.getTotalAvailableBlocks() - Math.ceil(sizeGB / 7.3),
-        total: creatorBlocks.totalBlocks
-      }
+        available:
+          creatorBlocks.getTotalAvailableBlocks() - Math.ceil(sizeGB / 7.3),
+        total: creatorBlocks.totalBlocks,
+      },
     });
-
   } catch (error) {
     console.error("❌ Erro ao criar vídeo:", error);
     res.status(500).json({
       success: false,
       message: "Erro interno do servidor",
-      details: process.env.NODE_ENV === 'development' ? error : undefined
+      details: process.env.NODE_ENV === "development" ? error : undefined,
     });
   }
 };
@@ -180,18 +212,23 @@ export const createVideo = async (req: AuthenticatedRequest, res: Response) => {
  * Endpoint para checar acesso e blocos disponíveis
  * GET /api/creator/access
  */
-export const getCreatorAccess = async (req: AuthenticatedRequest, res: Response) => {
+export const getCreatorAccess = async (
+  req: AuthenticatedRequest,
+  res: Response,
+) => {
   try {
-    const creatorBlocks = await CreatorBlocks.findOne({ creatorId: req.userId });
+    const creatorBlocks = await CreatorBlocks.findOne({
+      creatorId: req.userId,
+    });
 
     if (!creatorBlocks) {
       return res.json({
         access: false,
-        message: 'Aguardando dados reais',
+        message: "Aguardando dados reais",
         blocksAvailable: 0,
         blocksFree: 0,
         blocksPurchased: 0,
-        freeBlockActive: false
+        freeBlockActive: false,
       });
     }
 
@@ -208,18 +245,17 @@ export const getCreatorAccess = async (req: AuthenticatedRequest, res: Response)
       freeBlockActive: creatorBlocks.isFreeBlockActive(),
       freeBlockExpiry: creatorBlocks.freeBlockExpiry,
       storageInfo: {
-        totalGB: Math.round((totalBlocks * 7.3) * 100) / 100,
+        totalGB: Math.round(totalBlocks * 7.3 * 100) / 100,
         usedGB: Math.round(creatorBlocks.usedStorageGB * 100) / 100,
-        availableGB: Math.round((availableBlocks * 7.3) * 100) / 100
+        availableGB: Math.round(availableBlocks * 7.3 * 100) / 100,
       },
-      videosUploaded: creatorBlocks.videos.length
+      videosUploaded: creatorBlocks.videos.length,
     });
-
   } catch (error) {
     console.error("❌ Erro ao buscar acesso do criador:", error);
     res.status(500).json({
       success: false,
-      message: "Erro interno do servidor"
+      message: "Erro interno do servidor",
     });
   }
 };
@@ -247,9 +283,13 @@ export const getCreatorVideos = async (req: Request, res: Response) => {
 
     res.json({
       success: true,
-      videos: videos.map(video => {
-        const fallbackThumb = video.thumbnailUrl || (video.muxPlaybackId ? `https://image.mux.com/${video.muxPlaybackId}/thumbnail.png` : null);
-        return ({
+      videos: videos.map((video) => {
+        const fallbackThumb =
+          video.thumbnailUrl ||
+          (video.muxPlaybackId
+            ? `https://image.mux.com/${video.muxPlaybackId}/thumbnail.png`
+            : null);
+        return {
           id: video._id,
           title: video.title,
           type: video.type,
@@ -262,22 +302,21 @@ export const getCreatorVideos = async (req: Request, res: Response) => {
           revenue: video.revenue,
           uploadedAt: video.uploadedAt,
           approvedAt: video.approvedAt,
-          thumbnailUrl: fallbackThumb
-        });
+          thumbnailUrl: fallbackThumb,
+        };
       }),
       pagination: {
         page: Number(page),
         limit: Number(limit),
         total,
-        pages: Math.ceil(total / Number(limit))
-      }
+        pages: Math.ceil(total / Number(limit)),
+      },
     });
-
   } catch (error) {
     console.error("❌ Erro ao buscar vídeos do criador:", error);
     res.status(500).json({
       success: false,
-      message: "Erro interno do servidor"
+      message: "Erro interno do servidor",
     });
   }
 };
@@ -286,23 +325,27 @@ export const getCreatorVideos = async (req: Request, res: Response) => {
  * Endpoint para listar vídeos pendentes de aprovação (Admin)
  * GET /api/videos/pending-approval
  */
-export const getPendingVideos = async (req: AuthenticatedRequest, res: Response) => {
+export const getPendingVideos = async (
+  req: AuthenticatedRequest,
+  res: Response,
+) => {
   try {
     // Verificar se é admin
     const user = await User.findById(req.userId);
-    if (!user || user.role !== 'admin') {
+    if (!user || user.role !== "admin") {
       return res.status(403).json({
         success: false,
-        message: 'Acesso negado. Apenas admins podem ver vídeos pendentes.'
+        message: "Acesso negado. Apenas admins podem ver vídeos pendentes.",
       });
     }
 
-    const videos = await Video.find({ status: 'pending_approval' })
-      .sort({ uploadedAt: 1 }); // Mais antigos primeiro
+    const videos = await Video.find({ status: "pending_approval" }).sort({
+      uploadedAt: 1,
+    }); // Mais antigos primeiro
 
     res.json({
       success: true,
-      videos: videos.map(video => ({
+      videos: videos.map((video) => ({
         id: video._id,
         title: video.title,
         type: video.type,
@@ -316,18 +359,21 @@ export const getPendingVideos = async (req: AuthenticatedRequest, res: Response)
         creatorId: video.creatorId,
         creatorName: video.creatorName,
         uploadedAt: video.uploadedAt,
-        thumbnailUrl: video.thumbnailUrl || (video.muxPlaybackId ? `https://image.mux.com/${video.muxPlaybackId}/thumbnail.png` : null),
+        thumbnailUrl:
+          video.thumbnailUrl ||
+          (video.muxPlaybackId
+            ? `https://image.mux.com/${video.muxPlaybackId}/thumbnail.png`
+            : null),
         videoUrl: video.videoUrl,
-        fileSize: video.fileSize
+        fileSize: video.fileSize,
       })),
-      total: videos.length
+      total: videos.length,
     });
-
   } catch (error) {
     console.error("❌ Erro ao buscar vídeos pendentes:", error);
     res.status(500).json({
       success: false,
-      message: "Erro interno do servidor"
+      message: "Erro interno do servidor",
     });
   }
 };
@@ -336,16 +382,19 @@ export const getPendingVideos = async (req: AuthenticatedRequest, res: Response)
  * Endpoint para aprovar vídeo (Admin)
  * POST /api/videos/:videoId/approve
  */
-export const approveVideo = async (req: AuthenticatedRequest, res: Response) => {
+export const approveVideo = async (
+  req: AuthenticatedRequest,
+  res: Response,
+) => {
   try {
     const { videoId } = req.params;
 
     // Verificar se é admin
     const user = await User.findById(req.userId);
-    if (!user || user.role !== 'admin') {
+    if (!user || user.role !== "admin") {
       return res.status(403).json({
         success: false,
-        message: 'Acesso negado. Apenas admins podem aprovar vídeos.'
+        message: "Acesso negado. Apenas admins podem aprovar vídeos.",
       });
     }
 
@@ -353,12 +402,12 @@ export const approveVideo = async (req: AuthenticatedRequest, res: Response) => 
     if (!video) {
       return res.status(404).json({
         success: false,
-        message: 'Vídeo não encontrado'
+        message: "Vídeo não encontrado",
       });
     }
 
     // Aprovar vídeo
-    video.status = 'approved';
+    video.status = "approved";
     video.approved = true;
     video.approvalStatus.approvedBy = req.userId;
     video.approvalStatus.approvedAt = new Date();
@@ -368,29 +417,30 @@ export const approveVideo = async (req: AuthenticatedRequest, res: Response) => 
     await video.save();
 
     // Atualizar status no CreatorBlocks
-    const creatorBlocks = await CreatorBlocks.findOne({ creatorId: video.creatorId });
+    const creatorBlocks = await CreatorBlocks.findOne({
+      creatorId: video.creatorId,
+    });
     if (creatorBlocks) {
-      await creatorBlocks.updateVideoStatus(videoId, 'approved');
+      await creatorBlocks.updateVideoStatus(videoId, "approved");
     }
 
     console.log(`✅ Vídeo aprovado: ${video.title} por ${user.nome}`);
 
     res.json({
       success: true,
-      message: 'Vídeo aprovado com sucesso',
+      message: "Vídeo aprovado com sucesso",
       video: {
         id: video._id,
         title: video.title,
         status: video.status,
-        approvedAt: video.approvedAt
-      }
+        approvedAt: video.approvedAt,
+      },
     });
-
   } catch (error) {
     console.error("❌ Erro ao aprovar vídeo:", error);
     res.status(500).json({
       success: false,
-      message: "Erro interno do servidor"
+      message: "Erro interno do servidor",
     });
   }
 };
@@ -407,16 +457,16 @@ export const rejectVideo = async (req: AuthenticatedRequest, res: Response) => {
     if (!reason || reason.trim().length === 0) {
       return res.status(400).json({
         success: false,
-        message: 'Motivo da rejeição é obrigatório'
+        message: "Motivo da rejeição é obrigatório",
       });
     }
 
     // Verificar se é admin
     const user = await User.findById(req.userId);
-    if (!user || user.role !== 'admin') {
+    if (!user || user.role !== "admin") {
       return res.status(403).json({
         success: false,
-        message: 'Acesso negado. Apenas admins podem rejeitar vídeos.'
+        message: "Acesso negado. Apenas admins podem rejeitar vídeos.",
       });
     }
 
@@ -424,12 +474,12 @@ export const rejectVideo = async (req: AuthenticatedRequest, res: Response) => {
     if (!video) {
       return res.status(404).json({
         success: false,
-        message: 'Vídeo não encontrado'
+        message: "Vídeo não encontrado",
       });
     }
 
     // Rejeitar vídeo
-    video.status = 'rejected';
+    video.status = "rejected";
     video.approved = false;
     video.approvalStatus.rejectedBy = req.userId;
     video.approvalStatus.rejectedAt = new Date();
@@ -438,29 +488,32 @@ export const rejectVideo = async (req: AuthenticatedRequest, res: Response) => {
     await video.save();
 
     // Devolver blocos ao criador
-    const creatorBlocks = await CreatorBlocks.findOne({ creatorId: video.creatorId });
+    const creatorBlocks = await CreatorBlocks.findOne({
+      creatorId: video.creatorId,
+    });
     if (creatorBlocks) {
       await creatorBlocks.removeVideo(videoId);
     }
 
-    console.log(`❌ Vídeo rejeitado: ${video.title} por ${user.nome} - Motivo: ${reason}`);
+    console.log(
+      `❌ Vídeo rejeitado: ${video.title} por ${user.nome} - Motivo: ${reason}`,
+    );
 
     res.json({
       success: true,
-      message: 'Vídeo rejeitado. Blocos devolvidos ao criador.',
+      message: "Vídeo rejeitado. Blocos devolvidos ao criador.",
       video: {
         id: video._id,
         title: video.title,
         status: video.status,
-        rejectionReason: reason
-      }
+        rejectionReason: reason,
+      },
     });
-
   } catch (error) {
     console.error("❌ Erro ao rejeitar vídeo:", error);
     res.status(500).json({
       success: false,
-      message: "Erro interno do servidor"
+      message: "Erro interno do servidor",
     });
   }
 };
@@ -477,7 +530,7 @@ export const getVideoDetails = async (req: Request, res: Response) => {
     if (!video) {
       return res.status(404).json({
         success: false,
-        message: 'Vídeo não encontrado'
+        message: "Vídeo não encontrado",
       });
     }
 
@@ -505,19 +558,26 @@ export const getVideoDetails = async (req: Request, res: Response) => {
         revenue: video.revenue,
         tags: video.tags,
         category: video.category,
-        thumbnailUrl: video.thumbnailUrl || (video.muxPlaybackId ? `https://image.mux.com/${video.muxPlaybackId}/thumbnail.png` : null),
-        videoUrl: video.videoUrl || (video.muxPlaybackId ? `https://stream.mux.com/${video.muxPlaybackId}.m3u8` : null),
+        thumbnailUrl:
+          video.thumbnailUrl ||
+          (video.muxPlaybackId
+            ? `https://image.mux.com/${video.muxPlaybackId}/thumbnail.png`
+            : null),
+        videoUrl:
+          video.videoUrl ||
+          (video.muxPlaybackId
+            ? `https://stream.mux.com/${video.muxPlaybackId}.m3u8`
+            : null),
         uploadedAt: video.uploadedAt,
         approvedAt: video.approvedAt,
-        approvalStatus: video.approvalStatus
-      }
+        approvalStatus: video.approvalStatus,
+      },
     });
-
   } catch (error) {
     console.error("❌ Erro ao buscar detalhes do vídeo:", error);
     res.status(500).json({
       success: false,
-      message: "Erro interno do servidor"
+      message: "Erro interno do servidor",
     });
   }
 };

@@ -6,9 +6,9 @@ import { AuthenticatedRequest } from "../middleware/auth";
 
 // Plan pricing configuration
 const PLAN_PRICES = {
-  basic: 19.90,
-  premium: 59.90,
-  vip: 199.00
+  basic: 19.9,
+  premium: 59.9,
+  vip: 199.0,
 };
 
 // Validation schemas
@@ -18,29 +18,40 @@ const transparentCheckoutSchema = Joi.object({
   months: Joi.number().min(1).max(24).required(),
   totalAmount: Joi.number().min(0).required(),
   cardData: Joi.object({
-    number: Joi.string().pattern(/^\d{16}$/).required(),
+    number: Joi.string()
+      .pattern(/^\d{16}$/)
+      .required(),
     name: Joi.string().min(2).max(50).required(),
-    expiry: Joi.string().pattern(/^\d{2}\/\d{2}$/).required(),
-    cvv: Joi.string().pattern(/^\d{3,4}$/).required(),
-    cpf: Joi.string().pattern(/^\d{11}$/).required(),
-  }).when('totalAmount', {
+    expiry: Joi.string()
+      .pattern(/^\d{2}\/\d{2}$/)
+      .required(),
+    cvv: Joi.string()
+      .pattern(/^\d{3,4}$/)
+      .required(),
+    cpf: Joi.string()
+      .pattern(/^\d{11}$/)
+      .required(),
+  }).when("totalAmount", {
     is: Joi.number().greater(0),
     then: Joi.required(),
-    otherwise: Joi.optional()
-  })
+    otherwise: Joi.optional(),
+  }),
 });
 
 /**
  * Process transparent checkout
  * POST /api/checkout/transparent
  */
-export const processTransparentCheckout = async (req: AuthenticatedRequest, res: Response) => {
+export const processTransparentCheckout = async (
+  req: AuthenticatedRequest,
+  res: Response,
+) => {
   try {
     const { error, value } = transparentCheckoutSchema.validate(req.body);
     if (error) {
-      return res.status(400).json({ 
-        message: "Dados inválidos", 
-        details: error.details[0].message 
+      return res.status(400).json({
+        message: "Dados inválidos",
+        details: error.details[0].message,
       });
     }
 
@@ -59,8 +70,8 @@ export const processTransparentCheckout = async (req: AuthenticatedRequest, res:
 
     // Check if user already has active subscription
     if (user.subscriptionStatus === "ativo") {
-      return res.status(400).json({ 
-        message: "Usuário já possui assinatura ativa" 
+      return res.status(400).json({
+        message: "Usuário já possui assinatura ativa",
       });
     }
 
@@ -107,11 +118,11 @@ export const processTransparentCheckout = async (req: AuthenticatedRequest, res:
             plan_name: `Plano ${planId.charAt(0).toUpperCase() + planId.slice(1)}`,
             free_months_used: months,
             user_email: user.email,
-          }
+          },
         },
         data_inicio_periodo: startDate,
         data_fim_periodo: endDate,
-        ativo: true
+        ativo: true,
       });
 
       await newSubscription.save();
@@ -124,8 +135,8 @@ export const processTransparentCheckout = async (req: AuthenticatedRequest, res:
           plan: planId,
           startDate,
           endDate,
-          status: "ativo"
-        }
+          status: "ativo",
+        },
       });
     }
 
@@ -142,16 +153,16 @@ export const processTransparentCheckout = async (req: AuthenticatedRequest, res:
         userInfo: {
           email: user.email,
           name: user.nome,
-          cpf: cardData.cpf
+          cpf: cardData.cpf,
         },
         planInfo: {
           id: planId,
           name: `Plano ${planId.charAt(0).toUpperCase() + planId.slice(1)}`,
-          months
-        }
+          months,
+        },
       });
 
-      if (mercadoPagoPayment.status === 'approved') {
+      if (mercadoPagoPayment.status === "approved") {
         // Create pending subscription (will be activated by webhook)
         const newSubscription = new Subscription({
           id_usuario: userId,
@@ -169,12 +180,12 @@ export const processTransparentCheckout = async (req: AuthenticatedRequest, res:
               plan_name: `Plano ${planId.charAt(0).toUpperCase() + planId.slice(1)}`,
               user_email: user.email,
               months_paid: months,
-              card_last_four: cardData.number.slice(-4)
-            }
+              card_last_four: cardData.number.slice(-4),
+            },
           },
           data_inicio_periodo: startDate,
           data_fim_periodo: endDate,
-          ativo: true
+          ativo: true,
         });
 
         await newSubscription.save();
@@ -204,28 +215,26 @@ export const processTransparentCheckout = async (req: AuthenticatedRequest, res:
             plan: planId,
             startDate,
             endDate,
-            status: "ativo"
-          }
+            status: "ativo",
+          },
         });
-
       } else {
         // Payment rejected
         res.status(400).json({
           success: false,
           message: "Pagamento rejeitado",
-          details: mercadoPagoPayment.statusDetail || "Verifique os dados do cartão"
+          details:
+            mercadoPagoPayment.statusDetail || "Verifique os dados do cartão",
         });
       }
-
     } catch (paymentError) {
       console.error("Erro no pagamento:", paymentError);
       res.status(500).json({
         success: false,
         message: "Erro ao processar pagamento",
-        details: "Tente novamente em alguns minutos"
+        details: "Tente novamente em alguns minutos",
       });
     }
-
   } catch (error) {
     console.error("Erro no checkout transparente:", error);
     res.status(500).json({ message: "Erro interno do servidor" });
@@ -238,32 +247,32 @@ export const processTransparentCheckout = async (req: AuthenticatedRequest, res:
  */
 async function simulateMercadoPagoPayment(paymentData: any) {
   // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 1000));
+  await new Promise((resolve) => setTimeout(resolve, 1000));
 
   // Simulate different payment outcomes based on card data
   const { cardData } = paymentData;
-  
+
   // Test cards for simulation
-  if (cardData.number === '4111111111111111') {
+  if (cardData.number === "4111111111111111") {
     return {
       id: `mp_${Date.now()}`,
-      status: 'approved',
-      statusDetail: 'approved'
+      status: "approved",
+      statusDetail: "approved",
     };
-  } else if (cardData.number === '4000000000000002') {
+  } else if (cardData.number === "4000000000000002") {
     return {
       id: `mp_${Date.now()}`,
-      status: 'rejected',
-      statusDetail: 'cc_rejected_insufficient_amount'
+      status: "rejected",
+      statusDetail: "cc_rejected_insufficient_amount",
     };
   } else {
     // Default to approved for other cards (in simulation)
     const shouldApprove = Math.random() > 0.1; // 90% approval rate
-    
+
     return {
       id: `mp_${Date.now()}`,
-      status: shouldApprove ? 'approved' : 'rejected',
-      statusDetail: shouldApprove ? 'approved' : 'cc_rejected_other_reason'
+      status: shouldApprove ? "approved" : "rejected",
+      statusDetail: shouldApprove ? "approved" : "cc_rejected_other_reason",
     };
   }
 }
@@ -276,9 +285,9 @@ export const getCheckoutStatus = async (req: Request, res: Response) => {
   try {
     const { transactionId } = req.params;
 
-    const subscription = await Subscription.findOne({ 
-      transaction_id: transactionId 
-    }).populate('id_usuario');
+    const subscription = await Subscription.findOne({
+      transaction_id: transactionId,
+    }).populate("id_usuario");
 
     if (!subscription) {
       return res.status(404).json({ message: "Transação não encontrada" });
@@ -294,10 +303,9 @@ export const getCheckoutStatus = async (req: Request, res: Response) => {
         amount: subscription.valor_pago / 100, // Convert from cents
         startDate: subscription.data_inicio_periodo,
         endDate: subscription.data_fim_periodo,
-        active: subscription.ativo
-      }
+        active: subscription.ativo,
+      },
     });
-
   } catch (error) {
     console.error("Erro ao buscar status do checkout:", error);
     res.status(500).json({ message: "Erro interno do servidor" });
@@ -308,12 +316,15 @@ export const getCheckoutStatus = async (req: Request, res: Response) => {
  * Handle subscription renewal
  * POST /api/checkout/renew
  */
-export const renewSubscription = async (req: AuthenticatedRequest, res: Response) => {
+export const renewSubscription = async (
+  req: AuthenticatedRequest,
+  res: Response,
+) => {
   try {
     const { userId, months = 1 } = req.body;
 
     // Verify access permissions
-    if (req.userId !== userId && req.userRole !== 'admin') {
+    if (req.userId !== userId && req.userRole !== "admin") {
       return res.status(403).json({ message: "Acesso negado" });
     }
 
@@ -323,7 +334,9 @@ export const renewSubscription = async (req: AuthenticatedRequest, res: Response
     }
 
     if (!user.subscriptionPlan) {
-      return res.status(400).json({ message: "Usuário não possui plano ativo" });
+      return res
+        .status(400)
+        .json({ message: "Usuário não possui plano ativo" });
     }
 
     // Extend subscription
@@ -341,9 +354,8 @@ export const renewSubscription = async (req: AuthenticatedRequest, res: Response
       success: true,
       message: "Assinatura renovada com sucesso",
       newEndDate,
-      monthsAdded: months
+      monthsAdded: months,
     });
-
   } catch (error) {
     console.error("Erro ao renovar assinatura:", error);
     res.status(500).json({ message: "Erro interno do servidor" });

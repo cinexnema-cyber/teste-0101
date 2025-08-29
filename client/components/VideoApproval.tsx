@@ -1,14 +1,34 @@
-import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import React, { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   CheckCircle,
   XCircle,
@@ -23,10 +43,10 @@ import {
   Search,
   MoreVertical,
   Download,
-  AlertTriangle
-} from 'lucide-react';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+  AlertTriangle,
+} from "lucide-react";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
 interface Video {
   id: string;
@@ -42,7 +62,7 @@ interface Video {
   tags: string[];
   uploadedAt: string;
   processedAt?: string;
-  status: 'pending_approval' | 'approved' | 'rejected' | 'processing';
+  status: "pending_approval" | "approved" | "rejected" | "processing";
   creatorStats?: {
     storageUsedGB: number;
     videoCount: number;
@@ -61,11 +81,11 @@ export const VideoApproval: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState<ApprovalStats>({ totalPending: 0 });
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
-  const [rejectionReason, setRejectionReason] = useState('');
+  const [rejectionReason, setRejectionReason] = useState("");
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [filters, setFilters] = useState({
-    search: '',
-    status: 'pending_approval'
+    search: "",
+    status: "pending_approval",
   });
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -74,24 +94,27 @@ export const VideoApproval: React.FC = () => {
   const fetchVideos = async () => {
     try {
       setLoading(true);
-      const endpoint = filters.status === 'pending_approval' 
-        ? '/api/admin/videos/pending' 
-        : '/api/admin/videos';
-      
+      const endpoint =
+        filters.status === "pending_approval"
+          ? "/api/admin/videos/pending"
+          : "/api/admin/videos";
+
       const queryParams = new URLSearchParams({
         page: page.toString(),
-        limit: '20',
-        ...(filters.status !== 'pending_approval' && { status: filters.status })
+        limit: "20",
+        ...(filters.status !== "pending_approval" && {
+          status: filters.status,
+        }),
       });
 
       const response = await fetch(`${endpoint}?${queryParams}`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('xnema_token')}`
-        }
+          Authorization: `Bearer ${localStorage.getItem("xnema_token")}`,
+        },
       });
 
       if (!response.ok) {
-        throw new Error('Falha ao buscar vídeos');
+        throw new Error("Falha ao buscar vídeos");
       }
 
       const data = await response.json();
@@ -99,7 +122,7 @@ export const VideoApproval: React.FC = () => {
       setStats(data.stats || { totalPending: 0 });
       setTotalPages(data.pagination?.pages || 1);
     } catch (error) {
-      console.error('Error fetching videos:', error);
+      console.error("Error fetching videos:", error);
     } finally {
       setLoading(false);
     }
@@ -114,21 +137,21 @@ export const VideoApproval: React.FC = () => {
     setActionLoading(videoId);
     try {
       const response = await fetch(`/api/admin/videos/${videoId}/approve`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('xnema_token')}`
-        }
+          Authorization: `Bearer ${localStorage.getItem("xnema_token")}`,
+        },
       });
 
       if (!response.ok) {
-        throw new Error('Falha ao aprovar vídeo');
+        throw new Error("Falha ao aprovar vídeo");
       }
 
       await fetchVideos(); // Refresh list
       setSelectedVideo(null);
     } catch (error) {
-      console.error('Error approving video:', error);
-      alert('Erro ao aprovar vídeo');
+      console.error("Error approving video:", error);
+      alert("Erro ao aprovar vídeo");
     } finally {
       setActionLoading(null);
     }
@@ -137,31 +160,31 @@ export const VideoApproval: React.FC = () => {
   // Handle video rejection
   const handleReject = async (videoId: string) => {
     if (!rejectionReason.trim()) {
-      alert('Motivo da rejeição é obrigatório');
+      alert("Motivo da rejeição é obrigatório");
       return;
     }
 
     setActionLoading(videoId);
     try {
       const response = await fetch(`/api/admin/videos/${videoId}/reject`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('xnema_token')}`
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("xnema_token")}`,
         },
-        body: JSON.stringify({ reason: rejectionReason.trim() })
+        body: JSON.stringify({ reason: rejectionReason.trim() }),
       });
 
       if (!response.ok) {
-        throw new Error('Falha ao rejeitar vídeo');
+        throw new Error("Falha ao rejeitar vídeo");
       }
 
       await fetchVideos(); // Refresh list
       setSelectedVideo(null);
-      setRejectionReason('');
+      setRejectionReason("");
     } catch (error) {
-      console.error('Error rejecting video:', error);
-      alert('Erro ao rejeitar vídeo');
+      console.error("Error rejecting video:", error);
+      alert("Erro ao rejeitar vídeo");
     } finally {
       setActionLoading(null);
     }
@@ -169,28 +192,32 @@ export const VideoApproval: React.FC = () => {
 
   // Handle video deletion
   const handleDelete = async (videoId: string) => {
-    if (!confirm('Tem certeza que deseja deletar este vídeo? Esta ação não pode ser desfeita.')) {
+    if (
+      !confirm(
+        "Tem certeza que deseja deletar este vídeo? Esta ação não pode ser desfeita.",
+      )
+    ) {
       return;
     }
 
     setActionLoading(videoId);
     try {
       const response = await fetch(`/api/admin/videos/${videoId}`, {
-        method: 'DELETE',
+        method: "DELETE",
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('xnema_token')}`
-        }
+          Authorization: `Bearer ${localStorage.getItem("xnema_token")}`,
+        },
       });
 
       if (!response.ok) {
-        throw new Error('Falha ao deletar vídeo');
+        throw new Error("Falha ao deletar vídeo");
       }
 
       await fetchVideos(); // Refresh list
       setSelectedVideo(null);
     } catch (error) {
-      console.error('Error deleting video:', error);
-      alert('Erro ao deletar vídeo');
+      console.error("Error deleting video:", error);
+      alert("Erro ao deletar vídeo");
     } finally {
       setActionLoading(null);
     }
@@ -198,40 +225,60 @@ export const VideoApproval: React.FC = () => {
 
   // Format file size
   const formatFileSize = (bytes: number): string => {
-    if (bytes === 0) return '0 Bytes';
+    if (bytes === 0) return "0 Bytes";
     const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
   // Format duration
   const formatDuration = (seconds?: number): string => {
-    if (!seconds) return 'N/A';
+    if (!seconds) return "N/A";
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
   };
 
   // Get status badge
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'pending_approval':
-        return <Badge variant="outline" className="text-yellow-600 border-yellow-600">Pendente</Badge>;
-      case 'approved':
-        return <Badge variant="outline" className="text-green-600 border-green-600">Aprovado</Badge>;
-      case 'rejected':
-        return <Badge variant="outline" className="text-red-600 border-red-600">Rejeitado</Badge>;
-      case 'processing':
-        return <Badge variant="outline" className="text-blue-600 border-blue-600">Processando</Badge>;
+      case "pending_approval":
+        return (
+          <Badge
+            variant="outline"
+            className="text-yellow-600 border-yellow-600"
+          >
+            Pendente
+          </Badge>
+        );
+      case "approved":
+        return (
+          <Badge variant="outline" className="text-green-600 border-green-600">
+            Aprovado
+          </Badge>
+        );
+      case "rejected":
+        return (
+          <Badge variant="outline" className="text-red-600 border-red-600">
+            Rejeitado
+          </Badge>
+        );
+      case "processing":
+        return (
+          <Badge variant="outline" className="text-blue-600 border-blue-600">
+            Processando
+          </Badge>
+        );
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
   };
 
-  const filteredVideos = videos.filter(video =>
-    video.title.toLowerCase().includes(filters.search.toLowerCase()) ||
-    video.creatorName.toLowerCase().includes(filters.search.toLowerCase())
+  const filteredVideos = videos.filter(
+    (video) =>
+      video.title.toLowerCase().includes(filters.search.toLowerCase()) ||
+      video.creatorName.toLowerCase().includes(filters.search.toLowerCase()),
   );
 
   return (
@@ -264,7 +311,9 @@ export const VideoApproval: React.FC = () => {
             <div className="flex items-center gap-3">
               <CheckCircle className="w-8 h-8 text-green-500" />
               <div>
-                <p className="text-2xl font-bold">{stats.approved?.count || 0}</p>
+                <p className="text-2xl font-bold">
+                  {stats.approved?.count || 0}
+                </p>
                 <p className="text-sm text-muted-foreground">Aprovados</p>
               </div>
             </div>
@@ -275,7 +324,9 @@ export const VideoApproval: React.FC = () => {
             <div className="flex items-center gap-3">
               <XCircle className="w-8 h-8 text-red-500" />
               <div>
-                <p className="text-2xl font-bold">{stats.rejected?.count || 0}</p>
+                <p className="text-2xl font-bold">
+                  {stats.rejected?.count || 0}
+                </p>
                 <p className="text-sm text-muted-foreground">Rejeitados</p>
               </div>
             </div>
@@ -286,7 +337,12 @@ export const VideoApproval: React.FC = () => {
             <div className="flex items-center gap-3">
               <FileVideo className="w-8 h-8 text-blue-500" />
               <div>
-                <p className="text-2xl font-bold">{Object.values(stats).reduce((acc: number, stat: any) => acc + (stat.count || 0), 0)}</p>
+                <p className="text-2xl font-bold">
+                  {Object.values(stats).reduce(
+                    (acc: number, stat: any) => acc + (stat.count || 0),
+                    0,
+                  )}
+                </p>
                 <p className="text-sm text-muted-foreground">Total</p>
               </div>
             </div>
@@ -306,7 +362,9 @@ export const VideoApproval: React.FC = () => {
                   id="search"
                   placeholder="Buscar por título ou criador..."
                   value={filters.search}
-                  onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+                  onChange={(e) =>
+                    setFilters((prev) => ({ ...prev, search: e.target.value }))
+                  }
                   className="pl-10"
                 />
               </div>
@@ -316,7 +374,9 @@ export const VideoApproval: React.FC = () => {
               <select
                 id="status"
                 value={filters.status}
-                onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))}
+                onChange={(e) =>
+                  setFilters((prev) => ({ ...prev, status: e.target.value }))
+                }
                 className="w-full px-3 py-2 border border-border rounded-md bg-background"
               >
                 <option value="pending_approval">Pendentes</option>
@@ -332,9 +392,16 @@ export const VideoApproval: React.FC = () => {
       {/* Videos List */}
       <Card>
         <CardHeader>
-          <CardTitle>Vídeos {filters.status === 'pending_approval' ? 'Pendentes' : getStatusBadge(filters.status)}</CardTitle>
+          <CardTitle>
+            Vídeos{" "}
+            {filters.status === "pending_approval"
+              ? "Pendentes"
+              : getStatusBadge(filters.status)}
+          </CardTitle>
           <CardDescription>
-            {loading ? 'Carregando...' : `${filteredVideos.length} vídeo(s) encontrado(s)`}
+            {loading
+              ? "Carregando..."
+              : `${filteredVideos.length} vídeo(s) encontrado(s)`}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -350,14 +417,17 @@ export const VideoApproval: React.FC = () => {
           ) : (
             <div className="space-y-4">
               {filteredVideos.map((video) => (
-                <Card key={video.id} className="hover:bg-muted/50 transition-colors">
+                <Card
+                  key={video.id}
+                  className="hover:bg-muted/50 transition-colors"
+                >
                   <CardContent className="p-6">
                     <div className="flex items-start gap-4">
                       {/* Thumbnail */}
                       <div className="w-32 h-20 bg-muted rounded-lg flex items-center justify-center flex-shrink-0">
                         {video.thumbnailUrl ? (
-                          <img 
-                            src={video.thumbnailUrl} 
+                          <img
+                            src={video.thumbnailUrl}
                             alt={video.title}
                             className="w-full h-full object-cover rounded-lg"
                           />
@@ -370,11 +440,13 @@ export const VideoApproval: React.FC = () => {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-4">
                           <div className="flex-1 min-w-0">
-                            <h3 className="font-semibold text-lg truncate">{video.title}</h3>
+                            <h3 className="font-semibold text-lg truncate">
+                              {video.title}
+                            </h3>
                             <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
                               {video.description}
                             </p>
-                            
+
                             <div className="flex flex-wrap items-center gap-4 mt-3">
                               <div className="flex items-center gap-1 text-sm text-muted-foreground">
                                 <User className="w-4 h-4" />
@@ -382,7 +454,11 @@ export const VideoApproval: React.FC = () => {
                               </div>
                               <div className="flex items-center gap-1 text-sm text-muted-foreground">
                                 <Calendar className="w-4 h-4" />
-                                {format(new Date(video.uploadedAt), 'dd/MM/yyyy HH:mm', { locale: ptBR })}
+                                {format(
+                                  new Date(video.uploadedAt),
+                                  "dd/MM/yyyy HH:mm",
+                                  { locale: ptBR },
+                                )}
                               </div>
                               <div className="flex items-center gap-1 text-sm text-muted-foreground">
                                 <FileVideo className="w-4 h-4" />
@@ -398,9 +474,15 @@ export const VideoApproval: React.FC = () => {
 
                             <div className="flex flex-wrap items-center gap-2 mt-3">
                               {getStatusBadge(video.status)}
-                              <Badge variant="secondary">{video.category}</Badge>
+                              <Badge variant="secondary">
+                                {video.category}
+                              </Badge>
                               {video.tags.map((tag, index) => (
-                                <Badge key={index} variant="outline" className="text-xs">
+                                <Badge
+                                  key={index}
+                                  variant="outline"
+                                  className="text-xs"
+                                >
                                   {tag}
                                 </Badge>
                               ))}
@@ -411,8 +493,8 @@ export const VideoApproval: React.FC = () => {
                           <div className="flex items-center gap-2">
                             <Dialog>
                               <DialogTrigger asChild>
-                                <Button 
-                                  variant="outline" 
+                                <Button
+                                  variant="outline"
                                   size="sm"
                                   onClick={() => setSelectedVideo(video)}
                                 >
@@ -427,14 +509,14 @@ export const VideoApproval: React.FC = () => {
                                     Detalhes completos do vídeo para aprovação
                                   </DialogDescription>
                                 </DialogHeader>
-                                
+
                                 {selectedVideo && (
                                   <div className="space-y-6">
                                     {/* Video Preview */}
                                     <div className="aspect-video bg-black rounded-lg flex items-center justify-center">
                                       {selectedVideo.thumbnailUrl ? (
-                                        <img 
-                                          src={selectedVideo.thumbnailUrl} 
+                                        <img
+                                          src={selectedVideo.thumbnailUrl}
                                           alt={selectedVideo.title}
                                           className="max-w-full max-h-full object-contain rounded-lg"
                                         />
@@ -451,7 +533,9 @@ export const VideoApproval: React.FC = () => {
                                       <div className="space-y-4">
                                         <div>
                                           <Label>Título</Label>
-                                          <p className="font-medium">{selectedVideo.title}</p>
+                                          <p className="font-medium">
+                                            {selectedVideo.title}
+                                          </p>
                                         </div>
                                         <div>
                                           <Label>Descrição</Label>
@@ -462,11 +546,17 @@ export const VideoApproval: React.FC = () => {
                                         <div>
                                           <Label>Tags</Label>
                                           <div className="flex flex-wrap gap-1 mt-1">
-                                            {selectedVideo.tags.map((tag, index) => (
-                                              <Badge key={index} variant="outline" className="text-xs">
-                                                {tag}
-                                              </Badge>
-                                            ))}
+                                            {selectedVideo.tags.map(
+                                              (tag, index) => (
+                                                <Badge
+                                                  key={index}
+                                                  variant="outline"
+                                                  className="text-xs"
+                                                >
+                                                  {tag}
+                                                </Badge>
+                                              ),
+                                            )}
                                           </div>
                                         </div>
                                       </div>
@@ -474,23 +564,37 @@ export const VideoApproval: React.FC = () => {
                                       <div className="space-y-4">
                                         <div>
                                           <Label>Criador</Label>
-                                          <p className="font-medium">{selectedVideo.creatorName}</p>
+                                          <p className="font-medium">
+                                            {selectedVideo.creatorName}
+                                          </p>
                                         </div>
                                         <div>
                                           <Label>Categoria</Label>
-                                          <p className="capitalize">{selectedVideo.category}</p>
+                                          <p className="capitalize">
+                                            {selectedVideo.category}
+                                          </p>
                                         </div>
                                         <div>
                                           <Label>Arquivo Original</Label>
-                                          <p className="text-sm">{selectedVideo.originalFilename}</p>
+                                          <p className="text-sm">
+                                            {selectedVideo.originalFilename}
+                                          </p>
                                           <p className="text-xs text-muted-foreground">
-                                            {formatFileSize(selectedVideo.fileSize)}
+                                            {formatFileSize(
+                                              selectedVideo.fileSize,
+                                            )}
                                           </p>
                                         </div>
                                         <div>
                                           <Label>Data de Upload</Label>
                                           <p className="text-sm">
-                                            {format(new Date(selectedVideo.uploadedAt), 'dd/MM/yyyy HH:mm', { locale: ptBR })}
+                                            {format(
+                                              new Date(
+                                                selectedVideo.uploadedAt,
+                                              ),
+                                              "dd/MM/yyyy HH:mm",
+                                              { locale: ptBR },
+                                            )}
                                           </p>
                                         </div>
                                       </div>
@@ -502,54 +606,103 @@ export const VideoApproval: React.FC = () => {
                                         <Label>Estatísticas do Criador</Label>
                                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2">
                                           <div className="text-center p-3 bg-muted rounded-lg">
-                                            <p className="text-sm text-muted-foreground">Armazenamento</p>
-                                            <p className="font-medium">{selectedVideo.creatorStats.storageUsedGB.toFixed(2)} GB</p>
+                                            <p className="text-sm text-muted-foreground">
+                                              Armazenamento
+                                            </p>
+                                            <p className="font-medium">
+                                              {selectedVideo.creatorStats.storageUsedGB.toFixed(
+                                                2,
+                                              )}{" "}
+                                              GB
+                                            </p>
                                           </div>
                                           <div className="text-center p-3 bg-muted rounded-lg">
-                                            <p className="text-sm text-muted-foreground">Vídeos</p>
-                                            <p className="font-medium">{selectedVideo.creatorStats.videoCount}</p>
+                                            <p className="text-sm text-muted-foreground">
+                                              Vídeos
+                                            </p>
+                                            <p className="font-medium">
+                                              {
+                                                selectedVideo.creatorStats
+                                                  .videoCount
+                                              }
+                                            </p>
                                           </div>
                                           <div className="text-center p-3 bg-muted rounded-lg">
-                                            <p className="text-sm text-muted-foreground">Carência</p>
-                                            <p className="font-medium">{selectedVideo.creatorStats.graceMonthsLeft} meses</p>
+                                            <p className="text-sm text-muted-foreground">
+                                              Carência
+                                            </p>
+                                            <p className="font-medium">
+                                              {
+                                                selectedVideo.creatorStats
+                                                  .graceMonthsLeft
+                                              }{" "}
+                                              meses
+                                            </p>
                                           </div>
                                           <div className="text-center p-3 bg-muted rounded-lg">
-                                            <p className="text-sm text-muted-foreground">Receita Total</p>
-                                            <p className="font-medium">R$ {selectedVideo.creatorStats.totalRevenue.toFixed(2)}</p>
+                                            <p className="text-sm text-muted-foreground">
+                                              Receita Total
+                                            </p>
+                                            <p className="font-medium">
+                                              R${" "}
+                                              {selectedVideo.creatorStats.totalRevenue.toFixed(
+                                                2,
+                                              )}
+                                            </p>
                                           </div>
                                         </div>
                                       </div>
                                     )}
 
                                     {/* Actions */}
-                                    {selectedVideo.status === 'pending_approval' && (
+                                    {selectedVideo.status ===
+                                      "pending_approval" && (
                                       <div className="space-y-4">
                                         <div className="flex gap-4">
                                           <Button
-                                            onClick={() => handleApprove(selectedVideo.id)}
-                                            disabled={actionLoading === selectedVideo.id}
+                                            onClick={() =>
+                                              handleApprove(selectedVideo.id)
+                                            }
+                                            disabled={
+                                              actionLoading === selectedVideo.id
+                                            }
                                             className="bg-green-600 hover:bg-green-700 text-white"
                                           >
                                             <CheckCircle className="w-4 h-4 mr-2" />
-                                            {actionLoading === selectedVideo.id ? 'Aprovando...' : 'Aprovar'}
+                                            {actionLoading === selectedVideo.id
+                                              ? "Aprovando..."
+                                              : "Aprovar"}
                                           </Button>
-                                          
+
                                           <div className="flex-1">
                                             <div className="flex gap-2">
                                               <Textarea
                                                 placeholder="Motivo da rejeição (obrigatório)"
                                                 value={rejectionReason}
-                                                onChange={(e) => setRejectionReason(e.target.value)}
+                                                onChange={(e) =>
+                                                  setRejectionReason(
+                                                    e.target.value,
+                                                  )
+                                                }
                                                 rows={2}
                                                 className="flex-1"
                                               />
                                               <Button
                                                 variant="destructive"
-                                                onClick={() => handleReject(selectedVideo.id)}
-                                                disabled={!rejectionReason.trim() || actionLoading === selectedVideo.id}
+                                                onClick={() =>
+                                                  handleReject(selectedVideo.id)
+                                                }
+                                                disabled={
+                                                  !rejectionReason.trim() ||
+                                                  actionLoading ===
+                                                    selectedVideo.id
+                                                }
                                               >
                                                 <XCircle className="w-4 h-4 mr-2" />
-                                                {actionLoading === selectedVideo.id ? 'Rejeitando...' : 'Rejeitar'}
+                                                {actionLoading ===
+                                                selectedVideo.id
+                                                  ? "Rejeitando..."
+                                                  : "Rejeitar"}
                                               </Button>
                                             </div>
                                           </div>
@@ -562,11 +715,17 @@ export const VideoApproval: React.FC = () => {
                                       <Button
                                         variant="destructive"
                                         size="sm"
-                                        onClick={() => handleDelete(selectedVideo.id)}
-                                        disabled={actionLoading === selectedVideo.id}
+                                        onClick={() =>
+                                          handleDelete(selectedVideo.id)
+                                        }
+                                        disabled={
+                                          actionLoading === selectedVideo.id
+                                        }
                                       >
                                         <Trash2 className="w-4 h-4 mr-2" />
-                                        {actionLoading === selectedVideo.id ? 'Deletando...' : 'Deletar Vídeo'}
+                                        {actionLoading === selectedVideo.id
+                                          ? "Deletando..."
+                                          : "Deletar Vídeo"}
                                       </Button>
                                       <p className="text-xs text-muted-foreground mt-1">
                                         Esta ação não pode ser desfeita
@@ -592,7 +751,7 @@ export const VideoApproval: React.FC = () => {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setPage(p => Math.max(1, p - 1))}
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
               >
                 Anterior
@@ -603,7 +762,7 @@ export const VideoApproval: React.FC = () => {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
               >
                 Próxima

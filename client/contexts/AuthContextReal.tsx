@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from "react";
 
 export interface AuthUser {
   id: string;
@@ -37,36 +43,36 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Verificar autenticação ao carregar
   const checkAuth = async () => {
     try {
-      const token = localStorage.getItem('xnema_token');
-      const storedUser = localStorage.getItem('xnema_user');
+      const token = localStorage.getItem("xnema_token");
+      const storedUser = localStorage.getItem("xnema_user");
 
       if (token && storedUser) {
         // Verificar se o token ainda é válido
-        const response = await fetch('/api/auth/me', {
+        const response = await fetch("/api/auth/me", {
           headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         });
 
         if (response.ok) {
           const data = await response.json();
           if (data.success && data.user) {
             setUser(data.user);
-            localStorage.setItem('xnema_user', JSON.stringify(data.user));
+            localStorage.setItem("xnema_user", JSON.stringify(data.user));
           } else {
             // Token inválido, limpar dados
             logout();
           }
         } else {
-          // Token inválido, limpar dados  
+          // Token inválido, limpar dados
           logout();
         }
       }
     } catch (error) {
-      console.error('Erro ao verificar autenticação:', error);
+      console.error("Erro ao verificar autenticação:", error);
       // Em caso de erro, usar dados do localStorage se existirem
-      const storedUser = localStorage.getItem('xnema_user');
+      const storedUser = localStorage.getItem("xnema_user");
       if (storedUser) {
         try {
           setUser(JSON.parse(storedUser));
@@ -82,32 +88,32 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Função de login
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
-      const response = await fetch('/api/auth/login-subscriber', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+      const response = await fetch("/api/auth/login-subscriber", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await response.json();
 
       if (data.success && data.token && data.user) {
-        localStorage.setItem('xnema_token', data.token);
-        localStorage.setItem('xnema_user', JSON.stringify(data.user));
+        localStorage.setItem("xnema_token", data.token);
+        localStorage.setItem("xnema_user", JSON.stringify(data.user));
         setUser(data.user);
         return true;
       }
 
       return false;
     } catch (error) {
-      console.error('Erro no login:', error);
+      console.error("Erro no login:", error);
       return false;
     }
   };
 
   // Função de logout
   const logout = () => {
-    localStorage.removeItem('xnema_token');
-    localStorage.removeItem('xnema_user');
+    localStorage.removeItem("xnema_token");
+    localStorage.removeItem("xnema_user");
     setUser(null);
   };
 
@@ -123,20 +129,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     isAuthenticated,
     login,
     logout,
-    checkAuth
+    checkAuth,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth deve ser usado dentro de um AuthProvider');
+    throw new Error("useAuth deve ser usado dentro de um AuthProvider");
   }
   return context;
 };

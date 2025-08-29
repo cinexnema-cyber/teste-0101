@@ -23,7 +23,7 @@ export const loginSubscriber = async (req: Request, res: Response) => {
   try {
     console.log("👤 Tentativa de login de assinante:", {
       email: req.body.email,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
 
     const { error, value } = subscriberLoginSchema.validate(req.body);
@@ -37,16 +37,16 @@ export const loginSubscriber = async (req: Request, res: Response) => {
     const { email, password } = value;
 
     // Find user by email and role subscriber/premium
-    const user = await User.findOne({ 
+    const user = await User.findOne({
       email: email.toLowerCase().trim(),
-      role: { $in: ['subscriber', 'premium'] }
+      role: { $in: ["subscriber", "premium"] },
     });
 
     if (!user) {
       console.log("❌ Assinante não encontrado:", email);
       return res.status(401).json({
         success: false,
-        message: 'Usuário assinante não encontrado'
+        message: "Usuário assinante não encontrado",
       });
     }
 
@@ -56,7 +56,7 @@ export const loginSubscriber = async (req: Request, res: Response) => {
       console.log("❌ Senha incorreta para assinante:", email);
       return res.status(401).json({
         success: false,
-        message: 'Senha incorreta'
+        message: "Senha incorreta",
       });
     }
 
@@ -64,7 +64,7 @@ export const loginSubscriber = async (req: Request, res: Response) => {
     console.log("📊 Status do assinante:", {
       role: user.role,
       isPremium: user.isPremium,
-      subscriptionStatus: user.subscriptionStatus
+      subscriptionStatus: user.subscriptionStatus,
     });
 
     // Generate token
@@ -74,7 +74,7 @@ export const loginSubscriber = async (req: Request, res: Response) => {
       id: user._id,
       email: user.email,
       role: user.role,
-      isPremium: user.isPremium
+      isPremium: user.isPremium,
     });
 
     res.json({
@@ -87,10 +87,9 @@ export const loginSubscriber = async (req: Request, res: Response) => {
         role: user.role,
         isPremium: user.isPremium,
         subscriptionStatus: user.subscriptionStatus,
-        assinante: user.assinante // Backward compatibility
-      }
+        assinante: user.assinante, // Backward compatibility
+      },
     });
-
   } catch (error) {
     console.error("❌ Erro no login de assinante:", error);
     res.status(500).json({
@@ -108,7 +107,7 @@ export const loginCreator = async (req: Request, res: Response) => {
   try {
     console.log("🎨 Tentativa de login de criador:", {
       email: req.body.email,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
 
     const { error, value } = creatorLoginSchema.validate(req.body);
@@ -122,16 +121,16 @@ export const loginCreator = async (req: Request, res: Response) => {
     const { email, password } = value;
 
     // Find user by email and role creator
-    const user = await User.findOne({ 
+    const user = await User.findOne({
       email: email.toLowerCase().trim(),
-      role: 'creator'
+      role: "creator",
     });
 
     if (!user) {
       console.log("❌ Criador não encontrado:", email);
       return res.status(401).json({
         success: false,
-        message: 'Criador não encontrado'
+        message: "Criador não encontrado",
       });
     }
 
@@ -141,22 +140,23 @@ export const loginCreator = async (req: Request, res: Response) => {
       console.log("❌ Senha incorreta para criador:", email);
       return res.status(401).json({
         success: false,
-        message: 'Senha incorreta'
+        message: "Senha incorreta",
       });
     }
 
     // Check creator approval status
     const creatorStatus = user.creatorProfile?.status || "pending";
-    console.log("🎨 Status do criador:", { 
-      email, 
+    console.log("🎨 Status do criador:", {
+      email,
       status: creatorStatus,
-      creatorProfile: !!user.creatorProfile
+      creatorProfile: !!user.creatorProfile,
     });
 
     if (creatorStatus === "rejected") {
       return res.status(403).json({
         success: false,
-        message: "Sua conta de criador foi rejeitada. Entre em contato conosco."
+        message:
+          "Sua conta de criador foi rejeitada. Entre em contato conosco.",
       });
     }
 
@@ -172,7 +172,7 @@ export const loginCreator = async (req: Request, res: Response) => {
       id: user._id,
       email: user.email,
       role: user.role,
-      creatorStatus
+      creatorStatus,
     });
 
     res.json({
@@ -190,11 +190,10 @@ export const loginCreator = async (req: Request, res: Response) => {
           totalVideos: user.creatorProfile?.totalVideos || 0,
           totalViews: user.creatorProfile?.totalViews || 0,
           monthlyEarnings: user.creatorProfile?.monthlyEarnings || 0,
-          affiliateEarnings: user.creatorProfile?.affiliateEarnings || 0
-        }
-      }
+          affiliateEarnings: user.creatorProfile?.affiliateEarnings || 0,
+        },
+      },
     });
-
   } catch (error) {
     console.error("❌ Erro no login de criador:", error);
     res.status(500).json({
@@ -212,7 +211,7 @@ export const loginAdmin = async (req: Request, res: Response) => {
   try {
     console.log("👑 Tentativa de login de admin:", {
       email: req.body.email,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
 
     const { error, value } = subscriberLoginSchema.validate(req.body);
@@ -226,16 +225,16 @@ export const loginAdmin = async (req: Request, res: Response) => {
     const { email, password } = value;
 
     // Find user by email and role admin
-    const user = await User.findOne({ 
+    const user = await User.findOne({
       email: email.toLowerCase().trim(),
-      role: 'admin'
+      role: "admin",
     });
 
     if (!user) {
       console.log("❌ Admin não encontrado:", email);
       return res.status(401).json({
         success: false,
-        message: 'Administrador não encontrado'
+        message: "Administrador não encontrado",
       });
     }
 
@@ -244,7 +243,7 @@ export const loginAdmin = async (req: Request, res: Response) => {
       console.log("❌ Tentativa de login admin não autorizada:", email);
       return res.status(403).json({
         success: false,
-        message: "Acesso de administrador não autorizado"
+        message: "Acesso de administrador não autorizado",
       });
     }
 
@@ -254,7 +253,7 @@ export const loginAdmin = async (req: Request, res: Response) => {
       console.log("❌ Senha incorreta para admin:", email);
       return res.status(401).json({
         success: false,
-        message: 'Senha incorreta'
+        message: "Senha incorreta",
       });
     }
 
@@ -264,7 +263,7 @@ export const loginAdmin = async (req: Request, res: Response) => {
     console.log("✅ Login de admin bem-sucedido:", {
       id: user._id,
       email: user.email,
-      role: user.role
+      role: user.role,
     });
 
     res.json({
@@ -274,10 +273,9 @@ export const loginAdmin = async (req: Request, res: Response) => {
         id: user._id,
         email: user.email,
         name: user.nome,
-        role: user.role
-      }
+        role: user.role,
+      },
     });
-
   } catch (error) {
     console.error("❌ Erro no login de admin:", error);
     res.status(500).json({

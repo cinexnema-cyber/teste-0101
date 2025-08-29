@@ -1,9 +1,12 @@
 import { Request, Response } from "express";
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from "@supabase/supabase-js";
 
 // Configuração do Supabase
-const supabaseUrl = process.env.SUPABASE_URL || 'https://gardjxolnrykvxxtatdq.supabase.co';
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdhcmRqeG9sbnJ5a3Z4eHRhdGRxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NTM3NjcyNywiZXhwIjoyMDcwOTUyNzI3fQ.L5P2vYFnqSU1n6aTKRsWg2M7kxO1tF6y0l4K3S_HpQA';
+const supabaseUrl =
+  process.env.SUPABASE_URL || "https://gardjxolnrykvxxtatdq.supabase.co";
+const supabaseServiceKey =
+  process.env.SUPABASE_SERVICE_ROLE_KEY ||
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdhcmRqeG9sbnJ5a3Z4eHRhdGRxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NTM3NjcyNywiZXhwIjoyMDcwOTUyNzI3fQ.L5P2vYFnqSU1n6aTKRsWg2M7kxO1tF6y0l4K3S_HpQA";
 
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
@@ -18,25 +21,25 @@ interface AuthenticatedRequest extends Request {
  */
 export const getCatalog = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    const { 
-      type, 
-      genre, 
-      search, 
-      page = 1, 
+    const {
+      type,
+      genre,
+      search,
+      page = 1,
       limit = 20,
-      premium_only = false 
+      premium_only = false,
     } = req.query;
 
     const userId = req.userId;
-    let query = supabase.from('content').select('*');
+    let query = supabase.from("content").select("*");
 
     // Filtros
     if (type) {
-      query = query.eq('type', type);
+      query = query.eq("type", type);
     }
 
     if (genre) {
-      query = query.contains('genre', [genre]);
+      query = query.contains("genre", [genre]);
     }
 
     if (search) {
@@ -47,54 +50,63 @@ export const getCatalog = async (req: AuthenticatedRequest, res: Response) => {
     let userIsPremium = false;
     if (userId) {
       const { data: user } = await supabase
-        .from('users')
-        .select('is_premium, subscription_end')
-        .eq('id', userId)
+        .from("users")
+        .select("is_premium, subscription_end")
+        .eq("id", userId)
         .single();
 
       if (user) {
         userIsPremium = user.is_premium;
         // Verificar se assinatura não expirou
-        if (user.subscription_end && new Date() > new Date(user.subscription_end)) {
+        if (
+          user.subscription_end &&
+          new Date() > new Date(user.subscription_end)
+        ) {
           userIsPremium = false;
         }
       }
     }
 
     // Se usuário não é premium, mostrar apenas conteúdo gratuito
-    if (!userIsPremium && premium_only !== 'true') {
-      query = query.eq('is_premium', false);
-    } else if (premium_only === 'true' && !userIsPremium) {
+    if (!userIsPremium && premium_only !== "true") {
+      query = query.eq("is_premium", false);
+    } else if (premium_only === "true" && !userIsPremium) {
       // Usuário não premium tentando acessar conteúdo premium
       return res.status(403).json({
         success: false,
-        message: 'Assinatura premium necessária'
+        message: "Assinatura premium necessária",
       });
     }
 
     // Paginação
     const offset = (Number(page) - 1) * Number(limit);
     query = query
-      .order('created_at', { ascending: false })
+      .order("created_at", { ascending: false })
       .range(offset, offset + Number(limit) - 1);
 
     const { data: content, error } = await query;
 
     if (error) {
-      console.error('❌ Erro ao buscar catálogo:', error);
+      console.error("❌ Erro ao buscar catálogo:", error);
       return res.status(500).json({
         success: false,
-        message: 'Erro ao buscar conteúdo'
+        message: "Erro ao buscar conteúdo",
       });
     }
 
     // Contar total de itens para paginação
-    let countQuery = supabase.from('content').select('*', { count: 'exact', head: true });
-    
-    if (type) countQuery = countQuery.eq('type', type);
-    if (genre) countQuery = countQuery.contains('genre', [genre]);
-    if (search) countQuery = countQuery.or(`title.ilike.%${search}%,description.ilike.%${search}%`);
-    if (!userIsPremium && premium_only !== 'true') countQuery = countQuery.eq('is_premium', false);
+    let countQuery = supabase
+      .from("content")
+      .select("*", { count: "exact", head: true });
+
+    if (type) countQuery = countQuery.eq("type", type);
+    if (genre) countQuery = countQuery.contains("genre", [genre]);
+    if (search)
+      countQuery = countQuery.or(
+        `title.ilike.%${search}%,description.ilike.%${search}%`,
+      );
+    if (!userIsPremium && premium_only !== "true")
+      countQuery = countQuery.eq("is_premium", false);
 
     const { count } = await countQuery;
 
@@ -105,16 +117,15 @@ export const getCatalog = async (req: AuthenticatedRequest, res: Response) => {
         page: Number(page),
         limit: Number(limit),
         total: count || 0,
-        totalPages: Math.ceil((count || 0) / Number(limit))
+        totalPages: Math.ceil((count || 0) / Number(limit)),
       },
-      userIsPremium
+      userIsPremium,
     });
-
   } catch (error) {
-    console.error('❌ Erro ao buscar catálogo:', error);
+    console.error("❌ Erro ao buscar catálogo:", error);
     res.status(500).json({
       success: false,
-      message: 'Erro interno do servidor'
+      message: "Erro interno do servidor",
     });
   }
 };
@@ -123,7 +134,10 @@ export const getCatalog = async (req: AuthenticatedRequest, res: Response) => {
  * Buscar detalhes de um conteúdo específico
  * GET /api/content/:id
  */
-export const getContentById = async (req: AuthenticatedRequest, res: Response) => {
+export const getContentById = async (
+  req: AuthenticatedRequest,
+  res: Response,
+) => {
   try {
     const { id } = req.params;
     const userId = req.userId;
@@ -131,21 +145,21 @@ export const getContentById = async (req: AuthenticatedRequest, res: Response) =
     if (!id) {
       return res.status(400).json({
         success: false,
-        message: 'ID do conteúdo é obrigatório'
+        message: "ID do conteúdo é obrigatório",
       });
     }
 
     // Buscar conteúdo
     const { data: content, error } = await supabase
-      .from('content')
-      .select('*')
-      .eq('id', id)
+      .from("content")
+      .select("*")
+      .eq("id", id)
       .single();
 
     if (error || !content) {
       return res.status(404).json({
         success: false,
-        message: 'Conteúdo não encontrado'
+        message: "Conteúdo não encontrado",
       });
     }
 
@@ -153,14 +167,17 @@ export const getContentById = async (req: AuthenticatedRequest, res: Response) =
     let userIsPremium = false;
     if (userId) {
       const { data: user } = await supabase
-        .from('users')
-        .select('is_premium, subscription_end')
-        .eq('id', userId)
+        .from("users")
+        .select("is_premium, subscription_end")
+        .eq("id", userId)
         .single();
 
       if (user) {
         userIsPremium = user.is_premium;
-        if (user.subscription_end && new Date() > new Date(user.subscription_end)) {
+        if (
+          user.subscription_end &&
+          new Date() > new Date(user.subscription_end)
+        ) {
           userIsPremium = false;
         }
       }
@@ -173,23 +190,22 @@ export const getContentById = async (req: AuthenticatedRequest, res: Response) =
         content: {
           ...content,
           video_url: null, // Remover URL do vídeo
-          accessRequired: 'premium'
+          accessRequired: "premium",
         },
-        userIsPremium
+        userIsPremium,
       });
     }
 
     res.json({
       success: true,
       content,
-      userIsPremium
+      userIsPremium,
     });
-
   } catch (error) {
-    console.error('❌ Erro ao buscar conteúdo:', error);
+    console.error("❌ Erro ao buscar conteúdo:", error);
     res.status(500).json({
       success: false,
-      message: 'Erro interno do servidor'
+      message: "Erro interno do servidor",
     });
   }
 };
@@ -206,85 +222,88 @@ export const recordWatch = async (req: AuthenticatedRequest, res: Response) => {
     if (!userId) {
       return res.status(401).json({
         success: false,
-        message: 'Login necessário'
+        message: "Login necessário",
       });
     }
 
     if (!id) {
       return res.status(400).json({
         success: false,
-        message: 'ID do conteúdo é obrigatório'
+        message: "ID do conteúdo é obrigatório",
       });
     }
 
     // Verificar se conteúdo existe
     const { data: content, error: contentError } = await supabase
-      .from('content')
-      .select('*')
-      .eq('id', id)
+      .from("content")
+      .select("*")
+      .eq("id", id)
       .single();
 
     if (contentError || !content) {
       return res.status(404).json({
         success: false,
-        message: 'Conteúdo não encontrado'
+        message: "Conteúdo não encontrado",
       });
     }
 
     // Verificar acesso premium se necessário
     if (content.is_premium) {
       const { data: user } = await supabase
-        .from('users')
-        .select('is_premium, subscription_end')
-        .eq('id', userId)
+        .from("users")
+        .select("is_premium, subscription_end")
+        .eq("id", userId)
         .single();
 
       if (!user || !user.is_premium) {
         return res.status(403).json({
           success: false,
-          message: 'Assinatura premium necessária'
+          message: "Assinatura premium necessária",
         });
       }
 
-      if (user.subscription_end && new Date() > new Date(user.subscription_end)) {
+      if (
+        user.subscription_end &&
+        new Date() > new Date(user.subscription_end)
+      ) {
         return res.status(403).json({
           success: false,
-          message: 'Assinatura expirada'
+          message: "Assinatura expirada",
         });
       }
     }
 
     // Registrar visualização no histórico
-    await supabase
-      .from('user_watch_history')
-      .upsert({
+    await supabase.from("user_watch_history").upsert(
+      {
         user_id: userId,
         content_id: id,
-        watched_at: new Date().toISOString()
-      }, {
-        onConflict: 'user_id,content_id'
-      });
+        watched_at: new Date().toISOString(),
+      },
+      {
+        onConflict: "user_id,content_id",
+      },
+    );
 
     // Incrementar contador de visualizações
     await supabase
-      .from('content')
+      .from("content")
       .update({
-        views_count: (content.views_count || 0) + 1
+        views_count: (content.views_count || 0) + 1,
       })
-      .eq('id', id);
+      .eq("id", id);
 
-    console.log('✅ Visualização registrada:', { userId, contentId: id });
+    console.log("✅ Visualização registrada:", { userId, contentId: id });
 
     res.json({
       success: true,
-      message: 'Visualização registrada'
+      message: "Visualização registrada",
     });
-
   } catch (error) {
-    console.error('❌ Erro ao registrar visualização:', error);
+    console.error("❌ Erro ao registrar visualização:", error);
     res.status(500).json({
       success: false,
-      message: 'Erro interno do servidor'
+      message: "Erro interno do servidor",
     });
   }
 };
@@ -293,7 +312,10 @@ export const recordWatch = async (req: AuthenticatedRequest, res: Response) => {
  * Buscar histórico de visualizações do usuário
  * GET /api/content/watch-history
  */
-export const getWatchHistory = async (req: AuthenticatedRequest, res: Response) => {
+export const getWatchHistory = async (
+  req: AuthenticatedRequest,
+  res: Response,
+) => {
   try {
     const userId = req.userId;
     const { page = 1, limit = 20 } = req.query;
@@ -301,7 +323,7 @@ export const getWatchHistory = async (req: AuthenticatedRequest, res: Response) 
     if (!userId) {
       return res.status(401).json({
         success: false,
-        message: 'Login necessário'
+        message: "Login necessário",
       });
     }
 
@@ -309,8 +331,9 @@ export const getWatchHistory = async (req: AuthenticatedRequest, res: Response) 
 
     // Buscar histórico com detalhes do conteúdo
     const { data: history, error } = await supabase
-      .from('user_watch_history')
-      .select(`
+      .from("user_watch_history")
+      .select(
+        `
         *,
         content:content_id (
           id,
@@ -322,29 +345,29 @@ export const getWatchHistory = async (req: AuthenticatedRequest, res: Response) 
           duration_minutes,
           rating
         )
-      `)
-      .eq('user_id', userId)
-      .order('watched_at', { ascending: false })
+      `,
+      )
+      .eq("user_id", userId)
+      .order("watched_at", { ascending: false })
       .range(offset, offset + Number(limit) - 1);
 
     if (error) {
-      console.error('❌ Erro ao buscar histórico:', error);
+      console.error("❌ Erro ao buscar histórico:", error);
       return res.status(500).json({
         success: false,
-        message: 'Erro ao buscar histórico'
+        message: "Erro ao buscar histórico",
       });
     }
 
     res.json({
       success: true,
-      history: history || []
+      history: history || [],
     });
-
   } catch (error) {
-    console.error('❌ Erro ao buscar histórico:', error);
+    console.error("❌ Erro ao buscar histórico:", error);
     res.status(500).json({
       success: false,
-      message: 'Erro interno do servidor'
+      message: "Erro interno do servidor",
     });
   }
 };
@@ -357,22 +380,22 @@ export const getGenres = async (req: Request, res: Response) => {
   try {
     // Buscar todos os gêneros únicos
     const { data: content, error } = await supabase
-      .from('content')
-      .select('genre');
+      .from("content")
+      .select("genre");
 
     if (error) {
-      console.error('❌ Erro ao buscar gêneros:', error);
+      console.error("❌ Erro ao buscar gêneros:", error);
       return res.status(500).json({
         success: false,
-        message: 'Erro ao buscar gêneros'
+        message: "Erro ao buscar gêneros",
       });
     }
 
     // Extrair gêneros únicos
     const genresSet = new Set<string>();
-    content?.forEach(item => {
+    content?.forEach((item) => {
       if (item.genre && Array.isArray(item.genre)) {
-        item.genre.forEach(g => genresSet.add(g));
+        item.genre.forEach((g) => genresSet.add(g));
       }
     });
 
@@ -380,14 +403,13 @@ export const getGenres = async (req: Request, res: Response) => {
 
     res.json({
       success: true,
-      genres
+      genres,
     });
-
   } catch (error) {
-    console.error('❌ Erro ao buscar gêneros:', error);
+    console.error("❌ Erro ao buscar gêneros:", error);
     res.status(500).json({
       success: false,
-      message: 'Erro interno do servidor'
+      message: "Erro interno do servidor",
     });
   }
 };
@@ -396,7 +418,10 @@ export const getGenres = async (req: Request, res: Response) => {
  * Buscar conteúdo em destaque
  * GET /api/content/featured
  */
-export const getFeaturedContent = async (req: AuthenticatedRequest, res: Response) => {
+export const getFeaturedContent = async (
+  req: AuthenticatedRequest,
+  res: Response,
+) => {
   try {
     const userId = req.userId;
 
@@ -404,14 +429,17 @@ export const getFeaturedContent = async (req: AuthenticatedRequest, res: Respons
     let userIsPremium = false;
     if (userId) {
       const { data: user } = await supabase
-        .from('users')
-        .select('is_premium, subscription_end')
-        .eq('id', userId)
+        .from("users")
+        .select("is_premium, subscription_end")
+        .eq("id", userId)
         .single();
 
       if (user) {
         userIsPremium = user.is_premium;
-        if (user.subscription_end && new Date() > new Date(user.subscription_end)) {
+        if (
+          user.subscription_end &&
+          new Date() > new Date(user.subscription_end)
+        ) {
           userIsPremium = false;
         }
       }
@@ -419,37 +447,36 @@ export const getFeaturedContent = async (req: AuthenticatedRequest, res: Respons
 
     // Buscar conteúdo mais popular
     let query = supabase
-      .from('content')
-      .select('*')
-      .order('views_count', { ascending: false })
+      .from("content")
+      .select("*")
+      .order("views_count", { ascending: false })
       .limit(10);
 
     // Se usuário não é premium, filtrar apenas conteúdo gratuito
     if (!userIsPremium) {
-      query = query.eq('is_premium', false);
+      query = query.eq("is_premium", false);
     }
 
     const { data: featured, error } = await query;
 
     if (error) {
-      console.error('❌ Erro ao buscar conteúdo em destaque:', error);
+      console.error("❌ Erro ao buscar conteúdo em destaque:", error);
       return res.status(500).json({
         success: false,
-        message: 'Erro ao buscar conteúdo em destaque'
+        message: "Erro ao buscar conteúdo em destaque",
       });
     }
 
     res.json({
       success: true,
       featured: featured || [],
-      userIsPremium
+      userIsPremium,
     });
-
   } catch (error) {
-    console.error('❌ Erro ao buscar conteúdo em destaque:', error);
+    console.error("❌ Erro ao buscar conteúdo em destaque:", error);
     res.status(500).json({
       success: false,
-      message: 'Erro interno do servidor'
+      message: "Erro interno do servidor",
     });
   }
 };

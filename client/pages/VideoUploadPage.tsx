@@ -1,15 +1,21 @@
-import React, { useState } from 'react';
-import { Layout } from '@/components/layout/Layout';
-import VideoUploadForm from '@/components/VideoUploadForm';
-import CreatorPortal from '@/components/CreatorPortal';
-import { CreatorBlocksDashboard } from '@/components/CreatorBlocksDashboard';
-import { useAuth } from '@/contexts/AuthContext';
-import { Navigate } from 'react-router-dom';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import React, { useState } from "react";
+import { Layout } from "@/components/layout/Layout";
+import VideoUploadForm from "@/components/VideoUploadForm";
+import CreatorPortal from "@/components/CreatorPortal";
+import { CreatorBlocksDashboard } from "@/components/CreatorBlocksDashboard";
+import { useAuth } from "@/contexts/AuthContext";
+import { Navigate } from "react-router-dom";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Upload,
   Crown,
@@ -21,9 +27,9 @@ import {
   Shield,
   Zap,
   Calculator,
-  HardDrive
-} from 'lucide-react';
-import { Link } from 'react-router-dom';
+  HardDrive,
+} from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function VideoUploadPage() {
   const { user, isLoading } = useAuth();
@@ -44,13 +50,13 @@ export default function VideoUploadPage() {
   }
 
   const handleUploadComplete = (video: any) => {
-    console.log('Upload completed:', video);
+    console.log("Upload completed:", video);
     // Refresh creator data after upload
     setCreatorData(null);
   };
 
   const handleUploadError = (error: string) => {
-    console.error('Upload error:', error);
+    console.error("Upload error:", error);
   };
 
   const handleDataUpdate = () => {
@@ -66,7 +72,10 @@ export default function VideoUploadPage() {
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h1 className="text-4xl font-bold text-foreground mb-2">
-                  Upload de <span className="text-transparent bg-gradient-to-r from-xnema-orange to-xnema-purple bg-clip-text">Vídeo</span>
+                  Upload de{" "}
+                  <span className="text-transparent bg-gradient-to-r from-xnema-orange to-xnema-purple bg-clip-text">
+                    Vídeo
+                  </span>
                 </h1>
                 <p className="text-muted-foreground">
                   Compartilhe seu conteúdo com a comunidade XNEMA
@@ -78,9 +87,7 @@ export default function VideoUploadPage() {
                   Criador Ativo
                 </Badge>
                 <Button variant="outline" asChild>
-                  <Link to="/creator-portal">
-                    Voltar ao Portal
-                  </Link>
+                  <Link to="/creator-portal">Voltar ao Portal</Link>
                 </Button>
               </div>
             </div>
@@ -150,31 +157,47 @@ export default function VideoUploadPage() {
             <Shield className="h-4 w-4 text-blue-600" />
             <AlertDescription className="text-blue-800 dark:text-blue-200">
               <div className="space-y-3">
-                <p className="font-semibold">Novo Fluxo com Sistema de Blocos:</p>
+                <p className="font-semibold">
+                  Novo Fluxo com Sistema de Blocos:
+                </p>
                 <div className="grid md:grid-cols-5 gap-4 text-sm">
                   <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs">1</div>
+                    <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs">
+                      1
+                    </div>
                     <span>Calcular blocos</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs">2</div>
+                    <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs">
+                      2
+                    </div>
                     <span>Pagar blocos (se necessário)</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs">3</div>
+                    <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs">
+                      3
+                    </div>
                     <span>Upload do vídeo</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs">4</div>
+                    <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs">
+                      4
+                    </div>
                     <span>Revisão da equipe</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs">5</div>
+                    <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs">
+                      5
+                    </div>
                     <span>Liberação para assinantes</span>
                   </div>
                 </div>
                 <div className="bg-white/10 rounded-lg p-3 mt-3">
-                  <p className="text-xs"><strong>Sistema Inteligente:</strong> Calculamos automaticamente quantos blocos seu vídeo precisa baseado na duração e resolução. Você só paga pelos blocos necessários!</p>
+                  <p className="text-xs">
+                    <strong>Sistema Inteligente:</strong> Calculamos
+                    automaticamente quantos blocos seu vídeo precisa baseado na
+                    duração e resolução. Você só paga pelos blocos necessários!
+                  </p>
                 </div>
               </div>
             </AlertDescription>
@@ -218,7 +241,8 @@ export default function VideoUploadPage() {
                   Diretrizes de Conteúdo
                 </CardTitle>
                 <CardDescription>
-                  Certifique-se de que seu conteúdo atende aos padrões da plataforma
+                  Certifique-se de que seu conteúdo atende aos padrões da
+                  plataforma
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -292,13 +316,12 @@ export default function VideoUploadPage() {
                 <div>
                   <p className="font-semibold mb-1">Precisa de Ajuda?</p>
                   <p className="text-sm">
-                    Nossa equipe está disponível para ajudar com questões técnicas ou diretrizes de conteúdo.
+                    Nossa equipe está disponível para ajudar com questões
+                    técnicas ou diretrizes de conteúdo.
                   </p>
                 </div>
                 <Button variant="outline" size="sm" asChild>
-                  <Link to="/contact">
-                    Falar Conosco
-                  </Link>
+                  <Link to="/contact">Falar Conosco</Link>
                 </Button>
               </div>
             </AlertDescription>

@@ -1,10 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
+import React, { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
   HardDrive,
   CreditCard,
   ShoppingCart,
@@ -14,9 +20,9 @@ import {
   Clock,
   Zap,
   FileVideo,
-  DollarSign
-} from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
+  DollarSign,
+} from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface CreatorBlocksData {
   creatorBlocks: {
@@ -59,7 +65,7 @@ interface PurchaseHistory {
   date: string;
   blocks: number;
   amountFormatted: string;
-  status: 'pending' | 'approved' | 'rejected';
+  status: "pending" | "approved" | "rejected";
   transactionId: string;
 }
 
@@ -72,13 +78,13 @@ interface CreatorBlocksDashboardProps {
 export const CreatorBlocksDashboard: React.FC<CreatorBlocksDashboardProps> = ({
   creatorId,
   onPurchaseComplete,
-  className = ''
+  className = "",
 }) => {
   const { user } = useAuth();
   const [data, setData] = useState<CreatorBlocksData | null>(null);
   const [purchases, setPurchases] = useState<PurchaseHistory[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState<string>("");
   const [purchasing, setPurchasing] = useState(false);
 
   const targetCreatorId = creatorId || user?.id;
@@ -95,12 +101,12 @@ export const CreatorBlocksDashboard: React.FC<CreatorBlocksDashboardProps> = ({
       setLoading(true);
       const response = await fetch(`/api/creator-blocks/${targetCreatorId}`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('xnema_token')}`
-        }
+          Authorization: `Bearer ${localStorage.getItem("xnema_token")}`,
+        },
       });
 
       if (!response.ok) {
-        throw new Error('Erro ao carregar dados dos blocos');
+        throw new Error("Erro ao carregar dados dos blocos");
       }
 
       const result = await response.json();
@@ -114,42 +120,47 @@ export const CreatorBlocksDashboard: React.FC<CreatorBlocksDashboardProps> = ({
 
   const fetchPurchaseHistory = async () => {
     try {
-      const response = await fetch(`/api/creator-blocks/${targetCreatorId}/purchases`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('xnema_token')}`
-        }
-      });
+      const response = await fetch(
+        `/api/creator-blocks/${targetCreatorId}/purchases`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("xnema_token")}`,
+          },
+        },
+      );
 
       if (response.ok) {
         const result = await response.json();
         setPurchases(result.purchases.slice(0, 5)); // Últimas 5 compras
       }
     } catch (err) {
-      console.error('Erro ao carregar histórico:', err);
+      console.error("Erro ao carregar histórico:", err);
     }
   };
 
   const handlePurchaseBlocks = async (blocks: number) => {
     try {
       setPurchasing(true);
-      const response = await fetch(`/api/creator-blocks/${targetCreatorId}/purchase`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('xnema_token')}`
+      const response = await fetch(
+        `/api/creator-blocks/${targetCreatorId}/purchase`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("xnema_token")}`,
+          },
+          body: JSON.stringify({ blocks }),
         },
-        body: JSON.stringify({ blocks })
-      });
+      );
 
       if (!response.ok) {
-        throw new Error('Erro ao iniciar compra');
+        throw new Error("Erro ao iniciar compra");
       }
 
       const result = await response.json();
-      
+
       // Redirecionar para Mercado Pago
       window.location.href = result.purchase.checkoutUrl;
-
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -158,27 +169,35 @@ export const CreatorBlocksDashboard: React.FC<CreatorBlocksDashboardProps> = ({
   };
 
   const formatPrice = (priceInCents: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
     }).format(priceInCents / 100);
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'approved': return 'bg-green-500';
-      case 'pending': return 'bg-yellow-500';
-      case 'rejected': return 'bg-red-500';
-      default: return 'bg-gray-500';
+      case "approved":
+        return "bg-green-500";
+      case "pending":
+        return "bg-yellow-500";
+      case "rejected":
+        return "bg-red-500";
+      default:
+        return "bg-gray-500";
     }
   };
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'approved': return 'Aprovado';
-      case 'pending': return 'Pendente';
-      case 'rejected': return 'Rejeitado';
-      default: return 'Desconhecido';
+      case "approved":
+        return "Aprovado";
+      case "pending":
+        return "Pendente";
+      case "rejected":
+        return "Rejeitado";
+      default:
+        return "Desconhecido";
     }
   };
 
@@ -225,8 +244,12 @@ export const CreatorBlocksDashboard: React.FC<CreatorBlocksDashboardProps> = ({
                 <Zap className="w-5 h-5 text-blue-500" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Blocos Disponíveis</p>
-                <p className="text-2xl font-bold">{creatorBlocks.availableBlocks}</p>
+                <p className="text-sm text-muted-foreground">
+                  Blocos Disponíveis
+                </p>
+                <p className="text-2xl font-bold">
+                  {creatorBlocks.availableBlocks}
+                </p>
                 <p className="text-xs text-muted-foreground">
                   de {creatorBlocks.totalBlocks} total
                 </p>
@@ -243,7 +266,9 @@ export const CreatorBlocksDashboard: React.FC<CreatorBlocksDashboardProps> = ({
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Armazenamento</p>
-                <p className="text-2xl font-bold">{summary.storage.availableGB.toFixed(1)} GB</p>
+                <p className="text-2xl font-bold">
+                  {summary.storage.availableGB.toFixed(1)} GB
+                </p>
                 <p className="text-xs text-muted-foreground">
                   de {summary.storage.totalGB.toFixed(1)} GB
                 </p>
@@ -260,7 +285,9 @@ export const CreatorBlocksDashboard: React.FC<CreatorBlocksDashboardProps> = ({
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Vídeos</p>
-                <p className="text-2xl font-bold">{creatorBlocks.stats.totalVideoCount}</p>
+                <p className="text-2xl font-bold">
+                  {creatorBlocks.stats.totalVideoCount}
+                </p>
                 <p className="text-xs text-muted-foreground">
                   {creatorBlocks.stats.averageSizePerVideo.toFixed(1)} GB média
                 </p>
@@ -300,7 +327,10 @@ export const CreatorBlocksDashboard: React.FC<CreatorBlocksDashboardProps> = ({
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              <Progress value={summary.blocks.usagePercentage} className="h-3" />
+              <Progress
+                value={summary.blocks.usagePercentage}
+                className="h-3"
+              />
               <div className="flex justify-between text-sm text-muted-foreground">
                 <span>{summary.blocks.usagePercentage}% utilizado</span>
                 <span>{summary.blocks.available} blocos restantes</span>
@@ -313,15 +343,21 @@ export const CreatorBlocksDashboard: React.FC<CreatorBlocksDashboardProps> = ({
           <CardHeader>
             <CardTitle className="text-lg">Uso de Armazenamento</CardTitle>
             <CardDescription>
-              {summary.storage.usedGB.toFixed(1)} GB de {summary.storage.totalGB.toFixed(1)} GB utilizados
+              {summary.storage.usedGB.toFixed(1)} GB de{" "}
+              {summary.storage.totalGB.toFixed(1)} GB utilizados
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              <Progress value={summary.storage.usagePercentage} className="h-3" />
+              <Progress
+                value={summary.storage.usagePercentage}
+                className="h-3"
+              />
               <div className="flex justify-between text-sm text-muted-foreground">
                 <span>{summary.storage.usagePercentage}% utilizado</span>
-                <span>{summary.storage.availableGB.toFixed(1)} GB restantes</span>
+                <span>
+                  {summary.storage.availableGB.toFixed(1)} GB restantes
+                </span>
               </div>
             </div>
           </CardContent>
@@ -333,7 +369,8 @@ export const CreatorBlocksDashboard: React.FC<CreatorBlocksDashboardProps> = ({
         <Alert className="border-red-500 bg-red-50 dark:bg-red-950">
           <AlertTriangle className="h-4 w-4 text-red-500" />
           <AlertDescription className="text-red-800 dark:text-red-200">
-            <strong>Upload Restrito:</strong> {creatorBlocks.restrictions?.reason}
+            <strong>Upload Restrito:</strong>{" "}
+            {creatorBlocks.restrictions?.reason}
           </AlertDescription>
         </Alert>
       )}
@@ -352,12 +389,15 @@ export const CreatorBlocksDashboard: React.FC<CreatorBlocksDashboardProps> = ({
         <CardContent>
           <div className="grid md:grid-cols-3 gap-4 mb-6">
             {[1, 5, 10].map((blocks) => (
-              <Card key={blocks} className="border-2 hover:border-xnema-orange transition-colors cursor-pointer">
+              <Card
+                key={blocks}
+                className="border-2 hover:border-xnema-orange transition-colors cursor-pointer"
+              >
                 <CardContent className="p-4 text-center">
                   <div className="mb-3">
                     <p className="text-2xl font-bold">{blocks}</p>
                     <p className="text-sm text-muted-foreground">
-                      bloco{blocks > 1 ? 's' : ''}
+                      bloco{blocks > 1 ? "s" : ""}
                     </p>
                   </div>
                   <div className="mb-3">
@@ -382,12 +422,13 @@ export const CreatorBlocksDashboard: React.FC<CreatorBlocksDashboardProps> = ({
               </Card>
             ))}
           </div>
-          
+
           <Alert className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950">
             <CreditCard className="h-4 w-4 text-blue-600" />
             <AlertDescription className="text-blue-800 dark:text-blue-200">
-              <strong>Pagamento Seguro:</strong> Processado via Mercado Pago. 
-              Após a confirmação, os blocos serão adicionados automaticamente à sua conta.
+              <strong>Pagamento Seguro:</strong> Processado via Mercado Pago.
+              Após a confirmação, os blocos serão adicionados automaticamente à
+              sua conta.
             </AlertDescription>
           </Alert>
         </CardContent>
@@ -401,24 +442,25 @@ export const CreatorBlocksDashboard: React.FC<CreatorBlocksDashboardProps> = ({
               <Clock className="w-5 h-5 text-blue-500" />
               Compras Recentes
             </CardTitle>
-            <CardDescription>
-              Últimas transações de blocos
-            </CardDescription>
+            <CardDescription>Últimas transações de blocos</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               {purchases.map((purchase) => (
-                <div key={purchase.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                <div
+                  key={purchase.id}
+                  className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
+                >
                   <div className="flex items-center gap-3">
                     <Badge className={getStatusColor(purchase.status)}>
                       {getStatusText(purchase.status)}
                     </Badge>
                     <div>
                       <p className="font-medium">
-                        {purchase.blocks} bloco{purchase.blocks > 1 ? 's' : ''}
+                        {purchase.blocks} bloco{purchase.blocks > 1 ? "s" : ""}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        {new Date(purchase.date).toLocaleDateString('pt-BR')}
+                        {new Date(purchase.date).toLocaleDateString("pt-BR")}
                       </p>
                     </div>
                   </div>

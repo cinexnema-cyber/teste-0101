@@ -1,23 +1,29 @@
-import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { 
-  HardDrive, 
-  ShoppingCart, 
-  CreditCard, 
-  CheckCircle, 
+import React, { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import {
+  HardDrive,
+  ShoppingCart,
+  CreditCard,
+  CheckCircle,
   AlertCircle,
   Clock,
   TrendingUp,
   Video,
   Eye,
   DollarSign,
-  Calendar
-} from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
+  Calendar,
+} from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface CreatorData {
   access: boolean;
@@ -41,7 +47,10 @@ interface CreatorPortalProps {
   onDataUpdate?: () => void;
 }
 
-export function CreatorPortal({ creatorData, onDataUpdate }: CreatorPortalProps) {
+export function CreatorPortal({
+  creatorData,
+  onDataUpdate,
+}: CreatorPortalProps) {
   const { user } = useAuth();
   const [data, setData] = useState<CreatorData | null>(creatorData || null);
   const [isLoading, setIsLoading] = useState(!creatorData);
@@ -56,10 +65,10 @@ export function CreatorPortal({ creatorData, onDataUpdate }: CreatorPortalProps)
   const fetchCreatorData = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch('/api/creator/access', {
+      const response = await fetch("/api/creator/access", {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('xnema_token')}`
-        }
+          Authorization: `Bearer ${localStorage.getItem("xnema_token")}`,
+        },
       });
 
       if (response.ok) {
@@ -67,7 +76,7 @@ export function CreatorPortal({ creatorData, onDataUpdate }: CreatorPortalProps)
         setData(result);
       }
     } catch (error) {
-      console.error('Erro ao carregar dados do criador:', error);
+      console.error("Erro ao carregar dados do criador:", error);
     } finally {
       setIsLoading(false);
     }
@@ -76,38 +85,37 @@ export function CreatorPortal({ creatorData, onDataUpdate }: CreatorPortalProps)
   const buyBlocks = async (blocksToAdd: number = 1) => {
     try {
       setIsPurchasing(true);
-      
+
       const response = await fetch(`/api/creator-blocks/${user?.id}/purchase`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('xnema_token')}`
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("xnema_token")}`,
         },
-        body: JSON.stringify({ blocks: blocksToAdd })
+        body: JSON.stringify({ blocks: blocksToAdd }),
       });
 
       if (!response.ok) {
-        throw new Error('Erro ao iniciar compra');
+        throw new Error("Erro ao iniciar compra");
       }
 
       const result = await response.json();
-      
+
       // Redirect to Mercado Pago
       window.location.href = result.purchase.checkoutUrl;
-
     } catch (error) {
-      console.error('Erro na compra:', error);
-      alert('Erro ao processar pagamento');
+      console.error("Erro na compra:", error);
+      alert("Erro ao processar pagamento");
     } finally {
       setIsPurchasing(false);
     }
   };
 
   const formatDate = (dateString: string): string => {
-    return new Intl.DateTimeFormat('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
+    return new Intl.DateTimeFormat("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
     }).format(new Date(dateString));
   };
 
@@ -142,19 +150,23 @@ export function CreatorPortal({ creatorData, onDataUpdate }: CreatorPortalProps)
         <CardContent>
           <div className="space-y-4">
             <p className="text-muted-foreground">
-              {data?.message || 'Aguardando dados reais'}
+              {data?.message || "Aguardando dados reais"}
             </p>
-            <p className="text-sm">Blocos disponíveis: {data?.blocksAvailable || 0}</p>
-            
+            <p className="text-sm">
+              Blocos disponíveis: {data?.blocksAvailable || 0}
+            </p>
+
             <div className="space-y-2">
               <p className="font-medium">Para começar a fazer upload:</p>
-              <Button 
+              <Button
                 onClick={() => buyBlocks(1)}
                 disabled={isPurchasing}
                 className="bg-xnema-orange hover:bg-xnema-orange/90 text-black"
               >
                 <ShoppingCart className="w-4 h-4 mr-2" />
-                {isPurchasing ? 'Processando...' : 'Comprar Primeiro Bloco - R$ 1.000'}
+                {isPurchasing
+                  ? "Processando..."
+                  : "Comprar Primeiro Bloco - R$ 1.000"}
               </Button>
             </div>
           </div>
@@ -163,15 +175,21 @@ export function CreatorPortal({ creatorData, onDataUpdate }: CreatorPortalProps)
     );
   }
 
-  const storageUsagePercentage = data.storageInfo.totalGB > 0 
-    ? Math.round((data.storageInfo.usedGB / data.storageInfo.totalGB) * 100) 
-    : 0;
+  const storageUsagePercentage =
+    data.storageInfo.totalGB > 0
+      ? Math.round((data.storageInfo.usedGB / data.storageInfo.totalGB) * 100)
+      : 0;
 
-  const blocksUsagePercentage = (data.blocksFree + data.blocksPurchased) > 0 
-    ? Math.round((data.blocksUsed / (data.blocksFree + data.blocksPurchased)) * 100) 
-    : 0;
+  const blocksUsagePercentage =
+    data.blocksFree + data.blocksPurchased > 0
+      ? Math.round(
+          (data.blocksUsed / (data.blocksFree + data.blocksPurchased)) * 100,
+        )
+      : 0;
 
-  const daysUntilExpiry = data.freeBlockActive ? getDaysUntilExpiry(data.freeBlockExpiry) : 0;
+  const daysUntilExpiry = data.freeBlockActive
+    ? getDaysUntilExpiry(data.freeBlockExpiry)
+    : 0;
 
   return (
     <div className="space-y-6">
@@ -184,8 +202,12 @@ export function CreatorPortal({ creatorData, onDataUpdate }: CreatorPortalProps)
                 <HardDrive className="w-5 h-5 text-blue-500" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Blocos Disponíveis</p>
-                <p className="text-2xl font-bold text-blue-600">{data.blocksAvailable}</p>
+                <p className="text-sm text-muted-foreground">
+                  Blocos Disponíveis
+                </p>
+                <p className="text-2xl font-bold text-blue-600">
+                  {data.blocksAvailable}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -199,7 +221,9 @@ export function CreatorPortal({ creatorData, onDataUpdate }: CreatorPortalProps)
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Vídeos Enviados</p>
-                <p className="text-2xl font-bold text-purple-600">{data.videosUploaded}</p>
+                <p className="text-2xl font-bold text-purple-600">
+                  {data.videosUploaded}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -231,8 +255,12 @@ export function CreatorPortal({ creatorData, onDataUpdate }: CreatorPortalProps)
                 <DollarSign className="w-5 h-5 text-xnema-orange" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Blocos Comprados</p>
-                <p className="text-2xl font-bold text-xnema-orange">{data.blocksPurchased}</p>
+                <p className="text-sm text-muted-foreground">
+                  Blocos Comprados
+                </p>
+                <p className="text-2xl font-bold text-xnema-orange">
+                  {data.blocksPurchased}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -248,8 +276,9 @@ export function CreatorPortal({ creatorData, onDataUpdate }: CreatorPortalProps)
               <div>
                 <p className="font-semibold">🎉 Bloco Gratuito Ativo!</p>
                 <p className="text-sm">
-                  Você tem {data.blocksFree} bloco gratuito válido por mais {daysUntilExpiry} dias
-                  (até {formatDate(data.freeBlockExpiry)})
+                  Você tem {data.blocksFree} bloco gratuito válido por mais{" "}
+                  {daysUntilExpiry} dias (até {formatDate(data.freeBlockExpiry)}
+                  )
                 </p>
               </div>
               <Badge className="bg-green-600 text-white">
@@ -278,7 +307,8 @@ export function CreatorPortal({ creatorData, onDataUpdate }: CreatorPortalProps)
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">Blocos Usados</span>
               <span className="text-sm text-muted-foreground">
-                {data.blocksUsed} de {data.blocksFree + data.blocksPurchased} blocos
+                {data.blocksUsed} de {data.blocksFree + data.blocksPurchased}{" "}
+                blocos
               </span>
             </div>
             <Progress value={blocksUsagePercentage} className="h-2" />
@@ -289,7 +319,8 @@ export function CreatorPortal({ creatorData, onDataUpdate }: CreatorPortalProps)
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">Armazenamento Usado</span>
               <span className="text-sm text-muted-foreground">
-                {Math.round(data.storageInfo.usedGB * 10) / 10}GB de {Math.round(data.storageInfo.totalGB * 10) / 10}GB
+                {Math.round(data.storageInfo.usedGB * 10) / 10}GB de{" "}
+                {Math.round(data.storageInfo.totalGB * 10) / 10}GB
               </span>
             </div>
             <Progress value={storageUsagePercentage} className="h-2" />
@@ -300,7 +331,9 @@ export function CreatorPortal({ creatorData, onDataUpdate }: CreatorPortalProps)
             <div className="space-y-2">
               <p className="text-sm font-medium">Blocos Gratuitos</p>
               <div className="flex items-center justify-between">
-                <span className="text-2xl font-bold text-green-600">{data.blocksFree}</span>
+                <span className="text-2xl font-bold text-green-600">
+                  {data.blocksFree}
+                </span>
                 <Badge variant={data.freeBlockActive ? "default" : "secondary"}>
                   {data.freeBlockActive ? "Ativo" : "Expirado"}
                 </Badge>
@@ -310,7 +343,9 @@ export function CreatorPortal({ creatorData, onDataUpdate }: CreatorPortalProps)
             <div className="space-y-2">
               <p className="text-sm font-medium">Blocos Comprados</p>
               <div className="flex items-center justify-between">
-                <span className="text-2xl font-bold text-blue-600">{data.blocksPurchased}</span>
+                <span className="text-2xl font-bold text-blue-600">
+                  {data.blocksPurchased}
+                </span>
                 <Badge variant="outline">Permanente</Badge>
               </div>
             </div>
@@ -334,14 +369,16 @@ export function CreatorPortal({ creatorData, onDataUpdate }: CreatorPortalProps)
             <Alert className="border-yellow-500 bg-yellow-50 dark:bg-yellow-950 mb-4">
               <AlertCircle className="h-4 w-4 text-yellow-600" />
               <AlertDescription className="text-yellow-800 dark:text-yellow-200">
-                <strong>Limite de blocos atingido!</strong> Você precisa comprar mais blocos para continuar enviando vídeos.
+                <strong>Limite de blocos atingido!</strong> Você precisa comprar
+                mais blocos para continuar enviando vídeos.
               </AlertDescription>
             </Alert>
           ) : (
             <Alert className="border-blue-500 bg-blue-50 dark:bg-blue-950 mb-4">
               <CheckCircle className="h-4 w-4 text-blue-600" />
               <AlertDescription className="text-blue-800 dark:text-blue-200">
-                Você ainda tem <strong>{data.blocksAvailable} bloco(s)</strong> disponível(is) para upload.
+                Você ainda tem <strong>{data.blocksAvailable} bloco(s)</strong>{" "}
+                disponível(is) para upload.
               </AlertDescription>
             </Alert>
           )}
@@ -351,16 +388,20 @@ export function CreatorPortal({ creatorData, onDataUpdate }: CreatorPortalProps)
               <CardContent className="p-4 text-center">
                 <div className="space-y-3">
                   <h3 className="font-semibold">1 Bloco</h3>
-                  <p className="text-2xl font-bold text-xnema-orange">R$ 1.000</p>
-                  <p className="text-sm text-muted-foreground">7,3 GB de armazenamento</p>
-                  <Button 
+                  <p className="text-2xl font-bold text-xnema-orange">
+                    R$ 1.000
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    7,3 GB de armazenamento
+                  </p>
+                  <Button
                     onClick={() => buyBlocks(1)}
                     disabled={isPurchasing}
                     className="w-full bg-xnema-orange hover:bg-xnema-orange/90 text-black"
                     size="sm"
                   >
                     <CreditCard className="w-4 h-4 mr-2" />
-                    {isPurchasing ? 'Processando...' : 'Comprar'}
+                    {isPurchasing ? "Processando..." : "Comprar"}
                   </Button>
                 </div>
               </CardContent>
@@ -370,17 +411,23 @@ export function CreatorPortal({ creatorData, onDataUpdate }: CreatorPortalProps)
               <CardContent className="p-4 text-center">
                 <div className="space-y-3">
                   <h3 className="font-semibold">5 Blocos</h3>
-                  <p className="text-2xl font-bold text-xnema-orange">R$ 4.750</p>
-                  <p className="text-sm text-muted-foreground">36,5 GB de armazenamento</p>
-                  <Badge className="bg-green-500 text-white mb-2">5% de desconto</Badge>
-                  <Button 
+                  <p className="text-2xl font-bold text-xnema-orange">
+                    R$ 4.750
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    36,5 GB de armazenamento
+                  </p>
+                  <Badge className="bg-green-500 text-white mb-2">
+                    5% de desconto
+                  </Badge>
+                  <Button
                     onClick={() => buyBlocks(5)}
                     disabled={isPurchasing}
                     className="w-full bg-xnema-orange hover:bg-xnema-orange/90 text-black"
                     size="sm"
                   >
                     <CreditCard className="w-4 h-4 mr-2" />
-                    {isPurchasing ? 'Processando...' : 'Comprar'}
+                    {isPurchasing ? "Processando..." : "Comprar"}
                   </Button>
                 </div>
               </CardContent>
@@ -390,17 +437,23 @@ export function CreatorPortal({ creatorData, onDataUpdate }: CreatorPortalProps)
               <CardContent className="p-4 text-center">
                 <div className="space-y-3">
                   <h3 className="font-semibold">10 Blocos</h3>
-                  <p className="text-2xl font-bold text-xnema-orange">R$ 9.000</p>
-                  <p className="text-sm text-muted-foreground">73 GB de armazenamento</p>
-                  <Badge className="bg-blue-500 text-white mb-2">10% de desconto</Badge>
-                  <Button 
+                  <p className="text-2xl font-bold text-xnema-orange">
+                    R$ 9.000
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    73 GB de armazenamento
+                  </p>
+                  <Badge className="bg-blue-500 text-white mb-2">
+                    10% de desconto
+                  </Badge>
+                  <Button
                     onClick={() => buyBlocks(10)}
                     disabled={isPurchasing}
                     className="w-full bg-xnema-orange hover:bg-xnema-orange/90 text-black"
                     size="sm"
                   >
                     <CreditCard className="w-4 h-4 mr-2" />
-                    {isPurchasing ? 'Processando...' : 'Comprar'}
+                    {isPurchasing ? "Processando..." : "Comprar"}
                   </Button>
                 </div>
               </CardContent>
@@ -426,8 +479,8 @@ export function CreatorPortal({ creatorData, onDataUpdate }: CreatorPortalProps)
 
       {/* Refresh Button */}
       <div className="flex justify-center">
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           onClick={() => {
             fetchCreatorData();
             if (onDataUpdate) onDataUpdate();

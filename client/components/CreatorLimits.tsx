@@ -1,13 +1,26 @@
-import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import React, { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import {
   HardDrive,
   Video,
@@ -24,9 +37,9 @@ import {
   Ban,
   Unlock,
   Edit,
-  RefreshCw
-} from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
+  RefreshCw,
+} from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface CreatorLimitData {
   storageUsedGB: number;
@@ -55,15 +68,15 @@ interface CreatorLimitsProps {
 export const CreatorLimits: React.FC<CreatorLimitsProps> = ({
   creatorId,
   showAdminControls = false,
-  onLimitsUpdate
+  onLimitsUpdate,
 }) => {
   const { user } = useAuth();
   const [limits, setLimits] = useState<CreatorLimitData | null>(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
-  const [restrictionReason, setRestrictionReason] = useState('');
-  const [newStorageLimit, setNewStorageLimit] = useState('');
-  const [newVideoLimit, setNewVideoLimit] = useState('');
+  const [restrictionReason, setRestrictionReason] = useState("");
+  const [newStorageLimit, setNewStorageLimit] = useState("");
+  const [newVideoLimit, setNewVideoLimit] = useState("");
 
   const targetCreatorId = creatorId || user?.id;
 
@@ -75,8 +88,8 @@ export const CreatorLimits: React.FC<CreatorLimitsProps> = ({
       setLoading(true);
       const response = await fetch(`/api/creators/${targetCreatorId}/limits`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('xnema_token')}`
-        }
+          Authorization: `Bearer ${localStorage.getItem("xnema_token")}`,
+        },
       });
 
       if (response.ok) {
@@ -87,7 +100,7 @@ export const CreatorLimits: React.FC<CreatorLimitsProps> = ({
         }
       }
     } catch (error) {
-      console.error('Error fetching creator limits:', error);
+      console.error("Error fetching creator limits:", error);
     } finally {
       setLoading(false);
     }
@@ -102,33 +115,36 @@ export const CreatorLimits: React.FC<CreatorLimitsProps> = ({
     if (!targetCreatorId || !limits) return;
 
     if (restrict && !restrictionReason.trim()) {
-      alert('Motivo da restrição é obrigatório');
+      alert("Motivo da restrição é obrigatório");
       return;
     }
 
     setActionLoading(true);
     try {
-      const endpoint = restrict ? 'restrict' : 'allow';
-      const response = await fetch(`/api/admin/creators/${targetCreatorId}/${endpoint}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('xnema_token')}`
+      const endpoint = restrict ? "restrict" : "allow";
+      const response = await fetch(
+        `/api/admin/creators/${targetCreatorId}/${endpoint}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("xnema_token")}`,
+          },
+          body: JSON.stringify({
+            reason: restrict ? restrictionReason.trim() : undefined,
+          }),
         },
-        body: JSON.stringify({
-          reason: restrict ? restrictionReason.trim() : undefined
-        })
-      });
+      );
 
       if (response.ok) {
         await fetchLimits();
-        setRestrictionReason('');
+        setRestrictionReason("");
       } else {
-        throw new Error('Falha ao alterar restrição');
+        throw new Error("Falha ao alterar restrição");
       }
     } catch (error) {
-      console.error('Error toggling restriction:', error);
-      alert('Erro ao alterar restrição');
+      console.error("Error toggling restriction:", error);
+      alert("Erro ao alterar restrição");
     } finally {
       setActionLoading(false);
     }
@@ -137,34 +153,37 @@ export const CreatorLimits: React.FC<CreatorLimitsProps> = ({
   // Handle limits update
   const handleLimitsUpdate = async () => {
     if (!targetCreatorId || !newStorageLimit || !newVideoLimit) {
-      alert('Todos os campos são obrigatórios');
+      alert("Todos os campos são obrigatórios");
       return;
     }
 
     setActionLoading(true);
     try {
-      const response = await fetch(`/api/admin/creators/${targetCreatorId}/limits`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('xnema_token')}`
+      const response = await fetch(
+        `/api/admin/creators/${targetCreatorId}/limits`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("xnema_token")}`,
+          },
+          body: JSON.stringify({
+            storageLimit: parseFloat(newStorageLimit) * 1024 * 1024 * 1024, // GB to bytes
+            videoCountLimit: parseInt(newVideoLimit),
+          }),
         },
-        body: JSON.stringify({
-          storageLimit: parseFloat(newStorageLimit) * 1024 * 1024 * 1024, // GB to bytes
-          videoCountLimit: parseInt(newVideoLimit)
-        })
-      });
+      );
 
       if (response.ok) {
         await fetchLimits();
-        setNewStorageLimit('');
-        setNewVideoLimit('');
+        setNewStorageLimit("");
+        setNewVideoLimit("");
       } else {
-        throw new Error('Falha ao atualizar limites');
+        throw new Error("Falha ao atualizar limites");
       }
     } catch (error) {
-      console.error('Error updating limits:', error);
-      alert('Erro ao atualizar limites');
+      console.error("Error updating limits:", error);
+      alert("Erro ao atualizar limites");
     } finally {
       setActionLoading(false);
     }
@@ -189,9 +208,9 @@ export const CreatorLimits: React.FC<CreatorLimitsProps> = ({
           <div className="text-center text-muted-foreground">
             <AlertTriangle className="w-12 h-12 mx-auto mb-4" />
             <p>Não foi possível carregar os limites do criador</p>
-            <Button 
-              variant="outline" 
-              size="sm" 
+            <Button
+              variant="outline"
+              size="sm"
               onClick={fetchLimits}
               className="mt-4"
             >
@@ -219,10 +238,16 @@ export const CreatorLimits: React.FC<CreatorLimitsProps> = ({
                 <p className="font-semibold">
                   {limits.storageUsedGB.toFixed(2)} / {limits.storageLimitGB} GB
                 </p>
-                <Progress 
-                  value={limits.storageUsedPercentage} 
+                <Progress
+                  value={limits.storageUsedPercentage}
                   className="mt-2"
-                  color={limits.storageUsedPercentage > 90 ? 'bg-red-500' : limits.storageUsedPercentage > 75 ? 'bg-yellow-500' : 'bg-blue-500'}
+                  color={
+                    limits.storageUsedPercentage > 90
+                      ? "bg-red-500"
+                      : limits.storageUsedPercentage > 75
+                        ? "bg-yellow-500"
+                        : "bg-blue-500"
+                  }
                 />
               </div>
             </div>
@@ -241,7 +266,10 @@ export const CreatorLimits: React.FC<CreatorLimitsProps> = ({
                   {limits.videoCount} / {limits.videoCountLimit}
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">
-                  {((limits.videoCount / limits.videoCountLimit) * 100).toFixed(1)}% usado
+                  {((limits.videoCount / limits.videoCountLimit) * 100).toFixed(
+                    1,
+                  )}
+                  % usado
                 </p>
               </div>
             </div>
@@ -255,9 +283,13 @@ export const CreatorLimits: React.FC<CreatorLimitsProps> = ({
                 <Crown className="w-5 h-5 text-green-500" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Período de Carência</p>
+                <p className="text-sm text-muted-foreground">
+                  Período de Carência
+                </p>
                 <p className="font-semibold">
-                  {limits.isGracePeriod ? `${limits.graceMonthsLeft} meses` : 'Finalizado'}
+                  {limits.isGracePeriod
+                    ? `${limits.graceMonthsLeft} meses`
+                    : "Finalizado"}
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">
                   Comissão: {limits.currentCommissionRate}%
@@ -279,7 +311,7 @@ export const CreatorLimits: React.FC<CreatorLimitsProps> = ({
                   R$ {limits.totalRevenue.toFixed(2)}
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">
-                  {limits.totalViews.toLocaleString('pt-BR')} visualizações
+                  {limits.totalViews.toLocaleString("pt-BR")} visualizações
                 </p>
               </div>
             </div>
@@ -300,14 +332,16 @@ export const CreatorLimits: React.FC<CreatorLimitsProps> = ({
             <Alert className="border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950">
               <CheckCircle className="h-4 w-4 text-green-600" />
               <AlertDescription className="text-green-800 dark:text-green-200">
-                <strong>Upload Liberado:</strong> Você pode enviar novos vídeos para a plataforma.
+                <strong>Upload Liberado:</strong> Você pode enviar novos vídeos
+                para a plataforma.
               </AlertDescription>
             </Alert>
           ) : (
             <Alert className="border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950">
               <Ban className="h-4 w-4 text-red-600" />
               <AlertDescription className="text-red-800 dark:text-red-200">
-                <strong>Upload Restrito:</strong> {limits.restrictions.reason || 'Restrição ativa'}
+                <strong>Upload Restrito:</strong>{" "}
+                {limits.restrictions.reason || "Restrição ativa"}
               </AlertDescription>
             </Alert>
           )}
@@ -317,19 +351,23 @@ export const CreatorLimits: React.FC<CreatorLimitsProps> = ({
             <Alert className="border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-950 mt-4">
               <AlertTriangle className="h-4 w-4 text-yellow-600" />
               <AlertDescription className="text-yellow-800 dark:text-yellow-200">
-                <strong>Aviso:</strong> Armazenamento quase esgotado ({limits.storageUsedPercentage.toFixed(1)}%). 
-                Considere deletar vídeos antigos ou solicitar aumento de limite.
+                <strong>Aviso:</strong> Armazenamento quase esgotado (
+                {limits.storageUsedPercentage.toFixed(1)}%). Considere deletar
+                vídeos antigos ou solicitar aumento de limite.
               </AlertDescription>
             </Alert>
           )}
 
           {/* Video Limit Warning */}
-          {(limits.videoCount / limits.videoCountLimit) > 0.9 && (
+          {limits.videoCount / limits.videoCountLimit > 0.9 && (
             <Alert className="border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-950 mt-4">
               <AlertTriangle className="h-4 w-4 text-yellow-600" />
               <AlertDescription className="text-yellow-800 dark:text-yellow-200">
-                <strong>Aviso:</strong> Limite de vídeos quase atingido ({limits.videoCount}/{limits.videoCountLimit}). 
-                {showAdminControls ? 'Considere aumentar o limite.' : 'Entre em contato para solicitar aumento.'}
+                <strong>Aviso:</strong> Limite de vídeos quase atingido (
+                {limits.videoCount}/{limits.videoCountLimit}).
+                {showAdminControls
+                  ? "Considere aumentar o limite."
+                  : "Entre em contato para solicitar aumento."}
               </AlertDescription>
             </Alert>
           )}
@@ -337,7 +375,7 @@ export const CreatorLimits: React.FC<CreatorLimitsProps> = ({
       </Card>
 
       {/* Admin Controls */}
-      {showAdminControls && user?.role === 'admin' && (
+      {showAdminControls && user?.role === "admin" && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -367,7 +405,7 @@ export const CreatorLimits: React.FC<CreatorLimitsProps> = ({
                       disabled={!restrictionReason.trim() || actionLoading}
                     >
                       <Ban className="w-4 h-4 mr-2" />
-                      {actionLoading ? 'Restringindo...' : 'Restringir Upload'}
+                      {actionLoading ? "Restringindo..." : "Restringir Upload"}
                     </Button>
                   </div>
                 ) : (
@@ -377,7 +415,7 @@ export const CreatorLimits: React.FC<CreatorLimitsProps> = ({
                     className="bg-green-600 hover:bg-green-700 text-white"
                   >
                     <Unlock className="w-4 h-4 mr-2" />
-                    {actionLoading ? 'Liberando...' : 'Liberar Upload'}
+                    {actionLoading ? "Liberando..." : "Liberar Upload"}
                   </Button>
                 )}
               </div>
@@ -388,7 +426,9 @@ export const CreatorLimits: React.FC<CreatorLimitsProps> = ({
               <Label>Atualizar Limites</Label>
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="storage-limit">Limite de Armazenamento (GB)</Label>
+                  <Label htmlFor="storage-limit">
+                    Limite de Armazenamento (GB)
+                  </Label>
                   <Input
                     id="storage-limit"
                     type="number"
@@ -418,7 +458,7 @@ export const CreatorLimits: React.FC<CreatorLimitsProps> = ({
                 variant="outline"
               >
                 <Edit className="w-4 h-4 mr-2" />
-                {actionLoading ? 'Atualizando...' : 'Atualizar Limites'}
+                {actionLoading ? "Atualizando..." : "Atualizar Limites"}
               </Button>
             </div>
           </CardContent>
@@ -441,21 +481,30 @@ export const CreatorLimits: React.FC<CreatorLimitsProps> = ({
                   🎉 Benefícios do Período de Carência
                 </h4>
                 <ul className="text-sm text-green-800 dark:text-green-200 space-y-1">
-                  <li>• <strong>100% da receita</strong> é sua por {limits.graceMonthsLeft} meses</li>
+                  <li>
+                    • <strong>100% da receita</strong> é sua por{" "}
+                    {limits.graceMonthsLeft} meses
+                  </li>
                   <li>• Sem comissões da plataforma</li>
                   <li>• Tempo para estabelecer sua audiência</li>
                   <li>• Suporte prioritário da equipe</li>
                 </ul>
               </div>
-              
+
               <div className="grid md:grid-cols-2 gap-4 text-sm">
                 <div>
-                  <p className="font-medium mb-1">Após o período de carência:</p>
-                  <p className="text-muted-foreground">70% para você, 30% para a plataforma</p>
+                  <p className="font-medium mb-1">
+                    Após o período de carência:
+                  </p>
+                  <p className="text-muted-foreground">
+                    70% para você, 30% para a plataforma
+                  </p>
                 </div>
                 <div>
                   <p className="font-medium mb-1">Tempo restante:</p>
-                  <p className="text-muted-foreground">{limits.graceMonthsLeft} meses</p>
+                  <p className="text-muted-foreground">
+                    {limits.graceMonthsLeft} meses
+                  </p>
                 </div>
               </div>
             </div>
@@ -465,12 +514,10 @@ export const CreatorLimits: React.FC<CreatorLimitsProps> = ({
 
       {/* Refresh Button */}
       <div className="flex justify-center">
-        <Button 
-          variant="outline" 
-          onClick={fetchLimits}
-          disabled={loading}
-        >
-          <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+        <Button variant="outline" onClick={fetchLimits} disabled={loading}>
+          <RefreshCw
+            className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`}
+          />
           Atualizar Dados
         </Button>
       </div>

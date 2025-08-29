@@ -1,11 +1,17 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 import {
   Video,
   Lock,
@@ -22,96 +28,94 @@ import {
   Award,
   Users,
   Zap,
-  Target
-} from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
-import type { AuthUser } from '@/contexts/AuthContext';
+  Target,
+} from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import type { AuthUser } from "@/contexts/AuthContext";
 
 export default function CreatorLogin() {
   const navigate = useNavigate();
   const { setUser } = useAuth();
-  
+
   const [formData, setFormData] = useState({
-    email: '',
-    password: ''
+    email: "",
+    password: "",
   });
-  
+
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    
+    setFormData((prev) => ({ ...prev, [field]: value }));
+
     // Clear error when user starts typing
     if (error) {
-      setError('');
+      setError("");
     }
   };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.email.trim() || !formData.password.trim()) {
-      setError('Email e senha são obrigatórios');
+      setError("Email e senha são obrigatórios");
       return;
     }
 
     setIsLoading(true);
-    setError('');
+    setError("");
 
     try {
-      const response = await fetch('/api/auth/login-creator', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json' 
+      const response = await fetch("/api/auth/login-creator", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           email: formData.email.trim(),
-          password: formData.password
-        })
+          password: formData.password,
+        }),
       });
 
       const data = await response.json();
 
       if (data.success && data.token) {
         // Store token
-        localStorage.setItem('xnema_token', data.token);
+        localStorage.setItem("xnema_token", data.token);
 
         // Transform user data to AuthUser format
         const transformedUser: AuthUser = {
           id: data.user.id,
           user_id: data.user.id,
           email: data.user.email,
-          username: data.user.name || data.user.email.split('@')[0],
-          displayName: data.user.name || data.user.email.split('@')[0],
-          bio: data.user.creatorProfile?.bio || '',
-          subscriptionStatus: 'inativo', // Criadores não são assinantes
+          username: data.user.name || data.user.email.split("@")[0],
+          displayName: data.user.name || data.user.email.split("@")[0],
+          bio: data.user.creatorProfile?.bio || "",
+          subscriptionStatus: "inativo", // Criadores não são assinantes
           subscriptionStart: undefined,
           subscriptionPlan: undefined,
-          name: data.user.name || data.user.email.split('@')[0],
+          name: data.user.name || data.user.email.split("@")[0],
           assinante: false, // Criadores não são assinantes
-          role: data.user.role || 'creator'
+          role: data.user.role || "creator",
         };
 
         // Update auth context
         setUser(transformedUser);
-        localStorage.setItem('xnema_user', JSON.stringify(transformedUser));
+        localStorage.setItem("xnema_user", JSON.stringify(transformedUser));
 
-        setSuccess('Login realizado com sucesso!');
+        setSuccess("Login realizado com sucesso!");
 
         // Redirect to creator portal
         setTimeout(() => {
-          navigate('/creator-portal');
+          navigate("/creator-portal");
         }, 1000);
-
       } else {
-        setError(data.message || 'Erro no login');
+        setError(data.message || "Erro no login");
       }
-
     } catch (error) {
-      console.error('Erro no login:', error);
-      setError('Erro de conexão. Verifique sua internet e tente novamente.');
+      console.error("Erro no login:", error);
+      setError("Erro de conexão. Verifique sua internet e tente novamente.");
     } finally {
       setIsLoading(false);
     }
@@ -126,7 +130,9 @@ export default function CreatorLogin() {
             <div className="w-16 h-16 bg-gradient-to-r from-xnema-orange to-xnema-purple rounded-full flex items-center justify-center shadow-lg">
               <Video className="w-8 h-8 text-white" />
             </div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-xnema-orange to-xnema-purple bg-clip-text text-transparent">XNEMA</h1>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-xnema-orange to-xnema-purple bg-clip-text text-transparent">
+              XNEMA
+            </h1>
           </div>
 
           <div className="space-y-2">
@@ -134,7 +140,9 @@ export default function CreatorLogin() {
               <Palette className="w-4 h-4 mr-2" />
               Portal do Criador de Conteúdo
             </Badge>
-            <p className="text-sm text-muted-foreground">Transforme sua criatividade em renda</p>
+            <p className="text-sm text-muted-foreground">
+              Transforme sua criatividade em renda
+            </p>
           </div>
         </div>
 
@@ -148,7 +156,7 @@ export default function CreatorLogin() {
               Acesse seu estdio de criação e comece a monetizar
             </CardDescription>
           </CardHeader>
-          
+
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
@@ -160,7 +168,7 @@ export default function CreatorLogin() {
                     type="email"
                     placeholder="criador@email.com"
                     value={formData.email}
-                    onChange={(e) => handleInputChange('email', e.target.value)}
+                    onChange={(e) => handleInputChange("email", e.target.value)}
                     className="pl-10"
                     disabled={isLoading}
                     required
@@ -177,7 +185,9 @@ export default function CreatorLogin() {
                     type="password"
                     placeholder="••••••••"
                     value={formData.password}
-                    onChange={(e) => handleInputChange('password', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("password", e.target.value)
+                    }
                     className="pl-10"
                     disabled={isLoading}
                     required
@@ -225,13 +235,13 @@ export default function CreatorLogin() {
             {/* Links */}
             <div className="mt-6 space-y-4">
               <div className="text-center">
-            <Link
-              to="/forgot-password"
-              className="text-sm text-xnema-orange hover:text-xnema-orange/80 underline font-medium"
-            >
-              Esqueceu sua senha?
-            </Link>
-          </div>
+                <Link
+                  to="/forgot-password"
+                  className="text-sm text-xnema-orange hover:text-xnema-orange/80 underline font-medium"
+                >
+                  Esqueceu sua senha?
+                </Link>
+              </div>
 
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
@@ -247,14 +257,14 @@ export default function CreatorLogin() {
               <div className="grid grid-cols-2 gap-3">
                 <Button
                   variant="outline"
-                  onClick={() => navigate('/login/subscriber')}
+                  onClick={() => navigate("/login/subscriber")}
                   className="text-sm border-blue-500 text-blue-600 hover:bg-blue-500 hover:text-white"
                 >
                   Área Premium
                 </Button>
                 <Button
                   variant="outline"
-                  onClick={() => navigate('/register?role=creator')}
+                  onClick={() => navigate("/register?role=creator")}
                   className="text-sm border-xnema-orange text-xnema-orange hover:bg-xnema-orange hover:text-black"
                 >
                   Virar Criador
@@ -297,7 +307,7 @@ export default function CreatorLogin() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => navigate('/creator-info')}
+                onClick={() => navigate("/creator-info")}
                 className="border-xnema-orange text-xnema-orange hover:bg-xnema-orange hover:text-black font-medium"
               >
                 Como Funciona
@@ -338,12 +348,15 @@ export default function CreatorLogin() {
         {/* Footer */}
         <div className="text-center text-sm text-muted-foreground">
           <p>
-            Ao fazer login, você aceita nossos{' '}
+            Ao fazer login, você aceita nossos{" "}
             <Link to="/terms" className="underline hover:text-foreground">
               Termos de Uso
-            </Link>{' '}
-            e{' '}
-            <Link to="/creator-agreement" className="underline hover:text-foreground">
+            </Link>{" "}
+            e{" "}
+            <Link
+              to="/creator-agreement"
+              className="underline hover:text-foreground"
+            >
               Acordo de Criador
             </Link>
           </p>

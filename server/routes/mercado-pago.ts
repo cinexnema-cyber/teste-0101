@@ -10,15 +10,17 @@ const MERCADO_PAGO_PLANS = {
   monthly: {
     id: "monthly_plan",
     name: "Plano Mensal XNEMA",
-    price: 19.90,
-    checkoutUrl: "https://www.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=monthly_plan_id",
+    price: 19.9,
+    checkoutUrl:
+      "https://www.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=monthly_plan_id",
   },
   yearly: {
-    id: "yearly_plan", 
+    id: "yearly_plan",
     name: "Plano Anual XNEMA",
-    price: 199.00,
-    checkoutUrl: "https://www.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=yearly_plan_id",
-  }
+    price: 199.0,
+    checkoutUrl:
+      "https://www.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=yearly_plan_id",
+  },
 };
 
 const createPaymentSchema = Joi.object({
@@ -38,13 +40,16 @@ const webhookSchema = Joi.object({
  * Endpoint para criar preferência de pagamento
  * POST /api/payments/create
  */
-export const createPayment = async (req: AuthenticatedRequest, res: Response) => {
+export const createPayment = async (
+  req: AuthenticatedRequest,
+  res: Response,
+) => {
   try {
     const { error, value } = createPaymentSchema.validate(req.body);
     if (error) {
-      return res.status(400).json({ 
-        message: "Dados inválidos", 
-        details: error.details[0].message 
+      return res.status(400).json({
+        message: "Dados inválidos",
+        details: error.details[0].message,
       });
     }
 
@@ -59,12 +64,13 @@ export const createPayment = async (req: AuthenticatedRequest, res: Response) =>
     // Verificar se o usuário já é premium
     if (user.isPremium && user.subscriptionStatus === "active") {
       return res.status(400).json({
-        message: "Usuário já possui assinatura ativa"
+        message: "Usuário já possui assinatura ativa",
       });
     }
 
     // Buscar dados do plano
-    const planData = MERCADO_PAGO_PLANS[planId as keyof typeof MERCADO_PAGO_PLANS];
+    const planData =
+      MERCADO_PAGO_PLANS[planId as keyof typeof MERCADO_PAGO_PLANS];
     if (!planData) {
       return res.status(400).json({ message: "Plano não encontrado" });
     }
@@ -73,7 +79,7 @@ export const createPayment = async (req: AuthenticatedRequest, res: Response) =>
     const now = new Date();
     const startDate = now;
     const endDate = new Date(now);
-    
+
     if (planId === "monthly") {
       endDate.setMonth(endDate.getMonth() + 1);
     } else if (planId === "yearly") {
@@ -99,11 +105,11 @@ export const createPayment = async (req: AuthenticatedRequest, res: Response) =>
         dados_adicionais: {
           plan_name: planData.name,
           user_email: user.email,
-        }
+        },
       },
       data_inicio_periodo: startDate,
       data_fim_periodo: endDate,
-      ativo: false
+      ativo: false,
     });
 
     await newSubscription.save();
@@ -117,7 +123,7 @@ export const createPayment = async (req: AuthenticatedRequest, res: Response) =>
     await user.save();
 
     // Construir URL de checkout com parâmetros personalizados
-    const checkoutUrl = `${planData.checkoutUrl}&external_reference=${transactionId}&notification_url=${process.env.WEBHOOK_URL || 'http://localhost:3001'}/api/payments/webhook&back_urls[success]=${process.env.FRONTEND_URL || 'http://localhost:3000'}/payment-success&back_urls[failure]=${process.env.FRONTEND_URL || 'http://localhost:3000'}/payment-error&back_urls[pending]=${process.env.FRONTEND_URL || 'http://localhost:3000'}/payment-pending`;
+    const checkoutUrl = `${planData.checkoutUrl}&external_reference=${transactionId}&notification_url=${process.env.WEBHOOK_URL || "http://localhost:3001"}/api/payments/webhook&back_urls[success]=${process.env.FRONTEND_URL || "http://localhost:3000"}/payment-success&back_urls[failure]=${process.env.FRONTEND_URL || "http://localhost:3000"}/payment-error&back_urls[pending]=${process.env.FRONTEND_URL || "http://localhost:3000"}/payment-pending`;
 
     res.json({
       success: true,
@@ -127,15 +133,14 @@ export const createPayment = async (req: AuthenticatedRequest, res: Response) =>
       plan: {
         id: planId,
         name: planData.name,
-        price: planData.price
-      }
+        price: planData.price,
+      },
     });
-
   } catch (error) {
     console.error("Erro ao criar pagamento:", error);
-    res.status(500).json({ 
+    res.status(500).json({
       message: "Erro interno do servidor",
-      details: process.env.NODE_ENV === 'development' ? error : undefined
+      details: process.env.NODE_ENV === "development" ? error : undefined,
     });
   }
 };
@@ -150,20 +155,28 @@ export const handleWebhook = async (req: Request, res: Response) => {
 
     const { error, value } = webhookSchema.validate(req.body);
     if (error) {
-      console.error("❌ Webhook com dados inválidos:", error.details[0].message);
+      console.error(
+        "❌ Webhook com dados inválidos:",
+        error.details[0].message,
+      );
       return res.status(400).json({ message: "Dados do webhook inválidos" });
     }
 
     // Adicionar external_reference ao payload se estiver nos parâmetros
     const webhookData = {
       ...value,
-      external_reference: req.body.external_reference || req.query.external_reference
+      external_reference:
+        req.body.external_reference || req.query.external_reference,
     };
 
     // Processar apenas eventos de pagamento
-    if (webhookData.action === "payment.created" || webhookData.action === "payment.updated") {
+    if (
+      webhookData.action === "payment.created" ||
+      webhookData.action === "payment.updated"
+    ) {
       // Usar serviço de retry para processar o webhook
-      const result = await WebhookRetryService.processPaymentWebhook(webhookData);
+      const result =
+        await WebhookRetryService.processPaymentWebhook(webhookData);
 
       if (result.success) {
         console.log("✅ Webhook processado com sucesso");
@@ -172,22 +185,24 @@ export const handleWebhook = async (req: Request, res: Response) => {
         // Ainda assim retornamos 200 para o Mercado Pago (retry será feito internamente)
       }
     } else {
-      console.log("ℹ️ Webhook ignorado (não é evento de pagamento):", webhookData.action);
+      console.log(
+        "ℹ️ Webhook ignorado (não é evento de pagamento):",
+        webhookData.action,
+      );
     }
 
     // SEMPRE responder OK para o Mercado Pago (retry é gerenciado internamente)
     res.status(200).json({
       success: true,
-      message: "Webhook recebido e processado"
+      message: "Webhook recebido e processado",
     });
-
   } catch (error) {
     console.error("😨 Erro crítico no webhook:", error);
 
     // Mesmo com erro, retornar 200 para evitar reenvio descontrolado
     res.status(200).json({
       success: false,
-      message: "Erro processado"
+      message: "Erro processado",
     });
   }
 };
@@ -200,9 +215,9 @@ export const getPaymentStatus = async (req: Request, res: Response) => {
   try {
     const { transactionId } = req.params;
 
-    const subscription = await Subscription.findOne({ 
-      transaction_id: transactionId 
-    }).populate('id_usuario');
+    const subscription = await Subscription.findOne({
+      transaction_id: transactionId,
+    }).populate("id_usuario");
 
     if (!subscription) {
       return res.status(404).json({ message: "Pagamento não encontrado" });
@@ -215,9 +230,8 @@ export const getPaymentStatus = async (req: Request, res: Response) => {
       amount: subscription.valor_pago / 100, // converter de centavos
       active: subscription.ativo,
       startDate: subscription.data_inicio_periodo,
-      endDate: subscription.data_fim_periodo
+      endDate: subscription.data_fim_periodo,
     });
-
   } catch (error) {
     console.error("Erro ao consultar status:", error);
     res.status(500).json({ message: "Erro interno do servidor" });
@@ -228,7 +242,10 @@ export const getPaymentStatus = async (req: Request, res: Response) => {
  * Endpoint para listar pagamentos do usuário
  * GET /api/payments/user/:userId
  */
-export const getUserPayments = async (req: AuthenticatedRequest, res: Response) => {
+export const getUserPayments = async (
+  req: AuthenticatedRequest,
+  res: Response,
+) => {
   try {
     const { userId } = req.params;
 
@@ -237,11 +254,11 @@ export const getUserPayments = async (req: AuthenticatedRequest, res: Response) 
       return res.status(403).json({ message: "Acesso negado" });
     }
 
-    const subscriptions = await Subscription.find({ 
-      id_usuario: userId 
+    const subscriptions = await Subscription.find({
+      id_usuario: userId,
     }).sort({ data_pagamento: -1 });
 
-    const payments = subscriptions.map(sub => ({
+    const payments = subscriptions.map((sub) => ({
       id: sub.id,
       transactionId: sub.transaction_id,
       plan: sub.plano,
@@ -250,11 +267,10 @@ export const getUserPayments = async (req: AuthenticatedRequest, res: Response) 
       date: sub.data_pagamento,
       active: sub.ativo,
       startDate: sub.data_inicio_periodo,
-      endDate: sub.data_fim_periodo
+      endDate: sub.data_fim_periodo,
     }));
 
     res.json({ payments });
-
   } catch (error) {
     console.error("Erro ao buscar pagamentos:", error);
     res.status(500).json({ message: "Erro interno do servidor" });

@@ -25,20 +25,20 @@ export const createTestUsersIfNeeded = async () => {
         {
           email: "iarima@xnema.com",
           password: "iarima123",
-          nome: "Iarima Temiski", 
+          nome: "Iarima Temiski",
           role: "admin",
           isPremium: true,
           subscriptionStatus: "active",
-          assinante: true
+          assinante: true,
         },
         {
           email: "admin@xnema.com",
           password: "admin123",
           nome: "Administrador",
-          role: "admin", 
+          role: "admin",
           isPremium: true,
           subscriptionStatus: "active",
-          assinante: true
+          assinante: true,
         },
         {
           email: "assinante@xnema.com",
@@ -46,8 +46,8 @@ export const createTestUsersIfNeeded = async () => {
           nome: "Assinante Premium",
           role: "subscriber",
           isPremium: true,
-          subscriptionStatus: "active", 
-          assinante: true
+          subscriptionStatus: "active",
+          assinante: true,
         },
         {
           email: "criador@xnema.com",
@@ -66,9 +66,9 @@ export const createTestUsersIfNeeded = async () => {
             totalViews: 0,
             monthlyEarnings: 0,
             affiliateEarnings: 0,
-            referralCount: 0
-          }
-        }
+            referralCount: 0,
+          },
+        },
       ];
 
       for (const userData of defaultUsers) {
@@ -92,7 +92,7 @@ export const subscriberLogin = async (req: Request, res: Response) => {
   try {
     console.log("👤 Tentativa de login de assinante:", {
       email: req.body.email,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
 
     // Primeiro, garantir que temos usuários no sistema
@@ -110,13 +110,13 @@ export const subscriberLogin = async (req: Request, res: Response) => {
 
     // Buscar usuário por email (qualquer role)
     const User = require("../models/User").default;
-    const user = await User.findOne({ 
-      email: email.toLowerCase().trim()
+    const user = await User.findOne({
+      email: email.toLowerCase().trim(),
     });
 
     if (!user) {
       console.log("❌ Usuário não encontrado:", email);
-      
+
       // Tentar criar usuário automaticamente para emails específicos
       if (email === "iarima@xnema.com" && password === "iarima123") {
         console.log("🔧 Criando usuário Iarima automaticamente...");
@@ -128,13 +128,17 @@ export const subscriberLogin = async (req: Request, res: Response) => {
           role: "admin",
           isPremium: true,
           subscriptionStatus: "active",
-          assinante: true
+          assinante: true,
         });
         await newUser.save();
         console.log("✅ Usuário Iarima criado automaticamente");
-        
+
         // Continuar com o login
-        const token = generateToken(newUser._id.toString(), newUser.email, newUser.role);
+        const token = generateToken(
+          newUser._id.toString(),
+          newUser.email,
+          newUser.role,
+        );
         return res.json({
           success: true,
           token,
@@ -145,14 +149,14 @@ export const subscriberLogin = async (req: Request, res: Response) => {
             role: newUser.role,
             isPremium: newUser.isPremium,
             subscriptionStatus: newUser.subscriptionStatus,
-            assinante: newUser.assinante
-          }
+            assinante: newUser.assinante,
+          },
         });
       }
-      
+
       return res.status(401).json({
         success: false,
-        message: 'Usuário não encontrado. Verifique o email.'
+        message: "Usuário não encontrado. Verifique o email.",
       });
     }
 
@@ -162,7 +166,7 @@ export const subscriberLogin = async (req: Request, res: Response) => {
       console.log("❌ Senha incorreta para:", email);
       return res.status(401).json({
         success: false,
-        message: 'Senha incorreta'
+        message: "Senha incorreta",
       });
     }
 
@@ -173,7 +177,7 @@ export const subscriberLogin = async (req: Request, res: Response) => {
       id: user._id,
       email: user.email,
       role: user.role,
-      isPremium: user.isPremium
+      isPremium: user.isPremium,
     });
 
     // Resposta de sucesso - trata qualquer usuário como "assinante" nesta rota
@@ -185,12 +189,11 @@ export const subscriberLogin = async (req: Request, res: Response) => {
         email: user.email,
         name: user.nome,
         role: user.role, // Mantém role original
-        isPremium: user.isPremium || user.assinante || (user.role === "admin"),
+        isPremium: user.isPremium || user.assinante || user.role === "admin",
         subscriptionStatus: user.subscriptionStatus || "active",
-        assinante: user.assinante || user.isPremium || (user.role === "admin")
-      }
+        assinante: user.assinante || user.isPremium || user.role === "admin",
+      },
     });
-
   } catch (error) {
     console.error("❌ Erro no login de assinante:", error);
     res.status(500).json({
@@ -206,21 +209,23 @@ export const subscriberLogin = async (req: Request, res: Response) => {
 export const checkSubscribers = async (req: Request, res: Response) => {
   try {
     const User = require("../models/User").default;
-    const users = await User.find({}, 'email nome role isPremium subscriptionStatus assinante');
-    
+    const users = await User.find(
+      {},
+      "email nome role isPremium subscriptionStatus assinante",
+    );
+
     res.json({
       success: true,
       totalUsers: users.length,
-      users: users.map(user => ({
+      users: users.map((user) => ({
         email: user.email,
         name: user.nome,
         role: user.role,
         isPremium: user.isPremium,
         subscriptionStatus: user.subscriptionStatus,
-        assinante: user.assinante
-      }))
+        assinante: user.assinante,
+      })),
     });
-
   } catch (error) {
     console.error("❌ Erro ao verificar assinantes:", error);
     res.status(500).json({
@@ -235,7 +240,11 @@ export const checkSubscribers = async (req: Request, res: Response) => {
  */
 export const createSubscriber = async (req: Request, res: Response) => {
   try {
-    const { email = "test@assinante.com", password = "123456", name = "Assinante Teste" } = req.body;
+    const {
+      email = "test@assinante.com",
+      password = "123456",
+      name = "Assinante Teste",
+    } = req.body;
 
     // Verificar se usuário já existe
     const User = require("../models/User").default;
@@ -248,8 +257,8 @@ export const createSubscriber = async (req: Request, res: Response) => {
           email: user.email,
           name: user.nome,
           role: user.role,
-          created: false
-        }
+          created: false,
+        },
       });
     }
 
@@ -261,14 +270,14 @@ export const createSubscriber = async (req: Request, res: Response) => {
       role: "subscriber",
       isPremium: true,
       subscriptionStatus: "active",
-      assinante: true
+      assinante: true,
     });
 
     await user.save();
 
     console.log("✅ Assinante criado:", {
       email: user.email,
-      role: user.role
+      role: user.role,
     });
 
     res.json({
@@ -278,10 +287,9 @@ export const createSubscriber = async (req: Request, res: Response) => {
         email: user.email,
         name: user.nome,
         role: user.role,
-        created: true
-      }
+        created: true,
+      },
     });
-
   } catch (error) {
     console.error("❌ Erro ao criar assinante:", error);
     res.status(500).json({

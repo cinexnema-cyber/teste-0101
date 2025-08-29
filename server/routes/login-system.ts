@@ -25,20 +25,20 @@ export const initializeSystemUsers = async () => {
         role: "admin",
         isPremium: true,
         subscriptionStatus: "active",
-        assinante: true
+        assinante: true,
       },
       {
-        email: "assinante@xnema.com", 
+        email: "assinante@xnema.com",
         password: "123456",
         nome: "Assinante Premium",
         role: "subscriber",
         isPremium: true,
         subscriptionStatus: "active",
-        assinante: true
+        assinante: true,
       },
       {
         email: "criador@xnema.com",
-        password: "123456", 
+        password: "123456",
         nome: "Criador de Conteúdo",
         role: "creator",
         isPremium: false,
@@ -53,9 +53,9 @@ export const initializeSystemUsers = async () => {
           totalViews: 0,
           monthlyEarnings: 0,
           affiliateEarnings: 0,
-          referralCount: 0
-        }
-      }
+          referralCount: 0,
+        },
+      },
     ];
 
     for (const userData of usersToCreate) {
@@ -86,7 +86,7 @@ export const universalLogin = async (req: Request, res: Response) => {
   try {
     console.log("🔐 Tentativa de login universal:", {
       email: req.body.email,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
 
     const { error, value } = loginSchema.validate(req.body);
@@ -100,15 +100,15 @@ export const universalLogin = async (req: Request, res: Response) => {
     const { email, password } = value;
 
     // Find user by email (any role)
-    const user = await User.findOne({ 
-      email: email.toLowerCase().trim()
+    const user = await User.findOne({
+      email: email.toLowerCase().trim(),
     });
 
     if (!user) {
       console.log("❌ Usuário não encontrado:", email);
       return res.status(401).json({
         success: false,
-        message: 'Usuário não encontrado'
+        message: "Usuário não encontrado",
       });
     }
 
@@ -118,7 +118,7 @@ export const universalLogin = async (req: Request, res: Response) => {
       console.log("❌ Senha incorreta para:", email);
       return res.status(401).json({
         success: false,
-        message: 'Senha incorreta'
+        message: "Senha incorreta",
       });
     }
 
@@ -129,7 +129,7 @@ export const universalLogin = async (req: Request, res: Response) => {
       id: user._id,
       email: user.email,
       role: user.role,
-      isPremium: user.isPremium
+      isPremium: user.isPremium,
     });
 
     // Response based on role
@@ -143,12 +143,12 @@ export const universalLogin = async (req: Request, res: Response) => {
         role: user.role,
         isPremium: user.isPremium,
         subscriptionStatus: user.subscriptionStatus,
-        assinante: user.assinante
-      }
+        assinante: user.assinante,
+      },
     };
 
     // Add role-specific data
-    if (user.role === 'creator' && user.creatorProfile) {
+    if (user.role === "creator" && user.creatorProfile) {
       responseData.user.creatorProfile = {
         status: user.creatorProfile.status,
         bio: user.creatorProfile.bio,
@@ -156,12 +156,11 @@ export const universalLogin = async (req: Request, res: Response) => {
         totalVideos: user.creatorProfile.totalVideos || 0,
         totalViews: user.creatorProfile.totalViews || 0,
         monthlyEarnings: user.creatorProfile.monthlyEarnings || 0,
-        affiliateEarnings: user.creatorProfile.affiliateEarnings || 0
+        affiliateEarnings: user.creatorProfile.affiliateEarnings || 0,
       };
     }
 
     res.json(responseData);
-
   } catch (error) {
     console.error("❌ Erro no login universal:", error);
     res.status(500).json({
@@ -178,7 +177,7 @@ export const subscriberLogin = async (req: Request, res: Response) => {
   try {
     console.log("👤 Login de assinante:", {
       email: req.body.email,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
 
     const { error, value } = loginSchema.validate(req.body);
@@ -192,15 +191,15 @@ export const subscriberLogin = async (req: Request, res: Response) => {
     const { email, password } = value;
 
     // Find user by email (prefer subscribers, but allow any user)
-    const user = await User.findOne({ 
-      email: email.toLowerCase().trim()
+    const user = await User.findOne({
+      email: email.toLowerCase().trim(),
     });
 
     if (!user) {
       console.log("❌ Usuário não encontrado:", email);
       return res.status(401).json({
         success: false,
-        message: 'Usuário não encontrado'
+        message: "Usuário não encontrado",
       });
     }
 
@@ -210,7 +209,7 @@ export const subscriberLogin = async (req: Request, res: Response) => {
       console.log("❌ Senha incorreta:", email);
       return res.status(401).json({
         success: false,
-        message: 'Senha incorreta'
+        message: "Senha incorreta",
       });
     }
 
@@ -221,7 +220,7 @@ export const subscriberLogin = async (req: Request, res: Response) => {
       id: user._id,
       email: user.email,
       role: user.role,
-      isPremium: user.isPremium
+      isPremium: user.isPremium,
     });
 
     res.json({
@@ -234,10 +233,9 @@ export const subscriberLogin = async (req: Request, res: Response) => {
         role: user.role,
         isPremium: user.isPremium,
         subscriptionStatus: user.subscriptionStatus,
-        assinante: user.assinante || user.isPremium
-      }
+        assinante: user.assinante || user.isPremium,
+      },
     });
-
   } catch (error) {
     console.error("❌ Erro no login de assinante:", error);
     res.status(500).json({
@@ -254,7 +252,7 @@ export const creatorLogin = async (req: Request, res: Response) => {
   try {
     console.log("🎨 Login de criador:", {
       email: req.body.email,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
 
     const { error, value } = loginSchema.validate(req.body);
@@ -268,15 +266,15 @@ export const creatorLogin = async (req: Request, res: Response) => {
     const { email, password } = value;
 
     // Find user by email (any role, we'll convert to creator if needed)
-    const user = await User.findOne({ 
-      email: email.toLowerCase().trim()
+    const user = await User.findOne({
+      email: email.toLowerCase().trim(),
     });
 
     if (!user) {
       console.log("❌ Usuário não encontrado:", email);
       return res.status(401).json({
         success: false,
-        message: 'Usuário não encontrado'
+        message: "Usuário não encontrado",
       });
     }
 
@@ -286,7 +284,7 @@ export const creatorLogin = async (req: Request, res: Response) => {
       console.log("❌ Senha incorreta:", email);
       return res.status(401).json({
         success: false,
-        message: 'Senha incorreta'
+        message: "Senha incorreta",
       });
     }
 
@@ -304,7 +302,7 @@ export const creatorLogin = async (req: Request, res: Response) => {
         totalViews: 0,
         monthlyEarnings: 0,
         affiliateEarnings: 0,
-        referralCount: 0
+        referralCount: 0,
       };
     }
 
@@ -315,7 +313,7 @@ export const creatorLogin = async (req: Request, res: Response) => {
       id: user._id,
       email: user.email,
       role: user.role,
-      creatorStatus: creatorProfile.status
+      creatorStatus: creatorProfile.status,
     });
 
     res.json({
@@ -333,11 +331,10 @@ export const creatorLogin = async (req: Request, res: Response) => {
           totalVideos: creatorProfile.totalVideos || 0,
           totalViews: creatorProfile.totalViews || 0,
           monthlyEarnings: creatorProfile.monthlyEarnings || 0,
-          affiliateEarnings: creatorProfile.affiliateEarnings || 0
-        }
-      }
+          affiliateEarnings: creatorProfile.affiliateEarnings || 0,
+        },
+      },
     });
-
   } catch (error) {
     console.error("❌ Erro no login de criador:", error);
     res.status(500).json({
@@ -352,7 +349,11 @@ export const creatorLogin = async (req: Request, res: Response) => {
  */
 export const createEmergencyUser = async (req: Request, res: Response) => {
   try {
-    const { email = "emergency@xnema.com", password = "123456", role = "admin" } = req.body;
+    const {
+      email = "emergency@xnema.com",
+      password = "123456",
+      role = "admin",
+    } = req.body;
 
     // Check if user exists
     let user = await User.findOne({ email });
@@ -363,8 +364,8 @@ export const createEmergencyUser = async (req: Request, res: Response) => {
         user: {
           email: user.email,
           role: user.role,
-          created: false
-        }
+          created: false,
+        },
       });
     }
 
@@ -377,24 +378,27 @@ export const createEmergencyUser = async (req: Request, res: Response) => {
       isPremium: true,
       subscriptionStatus: "active",
       assinante: true,
-      creatorProfile: role === "creator" ? {
-        bio: "Usuário de emergência",
-        status: "approved",
-        totalVideos: 0,
-        approvedVideos: 0,
-        rejectedVideos: 0,
-        totalViews: 0,
-        monthlyEarnings: 0,
-        affiliateEarnings: 0,
-        referralCount: 0
-      } : undefined
+      creatorProfile:
+        role === "creator"
+          ? {
+              bio: "Usuário de emergência",
+              status: "approved",
+              totalVideos: 0,
+              approvedVideos: 0,
+              rejectedVideos: 0,
+              totalViews: 0,
+              monthlyEarnings: 0,
+              affiliateEarnings: 0,
+              referralCount: 0,
+            }
+          : undefined,
     });
 
     await user.save();
 
     console.log("🚨 Usuário de emergência criado:", {
       email: user.email,
-      role: user.role
+      role: user.role,
     });
 
     res.json({
@@ -403,10 +407,9 @@ export const createEmergencyUser = async (req: Request, res: Response) => {
       user: {
         email: user.email,
         role: user.role,
-        created: true
-      }
+        created: true,
+      },
     });
-
   } catch (error) {
     console.error("❌ Erro ao criar usuário de emergência:", error);
     res.status(500).json({
@@ -421,20 +424,22 @@ export const createEmergencyUser = async (req: Request, res: Response) => {
  */
 export const listAllUsers = async (req: Request, res: Response) => {
   try {
-    const users = await User.find({}, 'email nome role isPremium subscriptionStatus').limit(20);
-    
+    const users = await User.find(
+      {},
+      "email nome role isPremium subscriptionStatus",
+    ).limit(20);
+
     res.json({
       success: true,
-      users: users.map(user => ({
+      users: users.map((user) => ({
         email: user.email,
         name: user.nome,
         role: user.role,
         isPremium: user.isPremium,
-        subscriptionStatus: user.subscriptionStatus
+        subscriptionStatus: user.subscriptionStatus,
       })),
-      total: users.length
+      total: users.length,
     });
-
   } catch (error) {
     console.error("❌ Erro ao listar usuários:", error);
     res.status(500).json({

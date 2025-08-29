@@ -81,10 +81,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               displayName:
                 userData.user.name || userData.user.email.split("@")[0],
               bio: userData.user.bio || "",
-              subscriptionStatus: userData.user.assinante
-                ? "ativo"
-                : "inativo",
-              subscriptionStart: userData.user.subscription?.startDate ? new Date(userData.user.subscription.startDate) : undefined,
+              subscriptionStatus: userData.user.assinante ? "ativo" : "inativo",
+              subscriptionStart: userData.user.subscription?.startDate
+                ? new Date(userData.user.subscription.startDate)
+                : undefined,
               subscriptionPlan: userData.user.subscription?.plan || "monthly",
               name: userData.user.name || userData.user.email.split("@")[0],
               assinante: userData.user.assinante || false,
@@ -188,7 +188,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             displayName: result.user.name || result.user.email.split("@")[0],
             bio: result.user.bio || "",
             subscriptionStatus: result.user.assinante ? "ativo" : "inativo",
-            subscriptionStart: result.user.subscription?.startDate ? new Date(result.user.subscription.startDate) : undefined,
+            subscriptionStart: result.user.subscription?.startDate
+              ? new Date(result.user.subscription.startDate)
+              : undefined,
             subscriptionPlan: result.user.subscription?.plan || "monthly",
             name: result.user.name || result.user.email.split("@")[0],
             assinante: result.user.assinante || false,
