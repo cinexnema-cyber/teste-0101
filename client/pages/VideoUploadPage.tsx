@@ -80,7 +80,21 @@ export default function VideoUploadPage() {
             </div>
 
             {/* Creator Benefits */}
-            <div className="grid md:grid-cols-3 gap-6 mb-8">
+            <div className="grid md:grid-cols-4 gap-6 mb-8">
+              <Card>
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 bg-blue-500/20 rounded-full flex items-center justify-center">
+                      <Calculator className="w-5 h-5 text-blue-500" />
+                    </div>
+                    <h3 className="font-semibold">Sistema de Blocos</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    1 bloco = 7,3 GB por R$ 1.000. Pague apenas pelo que usar!
+                  </p>
+                </CardContent>
+              </Card>
+
               <Card>
                 <CardContent className="p-6">
                   <div className="flex items-center gap-3 mb-3">
@@ -112,8 +126,8 @@ export default function VideoUploadPage() {
               <Card>
                 <CardContent className="p-6">
                   <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 bg-blue-500/20 rounded-full flex items-center justify-center">
-                      <Zap className="w-5 h-5 text-blue-500" />
+                    <div className="w-10 h-10 bg-purple-500/20 rounded-full flex items-center justify-center">
+                      <Zap className="w-5 h-5 text-purple-500" />
                     </div>
                     <h3 className="font-semibold">Streaming 4K</h3>
                   </div>
