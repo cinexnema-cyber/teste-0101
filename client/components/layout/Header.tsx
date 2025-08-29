@@ -135,7 +135,7 @@ export function Header() {
               <>
                 <Button variant="ghost" size="sm" asChild>
                   <Link
-                    to="/login"
+                    to="/login-select"
                     className="text-foreground hover:text-xnema-orange"
                   >
                     {t("nav.login")}
