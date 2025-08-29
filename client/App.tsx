@@ -108,6 +108,9 @@ const App = () => (
               <Route path="/login/subscriber" element={<SubscriberLogin />} />
               <Route path="/register-subscriber" element={<SubscriberRegister />} />
               <Route path="/dashboard" element={<SubscriberDashboard />} />
+              <Route path="/catalog" element={<ContentCatalog />} />
+              <Route path="/pricing" element={<PricingPage />} />
+              <Route path="/payment-success" element={<PaymentSuccess />} />
               <Route path="/login/creator" element={<CreatorLoginSimple />} />
               <Route path="/login/admin" element={<AdminLoginSimple />} />
               <Route path="/register" element={<Register />} />
