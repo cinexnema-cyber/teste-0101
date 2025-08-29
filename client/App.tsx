@@ -91,6 +91,8 @@ const App = () => (
               <Route path="/premium" element={<Premium />} />
               <Route path="/creators" element={<Creators />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/login/subscriber" element={<SubscriberLogin />} />
+              <Route path="/login/creator" element={<CreatorLogin />} />
               <Route path="/register" element={<Register />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
