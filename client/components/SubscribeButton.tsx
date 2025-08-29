@@ -20,7 +20,7 @@ interface SubscribeButtonProps {
   amount?: number; // em centavos
   description?: string;
   variant?: "default" | "premium" | "creator";
-  size?: "sm" | "md" | "lg";
+  size?: "default" | "sm" | "lg" | "icon";
   className?: string;
   onSuccess?: () => void;
   onError?: (error: string) => void;
