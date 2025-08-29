@@ -43,7 +43,7 @@ export default function SubscriberLogin() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.email.trim() || !formData.password.trim()) {
       setError('Email e senha são obrigatórios');
       return;
@@ -54,31 +54,17 @@ export default function SubscriberLogin() {
 
     try {
       console.log('🔐 Tentando login...');
-      
-      const response = await fetch('/api/auth/login-subscriber', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: formData.email.trim(),
-          password: formData.password
-        })
-      });
 
-      const data = await response.json();
-      console.log('📥 Resposta do login:', data);
+      const success = await login(formData.email.trim(), formData.password);
 
-      if (data.success && data.token) {
-        // Armazenar dados de autenticação
-        localStorage.setItem('xnema_token', data.token);
-        localStorage.setItem('xnema_user', JSON.stringify(data.user));
-        
-        setSuccess(`Bem-vindo, ${data.user.name}!`);
-        
+      if (success && user) {
+        setSuccess(`Bem-vindo, ${user.name}!`);
+
         // Redirecionar baseado no status da assinatura
         setTimeout(() => {
-          if (data.user.role === 'admin') {
+          if (user.role === 'admin') {
             navigate('/admin-dashboard');
-          } else if (data.user.isPremium || data.user.assinante) {
+          } else if (user.isPremium || user.assinante) {
             navigate('/dashboard');
           } else {
             navigate('/pricing'); // Usuário não tem assinatura ativa
@@ -86,7 +72,7 @@ export default function SubscriberLogin() {
         }, 1500);
 
       } else {
-        setError(data.message || 'Email ou senha incorretos');
+        setError('Email ou senha incorretos');
       }
 
     } catch (error) {
