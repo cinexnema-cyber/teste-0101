@@ -84,11 +84,12 @@ export const MuxHelpers = {
     try {
       const upload = await mux.video.uploads.create({
         new_asset_settings: {
-          playback_policy: MUX_CONFIG.playback_policy,
+          playback_policy: MUX_CONFIG.playback_policy as any,
           mp4_support: MUX_CONFIG.encoding.mp4_support,
           normalize_audio: MUX_CONFIG.encoding.normalize_audio,
           video_quality: MUX_CONFIG.encoding.video_quality,
           test: MUX_CONFIG.test,
+          master_access: 'none',
           metadata: {
             title: metadata.title,
             description: metadata.description,
