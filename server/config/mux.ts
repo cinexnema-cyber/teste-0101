@@ -9,7 +9,10 @@ if (!MUX_TOKEN_SECRET) {
 }
 
 // Initialize Mux client
-const mux = new Mux(MUX_TOKEN_ID, MUX_TOKEN_SECRET);
+const mux = new Mux({
+  tokenId: MUX_TOKEN_ID,
+  tokenSecret: MUX_TOKEN_SECRET
+});
 
 // Mux configuration
 export const MUX_CONFIG = {
