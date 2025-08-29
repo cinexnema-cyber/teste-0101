@@ -12,7 +12,7 @@ const loginSchema = Joi.object({
 /**
  * Criar usuários de teste automaticamente se não existirem
  */
-const createTestUsersIfNeeded = async () => {
+export const createTestUsersIfNeeded = async () => {
   try {
     const userCount = await User.countDocuments();
     console.log(`📊 Total de usuários no banco: ${userCount}`);
