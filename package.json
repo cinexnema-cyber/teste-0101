@@ -47,6 +47,7 @@
     "clean": "rm -rf dist node_modules"
   },
   "dependencies": {
+    "@mux/mux-node": "^12.7.0",
     "@stripe/stripe-js": "^2.4.0",
     "@supabase/supabase-js": "^2.55.0",
     "@types/bcryptjs": "^2.4.6",
@@ -59,6 +60,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongodb-memory-server": "^10.2.0",
     "mongoose": "^8.17.1",
+    "multer": "^2.0.2",
     "stripe": "^14.15.0",
     "zod": "^3.23.8"
   },
