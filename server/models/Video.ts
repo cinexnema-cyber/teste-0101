@@ -4,15 +4,33 @@ import mongoose, { Document, Schema } from 'mongoose';
 interface IVideo extends Document {
   title: string;
   description: string;
+
+  // Movie/Series metadata
+  type: 'filme' | 'serie';
+  season?: number; // se for série
+  episode?: number; // se for série
+  director?: string;
+  cast: string[];
+  genre: string[];
+  synopsis?: string;
+  language?: string;
+  releaseDate?: Date;
+
+  // Technical fields
   muxAssetId: string;
   muxPlaybackId: string;
   creatorId: string;
   creatorName: string;
   thumbnail?: string;
-  duration?: number;
+  thumbnailUrl?: string;
+  videoUrl?: string; // Mux playback URL
+  duration: number; // duração em minutos
   fileSize: number;
   originalFilename: string;
+
+  // Status and approval
   status: 'uploading' | 'processing' | 'pending_approval' | 'approved' | 'rejected' | 'failed';
+  approved: boolean; // aprovação admin
   approvalStatus: {
     approvedBy?: string;
     approvedAt?: Date;
@@ -20,11 +38,15 @@ interface IVideo extends Document {
     rejectedAt?: Date;
     rejectionReason?: string;
   };
+
+  // Analytics
   viewCount: number;
   revenue: number;
   tags: string[];
   category: string;
   isPrivate: boolean;
+
+  // Timestamps
   uploadedAt: Date;
   processedAt?: Date;
   approvedAt?: Date;
@@ -45,6 +67,53 @@ const VideoSchema = new Schema<IVideo>({
     required: true,
     trim: true,
     maxlength: 2000
+  },
+
+  // Movie/Series metadata
+  type: {
+    type: String,
+    enum: ['filme', 'serie'],
+    required: true
+  },
+  season: {
+    type: Number,
+    default: null,
+    min: 1
+  },
+  episode: {
+    type: Number,
+    default: null,
+    min: 1
+  },
+  director: {
+    type: String,
+    trim: true
+  },
+  cast: [{
+    type: String,
+    trim: true
+  }],
+  genre: [{
+    type: String,
+    trim: true
+  }],
+  synopsis: {
+    type: String,
+    trim: true,
+    maxlength: 1000
+  },
+  language: {
+    type: String,
+    default: 'Português'
+  },
+  releaseDate: {
+    type: Date
+  },
+  thumbnailUrl: {
+    type: String
+  },
+  videoUrl: {
+    type: String
   },
   muxAssetId: {
     type: String,
@@ -69,8 +138,9 @@ const VideoSchema = new Schema<IVideo>({
     default: null
   },
   duration: {
-    type: Number, // Duration in seconds
-    default: 0
+    type: Number, // Duration in minutes
+    required: true,
+    min: 1
   },
   fileSize: {
     type: Number, // File size in bytes
@@ -84,6 +154,10 @@ const VideoSchema = new Schema<IVideo>({
     type: String,
     enum: ['uploading', 'processing', 'pending_approval', 'approved', 'rejected', 'failed'],
     default: 'uploading'
+  },
+  approved: {
+    type: Boolean,
+    default: false
   },
   approvalStatus: {
     approvedBy: {
