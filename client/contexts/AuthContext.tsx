@@ -119,7 +119,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           : authUser.subscriptionStatus,
         subscriptionStart: authUser.subscriptionStart,
         subscriptionPlan: isSpecialAdmin
-          ? "lifetime"
+          ? ("lifetime" as any)
           : authUser.subscriptionPlan,
         name: authUser.displayName,
         assinante: isSpecialAdmin
@@ -232,7 +232,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           : authUser.subscriptionStatus,
         subscriptionStart: authUser.subscriptionStart,
         subscriptionPlan: isSpecialAdmin
-          ? "lifetime"
+          ? ("lifetime" as any)
           : authUser.subscriptionPlan,
         name: authUser.displayName,
         assinante: isSpecialAdmin
@@ -302,7 +302,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               : currentUser.subscriptionStatus,
             subscriptionStart: currentUser.subscriptionStart,
             subscriptionPlan: isSpecialAdmin
-              ? "lifetime"
+              ? ("lifetime" as any)
               : currentUser.subscriptionPlan,
             name: currentUser.displayName,
             assinante: isSpecialAdmin
