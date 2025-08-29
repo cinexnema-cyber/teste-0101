@@ -411,6 +411,12 @@ export function createServer() {
   app.get("/api/payments/status/:transactionId", getPaymentStatus);
   app.get("/api/payments/user/:userId", authenticateToken, getUserPayments);
 
+  // Webhook retry routes
+  const { processRetries, getWebhookLogs, retrySpecificWebhook } = require("./routes/webhook-retry");
+  app.post("/api/webhooks/process-retries", processRetries);
+  app.get("/api/webhooks/logs", getWebhookLogs);
+  app.post("/api/webhooks/retry/:webhookId", retrySpecificWebhook);
+
   // Creator blocks routes
   app.get("/api/creator-blocks/:creatorId", authenticateToken, getCreatorBlocks);
   app.post("/api/creator-blocks/calculate", calculateBlocks);
