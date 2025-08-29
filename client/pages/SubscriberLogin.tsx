@@ -68,22 +68,24 @@ export default function SubscriberLogin() {
       if (data.success && data.token) {
         // Store token
         localStorage.setItem('xnema_token', data.token);
-        
-        // Update auth context
-        if (login) {
-          await login(data.user, data.token);
+
+        // Use AuthContext to perform full login flow with provided credentials
+        const loginOk = await login(formData.email.trim(), formData.password);
+        if (!loginOk) {
+          setError('Falha ao iniciar sessão. Tente novamente.');
+          return;
         }
 
         setSuccess('Login realizado com sucesso!');
-        
-        // Redirect based on user status
+
+        // Redirect based on user status from backend response (fallback to context on next render)
         setTimeout(() => {
-          if (data.user.isPremium) {
-            navigate('/dashboard'); // Premium dashboard
+          if (data.user?.isPremium) {
+            navigate('/dashboard');
           } else {
-            navigate('/pricing'); // Encourage subscription
+            navigate('/pricing');
           }
-        }, 1000);
+        }, 500);
 
       } else {
         setError(data.message || 'Erro no login');
