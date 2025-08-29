@@ -143,25 +143,32 @@ export default function VideoUploadPage() {
           <Alert className="mb-8 border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950">
             <Shield className="h-4 w-4 text-blue-600" />
             <AlertDescription className="text-blue-800 dark:text-blue-200">
-              <div className="space-y-2">
-                <p className="font-semibold">Processo de Aprovação:</p>
-                <div className="grid md:grid-cols-4 gap-4 text-sm">
+              <div className="space-y-3">
+                <p className="font-semibold">Novo Fluxo com Sistema de Blocos:</p>
+                <div className="grid md:grid-cols-5 gap-4 text-sm">
                   <div className="flex items-center gap-2">
                     <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs">1</div>
-                    <span>Upload do vídeo</span>
+                    <span>Calcular blocos</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs">2</div>
-                    <span>Processamento automático</span>
+                    <span>Pagar blocos (se necessário)</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs">3</div>
-                    <span>Revisão da equipe</span>
+                    <span>Upload do vídeo</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs">4</div>
+                    <span>Revisão da equipe</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs">5</div>
                     <span>Liberação para assinantes</span>
                   </div>
+                </div>
+                <div className="bg-white/10 rounded-lg p-3 mt-3">
+                  <p className="text-xs"><strong>Sistema Inteligente:</strong> Calculamos automaticamente quantos blocos seu vídeo precisa baseado na duração e resolução. Você só paga pelos blocos necessários!</p>
                 </div>
               </div>
             </AlertDescription>
