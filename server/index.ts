@@ -921,36 +921,47 @@ export function createServer() {
     }
   });
 
-  // Debug route to show database status
+  // Debug route to show database status - using Supabase
   app.get("/api/debug/db-status", async (req, res) => {
     try {
-      const User = require("./models/User").default;
-      const userCount = await User.countDocuments();
-      const recentUsers = await User.find({})
-        .select("email role createdAt")
-        .sort({ createdAt: -1 })
+      const { createClient } = require('@supabase/supabase-js');
+      const supabaseUrl = process.env.SUPABASE_URL!;
+      const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+      const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+      const { count: userCount, error: countError } = await supabase
+        .from('users')
+        .select('*', { count: 'exact', head: true });
+
+      const { data: recentUsers, error: usersError } = await supabase
+        .from('users')
+        .select('email, role, created_at')
+        .order('created_at', { ascending: false })
         .limit(5);
+
+      if (countError || usersError) {
+        throw countError || usersError;
+      }
 
       res.json({
         success: true,
         database: {
           connected: true,
-          host: require("mongoose").connection.host,
-          name: require("mongoose").connection.name,
-          totalUsers: userCount,
-          recentUsers,
+          host: "supabase",
+          name: "postgres",
+          totalUsers: userCount || 0,
+          recentUsers: recentUsers || [],
         },
         timestamp: new Date().toISOString(),
       });
     } catch (error) {
       console.error("❌ Erro no debug:", error);
-      const { getMongoDBConnectionInfo } = require("./utils/mongodbCheck");
       res.json({
         success: false,
         database: {
           connected: false,
           error: error.message,
-          connectionInfo: getMongoDBConnectionInfo(),
+          connectionInfo: "Using Supabase for all database operations",
         },
         timestamp: new Date().toISOString(),
       });
