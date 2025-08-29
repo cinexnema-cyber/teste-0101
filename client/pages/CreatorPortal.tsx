@@ -57,6 +57,7 @@ import {
   RefreshCw
 } from "lucide-react";
 import { useGoogleAnalytics } from "@/hooks/useGoogleAnalytics";
+import { Link } from "react-router-dom";
 
 // Legacy mock data - replaced by Google Analytics real-time data (GA4: G-FMZQ1MHE5G)
 // These constants remain for fallback purposes only
@@ -894,7 +895,7 @@ export default function CreatorPortal() {
                     </div>
 
                     <div className="space-y-4">
-                      <h4 className="font-semibold">Após Per��odo de Carência</h4>
+                      <h4 className="font-semibold">Após Período de Carência</h4>
                       <div className="space-y-2">
                         <div className="flex justify-between">
                           <span>Sua Parte (70%):</span>
